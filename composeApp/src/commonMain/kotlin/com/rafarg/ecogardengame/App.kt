@@ -21,7 +21,13 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -76,15 +82,28 @@ fun SpriteAnimation(
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
-fun App() {
+fun App(prefs: DataStore<Preferences>? = null) {
     MaterialTheme {
-        var count by remember { mutableStateOf(0) }
+        var clicks by remember { mutableStateOf(0) }
+        var money by remember { mutableStateOf(0) }
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
         val translationY = remember { Animatable(0f) }
         val rotation = remember { Animatable(0f) }
 
         var flyingApples by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+
+        val CLICKS_KEY = intPreferencesKey("clicks")
+        val MONEY_KEY = intPreferencesKey("money")
+
+        // Load initial data
+        LaunchedEffect(prefs) {
+            if (prefs != null) {
+                val settings = prefs.data.first()
+                clicks = settings[CLICKS_KEY] ?: 0
+                money = settings[MONEY_KEY] ?: 0
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -96,7 +115,13 @@ fun App() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Apples: $count", style = MaterialTheme.typography.headlineMedium)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Clicks: $clicks", style = MaterialTheme.typography.headlineMedium)
+                    Text("Money: $money", style = MaterialTheme.typography.headlineMedium)
+                }
 
                 // Sprite Animation
                 // Ensure "tomato_strip.png" exists in composeApp/src/commonMain/composeResources/drawable/
@@ -117,26 +142,37 @@ fun App() {
                             // 2. Set indication to null to remove the ripple effect
                             indication = null) {
 
-                            count++
+                            clicks++
+                            money++
+
+                            if (prefs != null) {
+                                scope.launch {
+                                    prefs.edit { settings ->
+                                        settings[CLICKS_KEY] = clicks
+                                        settings[MONEY_KEY] = money
+                                    }
+                                }
+                            }
+
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
-                            if (count > 0 && count % 10 == 0) {
+                            if (clicks > 0 && clicks % 10 == 0) {
                                 scope.launch { translationY.animateTo(-100f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) }
                                 scope.launch {
                                     delay(100L)
                                     translationY.animateTo(0f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
                                 }
                             }
-                            if (count > 0 && count % 25 == 0) {
+                            if (clicks > 0 && clicks % 25 == 0) {
                                 scope.launch {
                                     rotation.animateTo(rotation.value + 360f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessVeryLow))
                                     rotation.snapTo(0f)
                                 }
                             }
 
-                            if (count > 0 && count % 35 == 0) {
+                            if (clicks > 0 && clicks % 35 == 0) {
                                 val newParticles = (1..10).map {
                                     FlyingParticle(id = particleIdCounter++)
                                 }
