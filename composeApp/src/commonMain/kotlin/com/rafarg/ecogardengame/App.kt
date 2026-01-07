@@ -1,49 +1,79 @@
 package com.rafarg.ecogardengame
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ecogardengame.composeapp.generated.resources.Res
-import ecogardengame.composeapp.generated.resources.red_apple
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.random.Random
 
+// --- RESOURCES IMPORT ---
+import ecogardengame.composeapp.generated.resources.Res
+import ecogardengame.composeapp.generated.resources.tomato_strip
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+
 data class FlyingParticle(
-    val id: Long, // Unique ID for each particle
-    val animatableX: Animatable<Float, *> = Animatable(0f), // X-position for animation
-    val animatableY: Animatable<Float, *> = Animatable(0f),   // Y-position for animation
-    val animatableAlpha: Animatable<Float, *> = Animatable(1f) // Alpha for fade animation
+    val id: Long,
+    val animatableX: Animatable<Float, *> = Animatable(0f),
+    val animatableY: Animatable<Float, *> = Animatable(0f),
+    val animatableAlpha: Animatable<Float, *> = Animatable(1f)
 )
 
-// This counter will provide a unique ID without using System.nanoTime()
 private var particleIdCounter = 0L
 
+@Composable
+fun SpriteAnimation(
+    painter: Painter,
+    frameCount: Int,
+    modifier: Modifier = Modifier,
+    frameDurationMillis: Long = 150
+) {
+    var frame by remember { mutableStateOf(0) }
+    
+    LaunchedEffect(Unit) {
+        while (isActive) {
+            delay(frameDurationMillis)
+            frame = (frame + 1) % frameCount
+        }
+    }
+
+    Canvas(modifier = modifier) {
+        // Calculate the width of the entire strip as if drawn to fill height
+        val drawWidth = size.width * frameCount
+        val drawHeight = size.height
+        
+        clipRect(left = 0f, top = 0f, right = size.width, bottom = size.height) {
+            translate(left = -frame * size.width, top = 0f) {
+                with(painter) {
+                    draw(size = Size(drawWidth, drawHeight))
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
 fun App() {
@@ -54,7 +84,6 @@ fun App() {
         val translationY = remember { Animatable(0f) }
         val rotation = remember { Animatable(0f) }
 
-        // State list to hold the apple emojis currently on screen
         var flyingApples by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
 
         Box(
@@ -68,9 +97,12 @@ fun App() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text("Apples: $count", style = MaterialTheme.typography.headlineMedium)
-                Image(
-                    painter = painterResource(Res.drawable.red_apple),
-                    contentDescription = "Red Apple",
+
+                // Sprite Animation
+                // Ensure "tomato_strip.png" exists in composeApp/src/commonMain/composeResources/drawable/
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.tomato_strip),
+                    frameCount = 3,
                     modifier = Modifier
                         .size(200.dp)
                         .graphicsLayer {
@@ -79,9 +111,13 @@ fun App() {
                             this.translationY = translationY.value
                             rotationZ = rotation.value
                         }
-                        .clickable {
+                        .clickable (
+                            // 1. Create a remembered interaction source
+                            interactionSource = remember { MutableInteractionSource() },
+                            // 2. Set indication to null to remove the ripple effect
+                            indication = null) {
+
                             count++
-                            // --- Existing Animations (unchanged) ---
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
@@ -100,9 +136,7 @@ fun App() {
                                 }
                             }
 
-                            // --- Logic for Flying Apples (unchanged) ---
                             if (count > 0 && count % 35 == 0) {
-                                // Create more particles for a bigger explosion
                                 val newParticles = (1..10).map {
                                     FlyingParticle(id = particleIdCounter++)
                                 }
@@ -112,49 +146,40 @@ fun App() {
                 )
             }
 
-            // Render and animate each flying apple emoji
             flyingApples.forEach { particle ->
-                // --- UPDATE: EXPLOSION ANIMATION LOGIC ---
                 LaunchedEffect(particle.id) {
-                    val explosionDistance = 1900f // How far the apples will travel
-                    val animationDuration = 1000 // How fast the explosion happens in milliseconds
+                    val explosionDistance = 1900f
+                    val animationDuration = 1000
 
-                    // Launch three parallel animations
                     launch {
-                        // Animate Y position to a random vertical direction
                         particle.animatableY.animateTo(
                             targetValue = (Random.nextFloat() * explosionDistance) - (explosionDistance / 2),
                             animationSpec = tween(durationMillis = animationDuration, easing = EaseOut)
                         )
                     }
                     launch {
-                        // Animate X position to a random horizontal direction
                         particle.animatableX.animateTo(
                             targetValue = (Random.nextFloat() * explosionDistance) - (explosionDistance / 2),
                             animationSpec = tween(durationMillis = animationDuration, easing = EaseOut)
                         )
                     }
                     launch {
-                        // Animate alpha (fade out)
-                        // Start fading out a bit after the explosion starts
                         delay((animationDuration / 2).toLong())
                         particle.animatableAlpha.animateTo(
                             targetValue = 0f,
                             animationSpec = tween(durationMillis = (animationDuration / 2))
                         )
-                        // Clean up: remove the particle from the list when done
                         flyingApples = flyingApples.filterNot { it.id == particle.id }
                     }
                 }
 
-                // This Text composable displays the emoji
                 Text(
                     text = "🍎",
-                    fontSize = 32.sp, // Slightly smaller for a denser explosion
+                    fontSize = 32.sp,
                     modifier = Modifier
                         .offset {
                             IntOffset(
-                                x = particle.animatableX.value.toInt(), // Use animated X value
+                                x = particle.animatableX.value.toInt(),
                                 y = particle.animatableY.value.toInt()
                             )
                         }
