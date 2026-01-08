@@ -13,15 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -30,35 +27,22 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.random.Random
 
 // --- RESOURCES IMPORT ---
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.apple_strip
-import ecogardengame.composeapp.generated.resources.bellpepper_strip
-import ecogardengame.composeapp.generated.resources.broccoli_strip
-import ecogardengame.composeapp.generated.resources.garlic_strip
-import ecogardengame.composeapp.generated.resources.purpleonion_strip
-import ecogardengame.composeapp.generated.resources.squash_strip
-import ecogardengame.composeapp.generated.resources.tomato_strip
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
-data class Fruit(
-    val name: String,
-    val resource: org.jetbrains.compose.resources.DrawableResource,
-    val price: Int,
-    var unlocked: Boolean = false
+val items: List<GameItem> = listOf(
+    Tomato(),
+    Broccoli(),
+    BellPepper(),
+    Garlic(),
+    PurpleOnion(),
+    Squash()
 )
 
-val fruits = listOf(
-    Fruit("Tomato", Res.drawable.tomato_strip, 0, true),
-    Fruit("Broccoli", Res.drawable.broccoli_strip, 100),
-    Fruit("Bell Pepper", Res.drawable.bellpepper_strip, 200),
-    Fruit("Garlic", Res.drawable.garlic_strip, 300),
-    Fruit("Purple Onion", Res.drawable.purpleonion_strip, 400),
-    Fruit("Squash", Res.drawable.squash_strip, 500)
-)
 /**
  * Data class representing a single flying particle in the animation.
  *
@@ -73,11 +57,6 @@ data class FlyingParticle(
     val animatableY: Animatable<Float, *> = Animatable(0f),
     val animatableAlpha: Animatable<Float, *> = Animatable(1f)
 )
-
-/**
- * Counter to generate unique IDs for flying particles.
- */
-private var particleIdCounter = 0L
 
 /**
  * A composable that displays a sprite animation from a given painter resource.
@@ -137,9 +116,9 @@ fun App(prefs: DataStore<Preferences>? = null) {
         val translationY = remember { Animatable(0f) }
         val rotation = remember { Animatable(0f) }
         var menuVisible by remember { mutableStateOf(false) }
-        var currentFruit by remember { mutableStateOf(fruits.first()) }
+        var currentItem by remember { mutableStateOf(items.first()) }
 
-        var flyingApples by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
 
         // --- DATASTORE KEYS ---
         val clicksKey = intPreferencesKey("clicks")
@@ -175,9 +154,7 @@ fun App(prefs: DataStore<Preferences>? = null) {
                 }
 
                 // --- SPRITE ANIMATION AND CLICKABLE AREA ---
-                SpriteAnimation(
-                    painter = painterResource(currentFruit.resource),
-                    frameCount = 3,
+                currentItem.Animate(
                     modifier = Modifier
                         .size(200.dp)
                         .graphicsLayer {
@@ -205,30 +182,8 @@ fun App(prefs: DataStore<Preferences>? = null) {
                             }
 
                             // --- CLICK ANIMATIONS ---
-                            scope.launch {
-                                scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                                scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                            }
-                            if (clicks > 0 && clicks % 10 == 0) {
-                                scope.launch { translationY.animateTo(-100f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) }
-                                scope.launch {
-                                    delay(100L)
-                                    translationY.animateTo(0f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
-                                }
-                            }
-                            if (clicks > 0 && clicks % 25 == 0) {
-                                scope.launch {
-                                    rotation.animateTo(rotation.value + 360f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessVeryLow))
-                                    rotation.snapTo(0f)
-                                }
-                            }
-
-                            // --- PARTICLE EMISSION ---
-                            if (clicks > 0 && clicks % 35 == 0) {
-                                val newParticles = (1..10).map {
-                                    FlyingParticle(id = particleIdCounter++)
-                                }
-                                flyingApples = flyingApples + newParticles
+                            currentItem.animateClick(scope, scale, translationY, rotation, clicks) {
+                                flyingParticles = it
                             }
                         }
                 )
@@ -255,32 +210,28 @@ fun App(prefs: DataStore<Preferences>? = null) {
                         .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                         .padding(8.dp)
                 ) {
-                    fruits.forEach { fruit ->
+                    items.forEach { item ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .padding(8.dp)
                                 .clickable {
-                                    if (fruit.unlocked) {
-                                        currentFruit = fruit
+                                    if (item.unlocked) {
+                                        currentItem = item
                                         menuVisible = false
-                                    } else if (money >= fruit.price) {
-                                        money -= fruit.price
-                                        fruit.unlocked = true
-                                        currentFruit = fruit
+                                    } else if (money >= item.price) {
+                                        money -= item.price
+                                        item.unlocked = true
+                                        currentItem = item
                                         menuVisible = false
                                     }
                                 }
                         ) {
-                            SpriteAnimation(
-                                painter = painterResource(fruit.resource),
-                                frameCount = 3,
-                                modifier = Modifier.size(40.dp)
-                            )
+                            item.Animate(modifier = Modifier.size(40.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(fruit.name)
+                            Text(item.name)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(if (fruit.unlocked) "Bought" else "${fruit.price}")
+                            Text(if (item.unlocked) "Bought" else "${item.price}")
                         }
                     }
                 }
@@ -291,10 +242,10 @@ fun App(prefs: DataStore<Preferences>? = null) {
                 Button(onClick = {
                     clicks = 0
                     money = 0
-                    fruits.forEachIndexed { index, fruit ->
-                        fruit.unlocked = index == 0
+                    items.forEachIndexed { index, item ->
+                        item.unlocked = index == 0
                     }
-                    currentFruit = fruits.first()
+                    currentItem = items.first()
                     if (prefs != null) {
                         scope.launch {
                             prefs.edit { settings ->
@@ -309,46 +260,8 @@ fun App(prefs: DataStore<Preferences>? = null) {
             }
 
             // --- PARTICLE ANIMATION ---
-            flyingApples.forEach { particle ->
-                LaunchedEffect(particle.id) {
-                    val explosionDistance = 1900f
-                    val animationDuration = 1000
-
-                    launch {
-                        particle.animatableY.animateTo(
-                            targetValue = (Random.nextFloat() * explosionDistance) - (explosionDistance / 2),
-                            animationSpec = tween(durationMillis = animationDuration, easing = EaseOut)
-                        )
-                    }
-                    launch {
-                        particle.animatableX.animateTo(
-                            targetValue = (Random.nextFloat() * explosionDistance) - (explosionDistance / 2),
-                            animationSpec = tween(durationMillis = animationDuration, easing = EaseOut)
-                        )
-                    }
-                    launch {
-                        delay((animationDuration / 2).toLong())
-                        particle.animatableAlpha.animateTo(
-                            targetValue = 0f,
-                            animationSpec = tween(durationMillis = (animationDuration / 2))
-                        )
-                        flyingApples = flyingApples.filterNot { it.id == particle.id }
-                    }
-                }
-
-                // --- PARTICLE DISPLAY ---
-                Text(
-                    text = "🍎",
-                    fontSize = 32.sp,
-                    modifier = Modifier
-                        .offset {
-                            IntOffset(
-                                x = particle.animatableX.value.toInt(),
-                                y = particle.animatableY.value.toInt()
-                            )
-                        }
-                        .alpha(particle.animatableAlpha.value)
-                )
+            currentItem.ParticleEffect(flyingParticles) {
+                flyingParticles = it
             }
         }
     }
