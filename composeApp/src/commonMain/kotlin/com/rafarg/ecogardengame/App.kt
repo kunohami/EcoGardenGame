@@ -6,39 +6,51 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.random.Random
 
 // --- RESOURCES IMPORT ---
 import ecogardengame.composeapp.generated.resources.Res
-import ecogardengame.composeapp.generated.resources.tomato_strip
+import ecogardengame.composeapp.generated.resources.apple_strip
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
+val items: List<GameItem> = listOf(
+    Tomato(),
+    Broccoli(),
+    BellPepper(),
+    Garlic(),
+    PurpleOnion(),
+    Squash()
+)
+
+/**
+ * Data class representing a single flying particle in the animation.
+ *
+ * @param id Unique identifier for the particle.
+ * @param animatableX The animatable horizontal position of the particle.
+ * @param animatableY The animatable vertical position of the particle.
+ * @param animatableAlpha The animatable alpha (transparency) of the particle.
+ */
 data class FlyingParticle(
     val id: Long,
     val animatableX: Animatable<Float, *> = Animatable(0f),
@@ -46,8 +58,14 @@ data class FlyingParticle(
     val animatableAlpha: Animatable<Float, *> = Animatable(1f)
 )
 
-private var particleIdCounter = 0L
-
+/**
+ * A composable that displays a sprite animation from a given painter resource.
+ *
+ * @param painter The painter resource containing the sprite sheet.
+ * @param frameCount The total number of frames in the sprite animation.
+ * @param modifier The modifier to be applied to the animation canvas.
+ * @param frameDurationMillis The duration of each frame in milliseconds.
+ */
 @Composable
 fun SpriteAnimation(
     painter: Painter,
@@ -56,19 +74,20 @@ fun SpriteAnimation(
     frameDurationMillis: Long = 150
 ) {
     var frame by remember { mutableStateOf(0) }
-    
+
+    // Animate the frame index over time.
     LaunchedEffect(Unit) {
-        while (isActive) {
+        while (true) {
             delay(frameDurationMillis)
             frame = (frame + 1) % frameCount
         }
     }
 
+    // Draw the current frame of the sprite animation.
     Canvas(modifier = modifier) {
-        // Calculate the width of the entire strip as if drawn to fill height
         val drawWidth = size.width * frameCount
         val drawHeight = size.height
-        
+
         clipRect(left = 0f, top = 0f, right = size.width, bottom = size.height) {
             translate(left = -frame * size.width, top = 0f) {
                 with(painter) {
@@ -79,32 +98,42 @@ fun SpriteAnimation(
     }
 }
 
+/**
+ * The main application composable.
+ *
+ * @param prefs The DataStore instance for storing preferences.
+ */
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
 fun App(prefs: DataStore<Preferences>? = null) {
     MaterialTheme {
+        // --- STATE VARIABLES ---
         var clicks by remember { mutableStateOf(0) }
         var money by remember { mutableStateOf(0) }
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
         val translationY = remember { Animatable(0f) }
         val rotation = remember { Animatable(0f) }
+        var menuVisible by remember { mutableStateOf(false) }
+        var currentItem by remember { mutableStateOf(items.first()) }
 
-        var flyingApples by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
 
-        val CLICKS_KEY = intPreferencesKey("clicks")
-        val MONEY_KEY = intPreferencesKey("money")
+        // --- DATASTORE KEYS ---
+        val clicksKey = intPreferencesKey("clicks")
+        val moneyKey = intPreferencesKey("money")
 
-        // Load initial data
+        // --- LOAD INITIAL DATA ---
         LaunchedEffect(prefs) {
             if (prefs != null) {
                 val settings = prefs.data.first()
-                clicks = settings[CLICKS_KEY] ?: 0
-                money = settings[MONEY_KEY] ?: 0
+                clicks = settings[clicksKey] ?: 0
+                money = settings[moneyKey] ?: 0
             }
         }
 
+        // --- UI LAYOUT ---
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
@@ -115,6 +144,7 @@ fun App(prefs: DataStore<Preferences>? = null) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // --- SCORE DISPLAY ---
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -123,11 +153,8 @@ fun App(prefs: DataStore<Preferences>? = null) {
                     Text("Money: $money", style = MaterialTheme.typography.headlineMedium)
                 }
 
-                // Sprite Animation
-                // Ensure "tomato_strip.png" exists in composeApp/src/commonMain/composeResources/drawable/
-                SpriteAnimation(
-                    painter = painterResource(Res.drawable.tomato_strip),
-                    frameCount = 3,
+                // --- SPRITE ANIMATION AND CLICKABLE AREA ---
+                currentItem.Animate(
                     modifier = Modifier
                         .size(200.dp)
                         .graphicsLayer {
@@ -137,90 +164,104 @@ fun App(prefs: DataStore<Preferences>? = null) {
                             rotationZ = rotation.value
                         }
                         .clickable (
-                            // 1. Create a remembered interaction source
                             interactionSource = remember { MutableInteractionSource() },
-                            // 2. Set indication to null to remove the ripple effect
                             indication = null) {
 
+                            // --- CLICK HANDLER ---
                             clicks++
                             money++
 
+                            // Save data to DataStore
                             if (prefs != null) {
                                 scope.launch {
                                     prefs.edit { settings ->
-                                        settings[CLICKS_KEY] = clicks
-                                        settings[MONEY_KEY] = money
+                                        settings[clicksKey] = clicks
+                                        settings[moneyKey] = money
                                     }
                                 }
                             }
 
-                            scope.launch {
-                                scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                                scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                            }
-                            if (clicks > 0 && clicks % 10 == 0) {
-                                scope.launch { translationY.animateTo(-100f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) }
-                                scope.launch {
-                                    delay(100L)
-                                    translationY.animateTo(0f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
-                                }
-                            }
-                            if (clicks > 0 && clicks % 25 == 0) {
-                                scope.launch {
-                                    rotation.animateTo(rotation.value + 360f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessVeryLow))
-                                    rotation.snapTo(0f)
-                                }
-                            }
-
-                            if (clicks > 0 && clicks % 35 == 0) {
-                                val newParticles = (1..10).map {
-                                    FlyingParticle(id = particleIdCounter++)
-                                }
-                                flyingApples = flyingApples + newParticles
+                            // --- CLICK ANIMATIONS ---
+                            currentItem.animateClick(scope, scale, translationY, rotation, clicks) {
+                                flyingParticles = it
                             }
                         }
                 )
             }
 
-            flyingApples.forEach { particle ->
-                LaunchedEffect(particle.id) {
-                    val explosionDistance = 1900f
-                    val animationDuration = 1000
+            // --- MENU ICON ---
+            Box(modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)) {
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.apple_strip),
+                    frameCount = 3,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clickable { menuVisible = !menuVisible }
+                )
+            }
 
-                    launch {
-                        particle.animatableY.animateTo(
-                            targetValue = (Random.nextFloat() * explosionDistance) - (explosionDistance / 2),
-                            animationSpec = tween(durationMillis = animationDuration, easing = EaseOut)
-                        )
-                    }
-                    launch {
-                        particle.animatableX.animateTo(
-                            targetValue = (Random.nextFloat() * explosionDistance) - (explosionDistance / 2),
-                            animationSpec = tween(durationMillis = animationDuration, easing = EaseOut)
-                        )
-                    }
-                    launch {
-                        delay((animationDuration / 2).toLong())
-                        particle.animatableAlpha.animateTo(
-                            targetValue = 0f,
-                            animationSpec = tween(durationMillis = (animationDuration / 2))
-                        )
-                        flyingApples = flyingApples.filterNot { it.id == particle.id }
+
+            // --- FLOATING MENU ---
+            if (menuVisible) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 80.dp, end = 16.dp)
+                        .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
+                        .padding(8.dp)
+                ) {
+                    items.forEach { item ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .clickable {
+                                    if (item.unlocked) {
+                                        currentItem = item
+                                        menuVisible = false
+                                    } else if (money >= item.price) {
+                                        money -= item.price
+                                        item.unlocked = true
+                                        currentItem = item
+                                        menuVisible = false
+                                    }
+                                }
+                        ) {
+                            item.Animate(modifier = Modifier.size(40.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(item.name)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(if (item.unlocked) "Bought" else "${item.price}")
+                        }
                     }
                 }
+            }
 
-                Text(
-                    text = "🍎",
-                    fontSize = 32.sp,
-                    modifier = Modifier
-                        .offset {
-                            IntOffset(
-                                x = particle.animatableX.value.toInt(),
-                                y = particle.animatableY.value.toInt()
-                            )
+            // --- RESET BUTTON ---
+            Box(modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)) {
+                Button(onClick = {
+                    clicks = 0
+                    money = 0
+                    items.forEachIndexed { index, item ->
+                        item.unlocked = index == 0
+                    }
+                    currentItem = items.first()
+                    if (prefs != null) {
+                        scope.launch {
+                            prefs.edit { settings ->
+                                settings[clicksKey] = clicks
+                                settings[moneyKey] = money
+                            }
                         }
-                        .alpha(particle.animatableAlpha.value)
-                )
+                    }
+                }) {
+                    Text("Reset")
+                }
+            }
+
+            // --- PARTICLE ANIMATION ---
+            currentItem.ParticleEffect(flyingParticles) {
+                flyingParticles = it
             }
         }
     }
