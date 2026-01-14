@@ -2,6 +2,7 @@ package com.rafarg.ecogardengame
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.rafarg.ecogardengame.data.DATA_STORE_FILE_NAME
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -18,6 +19,6 @@ fun createDataStore(): DataStore<Preferences> = createDataStore(
             create = false,
             error = null,
         )
-        requireNotNull(documentDirectory).path + "/$DATA_STORE_FILE_NAME"
+        requireNotNull(documentDirectory).path + "/${DATA_STORE_FILE_NAME}"
     }
 )
