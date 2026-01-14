@@ -1,4 +1,4 @@
-package com.rafarg.ecogardengame
+package com.rafarg.ecogardengame.util
 
 import platform.UIKit.UIDevice
 

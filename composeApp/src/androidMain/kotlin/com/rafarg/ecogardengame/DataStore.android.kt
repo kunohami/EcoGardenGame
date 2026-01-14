@@ -5,6 +5,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.rafarg.ecogardengame.data.DATA_STORE_FILE_NAME
+
 // import okio.Path.Companion.toPath // Remove this import
 
 private var dataStore: DataStore<Preferences>? = null
