@@ -1,19 +1,15 @@
 package com.rafarg.ecogardengame.ui
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rafarg.ecogardengame.model.FlyingParticle
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.apple_strip
@@ -21,15 +17,11 @@ import org.jetbrains.compose.resources.painterResource
 
 /**
  * The main game screen where the player clicks on vegetables.
+ * Refactored to be agnostic of which vegetable is currently active.
  */
 @Composable
 fun GameScreen(viewModel: GameViewModel) {
-    val scope = rememberCoroutineScope()
-    val scale = remember { Animatable(1f) }
-    val translationY = remember { Animatable(0f) }
-    val rotation = remember { Animatable(0f) }
     var menuVisible by remember { mutableStateOf(false) }
-    var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -49,43 +41,16 @@ fun GameScreen(viewModel: GameViewModel) {
             )
         }
 
-        // --- MAIN GAME AREA (Vegetable) ---
+        // --- MAIN GAME AREA ---
+        // Every vegetable now handles its own rendering, movement, and particles!
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                viewModel.currentItem.Animate(
-                    modifier = Modifier
-                        .size(220.dp)
-                        .graphicsLayer {
-                            scaleX = scale.value
-                            scaleY = scale.value
-                            this.translationY = translationY.value
-                            rotationZ = rotation.value
-                        }
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            viewModel.onVegetableClick()
-                            viewModel.currentItem.animateClick(
-                                scope,
-                                scale,
-                                translationY,
-                                rotation,
-                                viewModel.totalClicks
-                            ) {
-                                flyingParticles = it
-                            }
-                        }
-                )
-
-                // --- PARTICLE ANIMATION (Now local to the vegetable container) ---
-                viewModel.currentItem.ParticleEffect(flyingParticles) {
-                    flyingParticles = it
-                }
-            }
+            viewModel.currentItem.Content(
+                modifier = Modifier,
+                onVegetableClick = { viewModel.onVegetableClick() }
+            )
         }
 
         // --- BOTTOM LEFT COUNTER (Specific Fruit) ---
@@ -141,7 +106,12 @@ fun GameScreen(viewModel: GameViewModel) {
                                 }
                             }
                     ) {
-                        item.Animate(modifier = Modifier.size(40.dp))
+                        // Using a standard size for the menu icons
+                        SpriteAnimation(
+                            painter = painterResource(item.resource),
+                            frameCount = 3,
+                            modifier = Modifier.size(40.dp)
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(item.name)
                         Spacer(modifier = Modifier.width(8.dp))
