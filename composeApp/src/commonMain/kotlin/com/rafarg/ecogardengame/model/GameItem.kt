@@ -23,19 +23,21 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.random.Random
 
 /**
- * Data class representing a single flying particle in the animation.
+ * Represent a single item gained from a click.
+ */
+data class Reward(val emoji: String, val moneyValue: Int = 0, val countValue: Int = 1)
+
+/**
+ * Now each particle carries its own emoji!
  */
 data class FlyingParticle(
     val id: Long,
+    val emoji: String,
     val animatableX: Animatable<Float, *> = Animatable(0f),
     val animatableY: Animatable<Float, *> = Animatable(0f),
     val animatableAlpha: Animatable<Float, *> = Animatable(1f)
 )
 
-/**
- * The core interface for all interactable items in the game.
- * Refactored to support polymorphic rendering of different gameplay styles.
- */
 interface GameItem {
     val id: String
     val name: String
@@ -43,30 +45,32 @@ interface GameItem {
     val price: Int
     var unlocked: Boolean
     val particleEmoji: String
+    
+    // Define base rewards for this item
+    val baseRewards: List<Reward>
 
-    /**
-     * Main rendering entry point for the item.
-     * Implementing classes can decide if they are static, moving, etc.
-     */
     @Composable
     fun Content(
         modifier: Modifier,
-        onVegetableClick: () -> Unit
+        onVegetableClick: (List<Reward>) -> Unit // Pass rewards back to ViewModel
     )
 
     @Composable
     fun ParticleEffect(particles: List<FlyingParticle>, updateParticles: (List<FlyingParticle>) -> Unit)
 }
 
-/**
- * Base class providing common behaviors like the standard particle effect and default static content.
- */
 abstract class BaseVegetable : GameItem {
     
+    // Default rewards: 1 of itself and 1 coin
+    override val baseRewards: List<Reward> get() = listOf(
+        Reward(emoji = particleEmoji, countValue = 1),
+        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
+    )
+
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: () -> Unit
+        onVegetableClick: (List<Reward>) -> Unit
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
@@ -86,13 +90,18 @@ abstract class BaseVegetable : GameItem {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        onVegetableClick()
+                        // Pass rewards to ViewModel
+                        onVegetableClick(baseRewards)
+                        
+                        // Bounce animation
                         scope.launch {
                             scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                         }
-                        flyingParticles = List(5) {
-                            FlyingParticle(id = Random.nextLong())
+                        
+                        // Create particles based on rewards
+                        flyingParticles = baseRewards.map { reward ->
+                            FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
                         }
                     }
             )
@@ -136,7 +145,7 @@ abstract class BaseVegetable : GameItem {
             }
 
             Text(
-                text = particleEmoji,
+                text = particle.emoji, // Now uses the particle's own emoji!
                 fontSize = 32.sp,
                 modifier = Modifier
                     .offset {

@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafarg.ecogardengame.model.GameItem
+import com.rafarg.ecogardengame.model.Reward
 import com.rafarg.ecogardengame.ui.items
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -70,13 +71,21 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
     }
 
-    fun onVegetableClick() {
+    /**
+     * Updated click handler that processes specific rewards.
+     */
+    fun onVegetableClick(rewards: List<Reward>) {
         totalClicks++
-        money++
         
-        val currentId = currentItem.id
-        val currentCount = fruitCounts[currentId] ?: 0
-        fruitCounts = fruitCounts + (currentId to (currentCount + 1))
+        rewards.forEach { reward ->
+            money += reward.moneyValue
+            
+            if (reward.countValue > 0) {
+                val currentId = currentItem.id
+                val currentCount = fruitCounts[currentId] ?: 0
+                fruitCounts = fruitCounts + (currentId to (currentCount + reward.countValue))
+            }
+        }
 
         saveData()
     }

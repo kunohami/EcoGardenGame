@@ -49,7 +49,7 @@ fun GameScreen(viewModel: GameViewModel) {
         ) {
             viewModel.currentItem.Content(
                 modifier = Modifier,
-                onVegetableClick = { viewModel.onVegetableClick() }
+                onVegetableClick = { rewards -> viewModel.onVegetableClick(rewards) }
             )
         }
 
