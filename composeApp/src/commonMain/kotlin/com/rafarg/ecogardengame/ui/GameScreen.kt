@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.model.FlyingParticle
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.Res
@@ -31,57 +32,78 @@ fun GameScreen(viewModel: GameViewModel) {
     var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        // --- TOP COUNTER (Money Only) ---
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // --- SCORE DISPLAY ---
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Clicks: ${viewModel.totalClicks}", style = MaterialTheme.typography.titleMedium)
-                    Text("Money: $${viewModel.money}", style = MaterialTheme.typography.titleLarge)
-                }
+            Text("🪙", fontSize = 24.sp)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "${viewModel.money}",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
 
-                val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
+        // --- MAIN GAME AREA (Vegetable) ---
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                viewModel.currentItem.Animate(
+                    modifier = Modifier
+                        .size(220.dp)
+                        .graphicsLayer {
+                            scaleX = scale.value
+                            scaleY = scale.value
+                            this.translationY = translationY.value
+                            rotationZ = rotation.value
+                        }
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            viewModel.onVegetableClick()
+                            viewModel.currentItem.animateClick(
+                                scope,
+                                scale,
+                                translationY,
+                                rotation,
+                                viewModel.totalClicks
+                            ) {
+                                flyingParticles = it
+                            }
+                        }
+                )
+
+                // --- PARTICLE ANIMATION (Now local to the vegetable container) ---
+                viewModel.currentItem.ParticleEffect(flyingParticles) {
+                    flyingParticles = it
+                }
+            }
+        }
+
+        // --- BOTTOM LEFT COUNTER (Specific Fruit) ---
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+        ) {
+            val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(viewModel.currentItem.particleEmoji, fontSize = 28.sp)
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${viewModel.currentItem.name}s: $fruitCount",
-                    style = MaterialTheme.typography.headlineSmall,
+                    text = "$fruitCount",
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-
-            // --- SPRITE ANIMATION AND CLICKABLE AREA ---
-            viewModel.currentItem.Animate(
-                modifier = Modifier
-                    .size(200.dp)
-                    .graphicsLayer {
-                        scaleX = scale.value
-                        scaleY = scale.value
-                        this.translationY = translationY.value
-                        rotationZ = rotation.value
-                    }
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        viewModel.onVegetableClick()
-                        viewModel.currentItem.animateClick(
-                            scope,
-                            scale,
-                            translationY,
-                            rotation,
-                            viewModel.totalClicks
-                        ) {
-                            flyingParticles = it
-                        }
-                    }
-            )
         }
 
         // --- FLOATING MENU ICON ---
@@ -127,11 +149,6 @@ fun GameScreen(viewModel: GameViewModel) {
                     }
                 }
             }
-        }
-
-        // --- PARTICLE ANIMATION ---
-        viewModel.currentItem.ParticleEffect(flyingParticles) {
-            flyingParticles = it
         }
     }
 }
