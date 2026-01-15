@@ -25,9 +25,6 @@ import kotlin.random.Random
 
 /**
  * Broccoli implementation with a unique "DVD Screensaver" movement.
- *
- * It overrides the [Content] method to implement its own movement logic,
- * ensuring the hitbox and particles follow the moving object.
  */
 class Broccoli : BaseVegetable() {
     override val id: String = "broccoli"
@@ -37,10 +34,16 @@ class Broccoli : BaseVegetable() {
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥦"
 
+    // Broccoli is harder to hit, so it gives more money!
+    override val baseRewards: List<Reward> get() = listOf(
+        Reward(emoji = particleEmoji, countValue = 1),
+        Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
+    )
+
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: () -> Unit
+        onVegetableClick: (List<Reward>) -> Unit
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
@@ -55,7 +58,7 @@ class Broccoli : BaseVegetable() {
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         
-        val itemSize = 100.dp
+        val itemSize = 150.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
         // Movement Loop
@@ -111,19 +114,27 @@ class Broccoli : BaseVegetable() {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            onVegetableClick()
-                            // Local animation and particles
+                            // Pass the specific rewards for Broccoli
+                            onVegetableClick(baseRewards)
+                            
+                            // Local animation
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
-                            flyingParticles = List(5) {
-                                FlyingParticle(id = Random.nextLong())
+
+                            // Create particles for each reward
+                            flyingParticles = baseRewards.flatMap { reward ->
+                                // If it's a coin reward of 2, maybe we want 2 coins? 
+                                // For now, let's just emit one particle per reward entry
+                                List(reward.moneyValue.coerceAtLeast(1)) {
+                                     FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
+                                }
                             }
                         }
                 )
 
-                // Particles are relative to this moving Box!
+                // Particles follow the Broccoli
                 ParticleEffect(flyingParticles) {
                     flyingParticles = it
                 }
