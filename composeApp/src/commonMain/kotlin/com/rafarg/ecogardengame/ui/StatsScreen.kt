@@ -26,25 +26,33 @@ fun StatsScreen(viewModel: GameViewModel) {
         
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Total Clicks Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+        // Total Clicks & Money Row
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Clicks Card
+            Card(
+                modifier = Modifier.weight(1f),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
-                Text("👆", fontSize = 32.sp)
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text("Total Clicks", style = MaterialTheme.typography.labelLarge)
-                    Text("${viewModel.totalClicks}", style = MaterialTheme.typography.headlineMedium)
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("👆 Clicks", style = MaterialTheme.typography.labelLarge)
+                    Text("${viewModel.totalClicks}", style = MaterialTheme.typography.headlineSmall)
+                }
+            }
+
+            // Money Card
+            Card(
+                modifier = Modifier.weight(1f),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("🪙 Money", style = MaterialTheme.typography.labelLarge)
+                    Text("Now: ${viewModel.money}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Total: ${viewModel.totalMoneyEarned}", style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text("Fruit Harvested", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.Start))
         
@@ -56,15 +64,19 @@ fun StatsScreen(viewModel: GameViewModel) {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(viewModel.itemsList) { item ->
-                val count = viewModel.fruitCounts[item.id] ?: 0
+                val current = viewModel.fruitCounts[item.id] ?: 0
+                val total = viewModel.totalFruitHarvested[item.id] ?: 0
+                
                 ListItem(
                     headlineContent = { Text(item.name) },
-                    supportingContent = { Text("Total collected") },
-                    trailingContent = { 
-                        Text("$count", style = MaterialTheme.typography.titleLarge) 
+                    supportingContent = { 
+                        Column {
+                            Text("Current: $current")
+                            Text("Total: $total")
+                        }
                     },
-                    leadingContent = {
-                        Text(item.particleEmoji, fontSize = 24.sp)
+                    trailingContent = { 
+                        Text(item.particleEmoji, fontSize = 32.sp)
                     }
                 )
             }

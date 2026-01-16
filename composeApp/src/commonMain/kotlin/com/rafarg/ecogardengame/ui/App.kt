@@ -36,7 +36,6 @@ fun App(prefs: DataStore<Preferences>? = null) {
         Scaffold(
             bottomBar = {
                 NavigationBar {
-                    // Only show screens that are marked for the bottom bar
                     Screen.entries.filter { it.showInBottomBar }.forEach { screen ->
                         NavigationBarItem(
                             icon = {
@@ -66,7 +65,10 @@ fun App(prefs: DataStore<Preferences>? = null) {
                     .padding(innerPadding)
             ) {
                 when (currentScreen) {
-                    Screen.GAME -> GameScreen(viewModel)
+                    Screen.GAME -> GameScreen(
+                        viewModel = viewModel,
+                        onNavigateToStore = { currentScreen = Screen.STORE }
+                    )
                     Screen.STORE -> StoreScreen(viewModel)
                     Screen.STATS -> StatsScreen(viewModel)
                     Screen.PROFILE -> ProfileScreen(viewModel)
