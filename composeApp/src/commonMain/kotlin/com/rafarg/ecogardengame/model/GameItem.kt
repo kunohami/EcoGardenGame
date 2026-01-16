@@ -25,7 +25,12 @@ import kotlin.random.Random
 /**
  * Represent a single item gained from a click.
  */
-data class Reward(val emoji: String, val moneyValue: Int = 0, val countValue: Int = 1)
+data class Reward(
+    val emoji: String, 
+    val moneyValue: Int = 0, 
+    val countValue: Int = 1,
+    val resource: DrawableResource? = null
+)
 
 /**
  * Represent the cost to unlock an item.
@@ -36,11 +41,12 @@ data class ItemCost(
 )
 
 /**
- * Now each particle carries its own emoji!
+ * Now each particle carries its own emoji and optional resource for animation!
  */
 data class FlyingParticle(
     val id: Long,
     val emoji: String,
+    val resource: DrawableResource? = null,
     val animatableX: Animatable<Float, *> = Animatable(0f),
     val animatableY: Animatable<Float, *> = Animatable(0f),
     val animatableAlpha: Animatable<Float, *> = Animatable(1f)
@@ -50,12 +56,11 @@ interface GameItem {
     val id: String
     val name: String
     val resource: DrawableResource
-    val price: Int // Keep for legacy/simple display if needed, but we'll use unlockCost
+    val price: Int
     val unlockCost: ItemCost
     var unlocked: Boolean
     val particleEmoji: String
     
-    // Define base rewards for this item
     val baseRewards: List<Reward>
 
     @Composable
@@ -70,9 +75,8 @@ interface GameItem {
 
 abstract class BaseVegetable : GameItem {
     
-    // Default rewards: 1 of itself and 1 coin
     override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1),
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
         Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
     )
 
@@ -99,19 +103,20 @@ abstract class BaseVegetable : GameItem {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        // Pass rewards to ViewModel
                         onVegetableClick(baseRewards)
                         
-                        // Bounce animation
                         scope.launch {
                             scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                         }
                         
-                        // Create particles based on rewards
                         flyingParticles = baseRewards.flatMap { reward ->
                             List(if (reward.moneyValue > 0) reward.moneyValue else 1) {
-                                FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
+                                FlyingParticle(
+                                    id = Random.nextLong(), 
+                                    emoji = reward.emoji,
+                                    resource = reward.resource
+                                )
                             }
                         }
                     }
@@ -155,9 +160,7 @@ abstract class BaseVegetable : GameItem {
                 }
             }
 
-            Text(
-                text = particle.emoji,
-                fontSize = 32.sp,
+            Box(
                 modifier = Modifier
                     .offset {
                         IntOffset(
@@ -166,7 +169,20 @@ abstract class BaseVegetable : GameItem {
                         )
                     }
                     .alpha(particle.animatableAlpha.value)
-            )
+            ) {
+                if (particle.resource != null) {
+                    SpriteAnimation(
+                        painter = painterResource(particle.resource),
+                        frameCount = 3,
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else {
+                    Text(
+                        text = particle.emoji,
+                        fontSize = 32.sp
+                    )
+                }
+            }
         }
     }
 }
