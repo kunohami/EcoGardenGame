@@ -140,6 +140,26 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
     }
 
+    /**
+     * Testing function to cheat resources
+     */
+    fun debugAddResources() {
+        money = 100000
+        totalMoneyEarned += 100000
+        
+        val newCounts = fruitCounts.toMutableMap()
+        val newTotals = totalFruitHarvested.toMutableMap()
+        
+        itemsList.forEach { item ->
+            newCounts[item.id] = 100000
+            newTotals[item.id] = (newTotals[item.id] ?: 0) + 100000
+        }
+        
+        fruitCounts = newCounts
+        totalFruitHarvested = newTotals
+        saveData()
+    }
+
     fun resetGame() {
         totalClicks = 0
         money = 0
