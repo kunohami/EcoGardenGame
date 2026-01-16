@@ -24,23 +24,21 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-/**
- * Purple Onion implementation with a "Teleport and Rotate" gameplay.
- * It fades out when clicked, reappears in a random location, and rotates.
- * Clicking while rotating gives bonus coins.
- */
 class PurpleOnion : BaseVegetable() {
     override val id: String = "purple_onion"
     override val name: String = "Purple Onion"
     override val resource = Res.drawable.purpleonion_strip
     override val price: Int = 200
+    override val unlockCost: ItemCost = ItemCost(
+        money = 500,
+        vegetableCosts = mapOf("tomato" to 100, "broccoli" to 25, "bell_pepper" to 10)
+    )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧅"
 
-    // Default is 2 coins, but we'll override this in the click handler for the bonus
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1),
-        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
     )
 
     @Composable
@@ -63,31 +61,22 @@ class PurpleOnion : BaseVegetable() {
         val itemSize = 130.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
-        // Function to handle the teleportation
         suspend fun teleport() {
-            // Fade Out
             alpha.animateTo(0f, tween(300))
-            
-            // Randomize position within bounds
             if (parentWidth > 0 && parentHeight > 0) {
                 val limitX = (parentWidth - itemSizePx) / 2
                 val limitY = (parentHeight - itemSizePx) / 2
                 posX = Random.nextFloat() * (limitX * 2) - limitX
                 posY = Random.nextFloat() * (limitY * 2) - limitY
             }
-            
-            // Fade In
             alpha.animateTo(1f, tween(300))
-            
-            // Start Rotation (Teleport finished, now "vulnerable" for bonus)
             rotation.animateTo(
                 targetValue = 360f,
-                animationSpec = tween(300, easing = LinearEasing)
+                animationSpec = tween(1000, easing = LinearEasing)
             )
-            rotation.snapTo(0f) // Reset rotation after finishing
+            rotation.snapTo(0f)
         }
 
-        // Initial teleport to a random spot when first loaded
         LaunchedEffect(parentWidth, parentHeight) {
             if (parentWidth > 0 && parentHeight > 0) {
                 teleport()
@@ -123,9 +112,8 @@ class PurpleOnion : BaseVegetable() {
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
-                            enabled = alpha.value > 0.8f // Disable clicking while fading
+                            enabled = alpha.value > 0.8f
                         ) {
-                            // Determine rewards: Bonus if rotating
                             val isRotating = rotation.value > 0 && rotation.value < 360
                             val currentRewards = if (isRotating) {
                                 listOf(
@@ -138,17 +126,12 @@ class PurpleOnion : BaseVegetable() {
 
                             onVegetableClick(currentRewards)
                             
-                            // Visuals
                             scope.launch {
-                                // Small bounce
                                 scale.animateTo(0.8f, spring())
                                 scale.animateTo(1f, spring())
-                                
-                                // Teleport to new location
                                 teleport()
                             }
 
-                            // Emission
                             flyingParticles = currentRewards.flatMap { reward ->
                                 List(if (reward.moneyValue > 0) reward.moneyValue else 1) {
                                     FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
