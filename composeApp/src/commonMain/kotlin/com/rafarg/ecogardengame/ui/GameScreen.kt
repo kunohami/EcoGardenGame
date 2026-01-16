@@ -3,13 +3,16 @@ package com.rafarg.ecogardengame.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.apple_strip
@@ -17,11 +20,11 @@ import org.jetbrains.compose.resources.painterResource
 
 /**
  * The main game screen where the player clicks on vegetables.
- * Refactored to be agnostic of which vegetable is currently active.
  */
 @Composable
-fun GameScreen(viewModel: GameViewModel) {
+fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
     var menuVisible by remember { mutableStateOf(false) }
+    var itemToPurchase by remember { mutableStateOf<GameItem?>(null) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -42,7 +45,6 @@ fun GameScreen(viewModel: GameViewModel) {
         }
 
         // --- MAIN GAME AREA ---
-        // Every vegetable now handles its own rendering, movement, and particles!
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -101,24 +103,85 @@ fun GameScreen(viewModel: GameViewModel) {
                                     viewModel.selectItem(item)
                                     menuVisible = false
                                 } else {
-                                    viewModel.tryUnlockItem(item)
-                                    if (item.unlocked) menuVisible = false
+                                    // Show purchase dialog for locked items
+                                    itemToPurchase = item
                                 }
                             }
                     ) {
-                        // Using a standard size for the menu icons
-                        SpriteAnimation(
-                            painter = painterResource(item.resource),
-                            frameCount = 3,
-                            modifier = Modifier.size(40.dp)
+                        val colorFilter = if (item.unlocked) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                        
+                        Box(modifier = Modifier.graphicsLayer { 
+                            alpha = if (item.unlocked) 1f else 0.5f 
+                        }) {
+                            SpriteAnimation(
+                                painter = painterResource(item.resource),
+                                frameCount = 3,
+                                modifier = Modifier.size(40.dp),
+                                colorFilter = colorFilter
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = item.name,
+                            color = if (item.unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(item.name)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (item.unlocked) "Bought" else "${item.price}")
                     }
                 }
             }
+        }
+
+        // --- PURCHASE DIALOG ---
+        itemToPurchase?.let { item ->
+            AlertDialog(
+                onDismissRequest = { itemToPurchase = null },
+                title = { Text("Unlock ${item.name}") },
+                text = {
+                    Column {
+                        Text("You need the following to unlock this item:")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // Show Money Cost
+                        val hasMoney = viewModel.money >= item.unlockCost.money
+                        Row {
+                            Text("🪙 ${item.unlockCost.money} (You have: ${viewModel.money})", 
+                                color = if (hasMoney) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+                        }
+                        
+                        // Show Vegetable Costs
+                        item.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
+                            val currentCount = viewModel.fruitCounts[vegId] ?: 0
+                            val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
+                            val hasVeg = currentCount >= amount
+                            Text("$vegEmoji $amount (You have: $currentCount)", 
+                                color = if (hasVeg) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+                        }
+                    }
+                },
+                confirmButton = {
+                    if (viewModel.canAfford(item)) {
+                        Button(onClick = {
+                            viewModel.tryUnlockItem(item)
+                            itemToPurchase = null
+                            menuVisible = false
+                        }) {
+                            Text("Unlock Now")
+                        }
+                    } else {
+                        Button(onClick = { 
+                            onNavigateToStore()
+                            itemToPurchase = null
+                        }) {
+                            Text("Go to Store")
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { itemToPurchase = null }) {
+                        Text("Close")
+                    }
+                }
+            )
         }
     }
 }
