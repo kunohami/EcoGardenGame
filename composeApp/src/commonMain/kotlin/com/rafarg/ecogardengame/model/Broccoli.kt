@@ -23,18 +23,18 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-/**
- * Broccoli implementation with a unique "DVD Screensaver" movement.
- */
 class Broccoli : BaseVegetable() {
     override val id: String = "broccoli"
     override val name: String = "Broccoli"
     override val resource = Res.drawable.broccoli_strip
     override val price: Int = 50
+    override val unlockCost: ItemCost = ItemCost(
+        money = 100,
+        vegetableCosts = mapOf("tomato" to 20)
+    )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥦"
 
-    // Broccoli is harder to hit, so it gives more money!
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1),
         Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
@@ -49,7 +49,6 @@ class Broccoli : BaseVegetable() {
         val scale = remember { Animatable(1f) }
         var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
         
-        // --- MOVEMENT STATE ---
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
         var velX by remember { mutableStateOf(4f) }
@@ -58,10 +57,9 @@ class Broccoli : BaseVegetable() {
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         
-        val itemSize = 150.dp
+        val itemSize = 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
-        // Movement Loop
         LaunchedEffect(parentWidth, parentHeight) {
             if (parentWidth > 0 && parentHeight > 0) {
                 while (true) {
@@ -100,7 +98,6 @@ class Broccoli : BaseVegetable() {
                     .size(itemSize),
                 contentAlignment = Alignment.Center
             ) {
-                // The Sprite
                 SpriteAnimation(
                     painter = painterResource(resource),
                     frameCount = 3,
@@ -114,27 +111,19 @@ class Broccoli : BaseVegetable() {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            // Pass the specific rewards for Broccoli
                             onVegetableClick(baseRewards)
-                            
-                            // Local animation
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
-
-                            // Create particles for each reward
                             flyingParticles = baseRewards.flatMap { reward ->
-                                // If it's a coin reward of 2, maybe we want 2 coins? 
-                                // For now, let's just emit one particle per reward entry
-                                List(reward.moneyValue.coerceAtLeast(1)) {
+                                List(if (reward.moneyValue > 0) reward.moneyValue else 1) {
                                      FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
                                 }
                             }
                         }
                 )
 
-                // Particles follow the Broccoli
                 ParticleEffect(flyingParticles) {
                     flyingParticles = it
                 }

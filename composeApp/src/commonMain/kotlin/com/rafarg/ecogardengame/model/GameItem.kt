@@ -28,6 +28,14 @@ import kotlin.random.Random
 data class Reward(val emoji: String, val moneyValue: Int = 0, val countValue: Int = 1)
 
 /**
+ * Represent the cost to unlock an item.
+ */
+data class ItemCost(
+    val money: Int = 0,
+    val vegetableCosts: Map<String, Int> = emptyMap() // id to amount
+)
+
+/**
  * Now each particle carries its own emoji!
  */
 data class FlyingParticle(
@@ -42,7 +50,8 @@ interface GameItem {
     val id: String
     val name: String
     val resource: DrawableResource
-    val price: Int
+    val price: Int // Keep for legacy/simple display if needed, but we'll use unlockCost
+    val unlockCost: ItemCost
     var unlocked: Boolean
     val particleEmoji: String
     
@@ -52,7 +61,7 @@ interface GameItem {
     @Composable
     fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit // Pass rewards back to ViewModel
+        onVegetableClick: (List<Reward>) -> Unit
     )
 
     @Composable
@@ -100,8 +109,10 @@ abstract class BaseVegetable : GameItem {
                         }
                         
                         // Create particles based on rewards
-                        flyingParticles = baseRewards.map { reward ->
-                            FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
+                        flyingParticles = baseRewards.flatMap { reward ->
+                            List(if (reward.moneyValue > 0) reward.moneyValue else 1) {
+                                FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
+                            }
                         }
                     }
             )
@@ -145,7 +156,7 @@ abstract class BaseVegetable : GameItem {
             }
 
             Text(
-                text = particle.emoji, // Now uses the particle's own emoji!
+                text = particle.emoji,
                 fontSize = 32.sp,
                 modifier = Modifier
                     .offset {
