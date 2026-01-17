@@ -20,6 +20,9 @@ import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.broccoli_strip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -36,7 +39,7 @@ class Broccoli : BaseVegetable() {
     override val particleEmoji: String = "🥦"
 
     override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1),
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
         Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
     )
 
@@ -116,11 +119,28 @@ class Broccoli : BaseVegetable() {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
-                            flyingParticles = baseRewards.flatMap { reward ->
-                                List(if (reward.moneyValue > 0) reward.moneyValue else 1) {
-                                     FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
-                                }
+                            
+                            val newRewards = baseRewards.map { reward ->
+                                val isMoney = reward.moneyValue > 0
+                                val amount = if (isMoney) reward.moneyValue else reward.countValue
+                                
+                                val angle = Random.nextDouble(0.0, 360.0)
+                                val radius = Random.nextFloat() * 40f + 20f
+                                val radians = angle * (PI / 180.0)
+                                val startX = (cos(radians) * radius).toFloat()
+                                val startY = (sin(radians) * radius).toFloat()
+
+                                FlyingParticle(
+                                    id = Random.nextLong(), 
+                                    emoji = reward.emoji,
+                                    resource = if (isMoney) null else reward.resource,
+                                    text = "+$amount",
+                                    animatableX = Animatable(startX),
+                                    animatableY = Animatable(startY),
+                                    animatableAlpha = Animatable(0f)
+                                )
                             }
+                            flyingParticles = flyingParticles + newRewards
                         }
                 )
 
