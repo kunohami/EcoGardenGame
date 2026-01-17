@@ -46,14 +46,15 @@ class Garlic : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit
+        onVegetableClick: (List<Reward>) -> Unit,
+        activeModifiers: List<GameplayModifier>
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
         var clickCount by remember { mutableStateOf(0) }
         var isExploded by remember { mutableStateOf(false) }
         val pieces = remember { mutableStateListOf<GarlicPiece>() }
-        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
 
         val vibrationIntensity = (clickCount.toFloat() / 10f) * 10f
         val infiniteTransition = rememberInfiniteTransition()
@@ -68,49 +69,56 @@ class Garlic : BaseVegetable() {
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (!isExploded) {
-                // Main Garlic
-                SpriteAnimation(
-                    painter = painterResource(resource),
-                    frameCount = 3,
-                    modifier = modifier
-                        .size(200.dp)
-                        .offset { IntOffset(if (clickCount > 0) vibX.roundToInt() else 0, 0) }
-                        .graphicsLayer {
-                            // Calculate growth based on click count (up to 1.5x at 10 clicks)
-                            val growth = 1f + (clickCount.toFloat() / 10f) * 0.5f
-                            scaleX = scale.value * growth
-                            scaleY = scale.value * growth
-                        }
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            clickCount++
-                            if (clickCount >= 10) {
-                                pieces.clear()
-                                repeat(10) {
-                                    val targetX = (Random.nextFloat() - 0.5f) * 500f
-                                    val targetY = (Random.nextFloat() - 0.5f) * 700f
-                                    val piece = GarlicPiece(
-                                        id = Random.nextLong(),
-                                        animatableX = Animatable(0f),
-                                        animatableY = Animatable(0f)
-                                    )
-                                    pieces.add(piece)
-                                    scope.launch { piece.animatableX.animateTo(targetX, tween(600, easing = EaseOutBack)) }
-                                    scope.launch { piece.animatableY.animateTo(targetY, tween(600, easing = EaseOutBack)) }
-                                }
-                                isExploded = true
-                            } else {
-                                onVegetableClick(baseRewards)
-                                scope.launch {
-                                    scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                                    scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                                }
-                                flyingParticles = flyingParticles + createRewardParticles(baseRewards)
+                Box(contentAlignment = Alignment.Center) {
+                    SpriteAnimation(
+                        painter = painterResource(resource),
+                        frameCount = 3,
+                        modifier = modifier
+                            .size(200.dp)
+                            .offset { IntOffset(if (clickCount > 0) vibX.roundToInt() else 0, 0) }
+                            .graphicsLayer {
+                                val growth = 1f + (clickCount.toFloat() / 10f) * 0.5f
+                                scaleX = scale.value * growth
+                                scaleY = scale.value * growth
                             }
-                        }
-                )
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                clickCount++
+                                if (clickCount >= 10) {
+                                    pieces.clear()
+                                    repeat(10) {
+                                        val targetX = (Random.nextFloat() - 0.5f) * 500f
+                                        val targetY = (Random.nextFloat() - 0.5f) * 700f
+                                        val piece = GarlicPiece(
+                                            id = Random.nextLong(),
+                                            animatableX = Animatable(0f),
+                                            animatableY = Animatable(0f)
+                                        )
+                                        pieces.add(piece)
+                                        scope.launch { piece.animatableX.animateTo(targetX, tween(600, easing = EaseOutBack)) }
+                                        scope.launch { piece.animatableY.animateTo(targetY, tween(600, easing = EaseOutBack)) }
+                                    }
+                                    isExploded = true
+                                } else {
+                                    onVegetableClick(baseRewards)
+                                    scope.launch {
+                                        scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
+                                        scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
+                                    }
+                                    
+                                    val newOnes = createRewardParticles(baseRewards)
+                                    val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                                    val overflow = (activeCount + newOnes.size) - 20
+                                    if (overflow > 0) {
+                                        flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
+                                    }
+                                    flyingParticles.addAll(newOnes)
+                                }
+                            }
+                    )
+                }
             } else {
                 pieces.forEach { piece ->
                     key(piece.id) {
@@ -145,16 +153,22 @@ class Garlic : BaseVegetable() {
                                                 )
                                                 onVegetableClick(bonusRewards)
                                                 
-                                                // Create bonus particles and offset them to piece position
-                                                val bonusParticles = createRewardParticles(bonusRewards).map { p ->
-                                                    p.copy(
-                                                        animatableX = Animatable(p.animatableX.value + piece.animatableX.value),
-                                                        animatableY = Animatable(p.animatableY.value + piece.animatableY.value)
-                                                    )
-                                                }
-                                                flyingParticles = flyingParticles + bonusParticles
+                                                val captureX = piece.animatableX.value
+                                                val captureY = piece.animatableY.value
                                                 
-                                                // Reset instantly
+                                                val newOnes = createRewardParticles(
+                                                    rewards = bonusRewards,
+                                                    offsetX = captureX,
+                                                    offsetY = captureY
+                                                )
+                                                
+                                                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                                                val overflow = (activeCount + newOnes.size) - 20
+                                                if (overflow > 0) {
+                                                    flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
+                                                }
+                                                flyingParticles.addAll(newOnes)
+                                                
                                                 isExploded = false
                                                 clickCount = 0
                                                 pieces.clear()
@@ -167,8 +181,7 @@ class Garlic : BaseVegetable() {
                 }
             }
             
-            // Always show particles at the top level
-            ParticleEffect(flyingParticles) { flyingParticles = it }
+            ParticleEffect(flyingParticles)
         }
     }
 }
