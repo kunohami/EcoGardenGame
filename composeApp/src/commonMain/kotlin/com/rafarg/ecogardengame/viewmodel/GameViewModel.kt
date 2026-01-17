@@ -1,20 +1,22 @@
 package com.rafarg.ecogardengame.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafarg.ecogardengame.model.GameItem
+import com.rafarg.ecogardengame.model.GameplayModifier
 import com.rafarg.ecogardengame.model.Reward
 import com.rafarg.ecogardengame.ui.items
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel() {
 
@@ -35,6 +37,11 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     var totalFruitHarvested by mutableStateOf<Map<String, Int>>(emptyMap())
         private set
 
+    // --- CPS LOGIC (Clicks Per Second) ---
+    private val clickTimestamps = mutableStateListOf<Long>()
+    var currentCps by mutableStateOf(0.0f)
+        private set
+
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(items.first())
         private set
@@ -49,6 +56,26 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
 
     init {
         loadData()
+        startCpsTracker()
+    }
+
+    private fun startCpsTracker() {
+        viewModelScope.launch {
+            while (isActive) {
+                val now = currentTimeMillis()
+                val oneSecondAgo = now - 1000
+                // Remove timestamps older than 1 second
+                while (clickTimestamps.isNotEmpty() && clickTimestamps.first() < oneSecondAgo) {
+                    clickTimestamps.removeAt(0)
+                }
+                currentCps = clickTimestamps.size.toFloat()
+                delay(100) // Update more frequently for CPS
+            }
+        }
+    }
+
+    private fun currentTimeMillis(): Long {
+        return Clock.System.now().toEpochMilliseconds()
     }
 
     private fun loadData() {
@@ -69,8 +96,14 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                     newFruitCounts[item.id] = prefs[countKey] ?: 0
                     newTotalHarvested[item.id] = prefs[totalHarvestedKey] ?: 0
                     
-                    val isUnlocked = if (item.id == "tomato") true else prefs[unlockedKey] ?: false
-                    item.unlocked = isUnlocked
+                    item.unlocked = if (item.id == "tomato") true else prefs[unlockedKey] ?: false
+                    
+                    // Load Modifiers
+                    item.modifiers.forEach { mod ->
+                        mod.isUnlocked = prefs[booleanPreferencesKey("mod_unlocked_${mod.id}")] ?: false
+                        mod.isEnabled = prefs[booleanPreferencesKey("mod_enabled_${mod.id}")] ?: false
+                    }
+                    
                     item
                 }
                 
@@ -84,6 +117,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
 
     fun onVegetableClick(rewards: List<Reward>) {
         totalClicks++
+        clickTimestamps.add(currentTimeMillis())
         
         val newFruitCounts = fruitCounts.toMutableMap()
         val newTotalHarvested = totalFruitHarvested.toMutableMap()
@@ -117,16 +151,16 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
     }
 
-    fun canAfford(item: GameItem): Boolean {
-        if (money < item.unlockCost.money) return false
-        item.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
+    fun canAfford(cost: com.rafarg.ecogardengame.model.ItemCost): Boolean {
+        if (money < cost.money) return false
+        cost.vegetableCosts.forEach { (vegId, amount) ->
             if ((fruitCounts[vegId] ?: 0) < amount) return false
         }
         return true
     }
 
     fun tryUnlockItem(item: GameItem) {
-        if (!item.unlocked && canAfford(item)) {
+        if (!item.unlocked && canAfford(item.unlockCost)) {
             money -= item.unlockCost.money
             
             val newCounts = fruitCounts.toMutableMap()
@@ -136,7 +170,28 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             fruitCounts = newCounts
             
             item.unlocked = true
-            currentItem = item // Autoselect the newly bought item
+            currentItem = item 
+            saveData()
+        }
+    }
+
+    fun tryUnlockModifier(modifier: GameplayModifier) {
+        if (!modifier.isUnlocked && canAfford(modifier.unlockCost)) {
+            money -= modifier.unlockCost.money
+            val newCounts = fruitCounts.toMutableMap()
+            modifier.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
+                newCounts[vegId] = (newCounts[vegId] ?: 0) - amount
+            }
+            fruitCounts = newCounts
+            modifier.isUnlocked = true
+            modifier.isEnabled = true
+            saveData()
+        }
+    }
+
+    fun toggleModifier(modifier: GameplayModifier) {
+        if (modifier.isUnlocked) {
+            modifier.isEnabled = !modifier.isEnabled
             saveData()
         }
     }
@@ -145,14 +200,14 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
      * Testing function to cheat resources
      */
     fun debugAddResources() {
-        money = 100000
+        money += 100000
         totalMoneyEarned += 100000
         
         val newCounts = fruitCounts.toMutableMap()
         val newTotals = totalFruitHarvested.toMutableMap()
         
         itemsList.forEach { item ->
-            newCounts[item.id] = 100000
+            newCounts[item.id] = (newCounts[item.id] ?: 0) + 100000
             newTotals[item.id] = (newTotals[item.id] ?: 0) + 100000
         }
         
@@ -168,7 +223,13 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         fruitCounts = emptyMap()
         totalFruitHarvested = emptyMap()
         itemsList = items.mapIndexed { index, item ->
-            item.apply { unlocked = (index == 0) }
+            item.apply { 
+                unlocked = (index == 0)
+                modifiers.forEach { 
+                    it.isUnlocked = false
+                    it.isEnabled = false
+                }
+            }
         }
         currentItem = itemsList.first()
         saveData()
@@ -189,6 +250,11 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                     prefs[countKey] = fruitCounts[item.id] ?: 0
                     prefs[totalHarvestedKey] = totalFruitHarvested[item.id] ?: 0
                     prefs[unlockedKey] = item.unlocked
+                    
+                    item.modifiers.forEach { mod ->
+                        prefs[booleanPreferencesKey("mod_unlocked_${mod.id}")] = mod.isUnlocked
+                        prefs[booleanPreferencesKey("mod_enabled_${mod.id}")] = mod.isEnabled
+                    }
                 }
             }
         }

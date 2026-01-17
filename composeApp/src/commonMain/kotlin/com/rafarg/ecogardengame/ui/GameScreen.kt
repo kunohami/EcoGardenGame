@@ -51,7 +51,8 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
         ) {
             viewModel.currentItem.Content(
                 modifier = Modifier,
-                onVegetableClick = { rewards -> viewModel.onVegetableClick(rewards) }
+                onVegetableClick = { rewards -> viewModel.onVegetableClick(rewards) },
+                activeModifiers = viewModel.currentItem.modifiers
             )
         }
 
@@ -69,6 +70,26 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     text = "$fruitCount",
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        // --- BOTTOM RIGHT COUNTER (CPS Meter) ---
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "${viewModel.currentCps.toInt()}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = "CPS",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
                 )
             }
         }
@@ -159,7 +180,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     }
                 },
                 confirmButton = {
-                    if (viewModel.canAfford(item)) {
+                    if (viewModel.canAfford(item.unlockCost)) {
                         Button(onClick = {
                             viewModel.tryUnlockItem(item)
                             itemToPurchase = null
