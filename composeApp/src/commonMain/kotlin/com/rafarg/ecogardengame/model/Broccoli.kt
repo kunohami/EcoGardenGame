@@ -43,14 +43,25 @@ class Broccoli : BaseVegetable() {
         Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
     )
 
+    override val modifiers: List<GameplayModifier> = listOf(
+        GameplayModifier(
+            id = "broccoli_giant",
+            name = "Giant Broccoli",
+            description = "Double size, but requires 2 clicks for reward.",
+            unlockCost = ItemCost(money = 500, vegetableCosts = mapOf("broccoli" to 100)),
+            targetItemId = "broccoli"
+        )
+    )
+
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit
+        onVegetableClick: (List<Reward>) -> Unit,
+        activeModifiers: List<GameplayModifier>
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
-        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
@@ -60,8 +71,11 @@ class Broccoli : BaseVegetable() {
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         
-        val itemSize = 100.dp
+        val isGiant = activeModifiers.any { it.id == "broccoli_giant" && it.isEnabled }
+        val itemSize = if (isGiant) 200.dp else 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
+
+        var clickCounter by remember { mutableStateOf(0) }
 
         LaunchedEffect(parentWidth, parentHeight) {
             if (parentWidth > 0 && parentHeight > 0) {
@@ -95,6 +109,7 @@ class Broccoli : BaseVegetable() {
                 },
             contentAlignment = Alignment.Center
         ) {
+            // THE MOVING BROCCOLI
             Box(
                 modifier = Modifier
                     .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
@@ -114,40 +129,47 @@ class Broccoli : BaseVegetable() {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            onVegetableClick(baseRewards)
+                            val currentX = posX
+                            val currentY = posY
+                            
+                            val rewardsToGive = if (isGiant) {
+                                clickCounter++
+                                if (clickCounter >= 2) {
+                                    clickCounter = 0
+                                    baseRewards
+                                } else emptyList()
+                            } else {
+                                baseRewards
+                            }
+
+                            if (rewardsToGive.isNotEmpty()) {
+                                onVegetableClick(rewardsToGive)
+                                val newOnes = createRewardParticles(
+                                    rewards = rewardsToGive,
+                                    offsetX = currentX,
+                                    offsetY = currentY
+                                )
+                                
+                                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                                val overflow = (activeCount + newOnes.size) - 20
+                                if (overflow > 0) {
+                                    flyingParticles.filter { !it.isManuallyRemoved }
+                                        .take(overflow)
+                                        .forEach { it.isManuallyRemoved = true }
+                                }
+                                flyingParticles.addAll(newOnes)
+                            }
+                            
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
-                            
-                            val newRewards = baseRewards.map { reward ->
-                                val isMoney = reward.moneyValue > 0
-                                val amount = if (isMoney) reward.moneyValue else reward.countValue
-                                
-                                val angle = Random.nextDouble(0.0, 360.0)
-                                val radius = Random.nextFloat() * 40f + 20f
-                                val radians = angle * (PI / 180.0)
-                                val startX = (cos(radians) * radius).toFloat()
-                                val startY = (sin(radians) * radius).toFloat()
-
-                                FlyingParticle(
-                                    id = Random.nextLong(), 
-                                    emoji = reward.emoji,
-                                    resource = if (isMoney) null else reward.resource,
-                                    text = "+$amount",
-                                    animatableX = Animatable(startX),
-                                    animatableY = Animatable(startY),
-                                    animatableAlpha = Animatable(0f)
-                                )
-                            }
-                            flyingParticles = flyingParticles + newRewards
                         }
                 )
-
-                ParticleEffect(flyingParticles) {
-                    flyingParticles = it
-                }
             }
+
+            // STATIC PARTICLE LAYER
+            ParticleEffect(flyingParticles)
         }
     }
 }

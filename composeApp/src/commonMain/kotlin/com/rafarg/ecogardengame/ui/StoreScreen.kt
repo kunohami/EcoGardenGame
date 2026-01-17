@@ -1,16 +1,18 @@
 package com.rafarg.ecogardengame.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.model.GameItem
+import com.rafarg.ecogardengame.model.GameplayModifier
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import org.jetbrains.compose.resources.painterResource
 
@@ -19,6 +21,8 @@ import org.jetbrains.compose.resources.painterResource
  */
 @Composable
 fun StoreScreen(viewModel: GameViewModel) {
+    var selectedItemForUpgrades by remember { mutableStateOf<GameItem?>(null) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,29 +42,50 @@ fun StoreScreen(viewModel: GameViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Now showing all items, including unlocked ones
-            items(viewModel.itemsList) { item ->
-                UnlockCard(item, viewModel)
+        if (selectedItemForUpgrades == null) {
+            Text("Vegetables", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp))
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(viewModel.itemsList) { item ->
+                    UnlockCard(item, viewModel, onShowUpgrades = { selectedItemForUpgrades = it })
+                }
+            }
+        } else {
+            // Upgrades View for a specific item
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { selectedItemForUpgrades = null }) {
+                    Text("Back")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Text("Upgrades: ${selectedItemForUpgrades?.name}", style = MaterialTheme.typography.titleLarge)
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(selectedItemForUpgrades?.modifiers ?: emptyList()) { modifier ->
+                    ModifierCard(modifier, viewModel)
+                }
             }
         }
     }
 }
 
 @Composable
-fun UnlockCard(item: GameItem, viewModel: GameViewModel) {
+fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameItem) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(enabled = item.unlocked) { onShowUpgrades(item) },
         colors = CardDefaults.cardColors()
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Use the animated bitmap for the item icon in the store
             Box(modifier = Modifier.size(60.dp)) {
                 SpriteAnimation(
                     painter = painterResource(item.resource),
@@ -74,7 +99,6 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.name, style = MaterialTheme.typography.titleMedium)
                 
-                // Show Costs in a Column to allow multiple lines
                 if (!item.unlocked) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("Unlock Cost:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
@@ -88,15 +112,14 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel) {
                         Text("$vegEmoji $amount", style = MaterialTheme.typography.bodySmall)
                     }
                 } else {
-                    Text("Purchased", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text("Purchased - Tap for Upgrades", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 }
             }
             
             if (item.unlocked) {
-                // Show purchased checkmark
                 Text("✅", fontSize = 32.sp)
             } else {
-                val canAfford = viewModel.canAfford(item)
+                val canAfford = viewModel.canAfford(item.unlockCost)
                 Button(
                     onClick = { viewModel.tryUnlockItem(item) },
                     enabled = canAfford,
@@ -105,6 +128,53 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel) {
                     )
                 ) {
                     Text("Unlock")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ModifierCard(modifier: GameplayModifier, viewModel: GameViewModel) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (modifier.isUnlocked) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(modifier.name, style = MaterialTheme.typography.titleMedium)
+                    Text(modifier.description, style = MaterialTheme.typography.bodySmall)
+                }
+                
+                if (modifier.isUnlocked) {
+                    Switch(
+                        checked = modifier.isEnabled,
+                        onCheckedChange = { viewModel.toggleModifier(modifier) }
+                    )
+                } else {
+                    val canAfford = viewModel.canAfford(modifier.unlockCost)
+                    Button(
+                        onClick = { viewModel.tryUnlockModifier(modifier) },
+                        enabled = canAfford
+                    ) {
+                        Text("Buy")
+                    }
+                }
+            }
+            
+            if (!modifier.isUnlocked) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (modifier.unlockCost.money > 0) {
+                        Text("🪙 ${modifier.unlockCost.money}", style = MaterialTheme.typography.labelSmall)
+                    }
+                    modifier.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
+                        val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
+                        Text("$vegEmoji $amount", style = MaterialTheme.typography.labelSmall)
+                    }
                 }
             }
         }
