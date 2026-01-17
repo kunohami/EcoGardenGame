@@ -8,25 +8,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.garlic_strip
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-/**
- * Represent a piece of garlic after explosion.
- */
 class GarlicPiece(
     val id: Long,
     val animatableX: Animatable<Float, *>,
@@ -36,10 +31,6 @@ class GarlicPiece(
     var isVisible by mutableStateOf(isVisibleInitial)
 }
 
-/**
- * Garlic implementation with a "Breaking Apart" gameplay.
- * Vibrates more with each click until it explodes into pieces.
- */
 class Garlic : BaseVegetable() {
     override val id: String = "garlic"
     override val name: String = "Garlic"
@@ -61,11 +52,9 @@ class Garlic : BaseVegetable() {
         val scale = remember { Animatable(1f) }
         var clickCount by remember { mutableStateOf(0) }
         var isExploded by remember { mutableStateOf(false) }
-
         val pieces = remember { mutableStateListOf<GarlicPiece>() }
         var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
 
-        // Vibration animation
         val vibrationIntensity = (clickCount.toFloat() / 10f) * 10f
         val infiniteTransition = rememberInfiniteTransition()
         val vibX by infiniteTransition.animateFloat(
@@ -87,15 +76,16 @@ class Garlic : BaseVegetable() {
                         .size(200.dp)
                         .offset { IntOffset(if (clickCount > 0) vibX.roundToInt() else 0, 0) }
                         .graphicsLayer {
-                            scaleX = scale.value
-                            scaleY = scale.value
+                            // Calculate growth based on click count (up to 1.5x at 10 clicks)
+                            val growth = 1f + (clickCount.toFloat() / 10f) * 0.5f
+                            scaleX = scale.value * growth
+                            scaleY = scale.value * growth
                         }
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
                             clickCount++
-
                             if (clickCount >= 10) {
                                 pieces.clear()
                                 repeat(10) {
@@ -107,13 +97,8 @@ class Garlic : BaseVegetable() {
                                         animatableY = Animatable(0f)
                                     )
                                     pieces.add(piece)
-
-                                    scope.launch {
-                                        piece.animatableX.animateTo(targetX, tween(600, easing = EaseOutBack))
-                                    }
-                                    scope.launch {
-                                        piece.animatableY.animateTo(targetY, tween(600, easing = EaseOutBack))
-                                    }
+                                    scope.launch { piece.animatableX.animateTo(targetX, tween(600, easing = EaseOutBack)) }
+                                    scope.launch { piece.animatableY.animateTo(targetY, tween(600, easing = EaseOutBack)) }
                                 }
                                 isExploded = true
                             } else {
@@ -122,76 +107,68 @@ class Garlic : BaseVegetable() {
                                     scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                     scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 }
-                                flyingParticles = baseRewards.map { reward ->
-                                    FlyingParticle(
-                                        id = Random.nextLong(),
-                                        emoji = reward.emoji,
-                                        resource = reward.resource
-                                    )
-                                }
+                                flyingParticles = flyingParticles + createRewardParticles(baseRewards)
                             }
                         }
                 )
             } else {
-                // Scattered Pieces
                 pieces.forEach { piece ->
                     key(piece.id) {
                         if (piece.isVisible) {
+                            val pieceScale = remember { Animatable(1f) }
+                            
                             Box(
                                 modifier = Modifier
-                                    .offset {
-                                        IntOffset(
-                                            piece.animatableX.value.roundToInt(),
-                                            piece.animatableY.value.roundToInt()
-                                        )
-                                    }
-                                    .size(70.dp)
-                                    .clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null
-                                    ) {
-                                        piece.isVisible = false
-
-                                        if (pieces.none { it.isVisible }) {
-                                            val bonusRewards = listOf(
-                                                Reward(emoji = "🪙", moneyValue = 20, countValue = 0),
-                                                Reward(emoji = particleEmoji, countValue = 10, resource = resource)
-                                            )
-                                            onVegetableClick(bonusRewards)
-
-                                            // MOSTRAR PARTÍCULAS DEL BONUS
-                                            flyingParticles = bonusRewards.flatMap { reward ->
-                                                // Mostramos 5 de cada tipo para que sea vistoso
-                                                List(5) {
-                                                    FlyingParticle(
-                                                        id = Random.nextLong(),
-                                                        emoji = reward.emoji,
-                                                        resource = reward.resource
-                                                    )
-                                                }
-                                            }
-
-                                            // Reset
-                                            isExploded = false
-                                            clickCount = 0
-                                            pieces.clear()
-                                        }
-                                    }
+                                    .offset { IntOffset(piece.animatableX.value.roundToInt(), piece.animatableY.value.roundToInt()) }
+                                    .size(70.dp),
+                                contentAlignment = Alignment.Center
                             ) {
                                 SpriteAnimation(
                                     painter = painterResource(resource),
                                     frameCount = 3,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .graphicsLayer {
+                                            scaleX = pieceScale.value
+                                            scaleY = pieceScale.value
+                                        }
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null
+                                        ) {
+                                            piece.isVisible = false
+                                            
+                                            if (pieces.none { it.isVisible }) {
+                                                val bonusRewards = listOf(
+                                                    Reward(emoji = "🪙", moneyValue = 20, countValue = 0),
+                                                    Reward(emoji = particleEmoji, countValue = 10, resource = resource)
+                                                )
+                                                onVegetableClick(bonusRewards)
+                                                
+                                                // Create bonus particles and offset them to piece position
+                                                val bonusParticles = createRewardParticles(bonusRewards).map { p ->
+                                                    p.copy(
+                                                        animatableX = Animatable(p.animatableX.value + piece.animatableX.value),
+                                                        animatableY = Animatable(p.animatableY.value + piece.animatableY.value)
+                                                    )
+                                                }
+                                                flyingParticles = flyingParticles + bonusParticles
+                                                
+                                                // Reset instantly
+                                                isExploded = false
+                                                clickCount = 0
+                                                pieces.clear()
+                                            }
+                                        }
                                 )
                             }
                         }
                     }
                 }
             }
-
-            ParticleEffect(flyingParticles) {
-                flyingParticles = it
-            }
+            
+            // Always show particles at the top level
+            ParticleEffect(flyingParticles) { flyingParticles = it }
         }
     }
 }

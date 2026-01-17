@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.purpleonion_strip
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
@@ -37,7 +36,7 @@ class PurpleOnion : BaseVegetable() {
     override val particleEmoji: String = "🧅"
 
     override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1),
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
         Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
     )
 
@@ -117,7 +116,7 @@ class PurpleOnion : BaseVegetable() {
                             val isRotating = rotation.value > 0 && rotation.value < 360
                             val currentRewards = if (isRotating) {
                                 listOf(
-                                    Reward(emoji = particleEmoji, countValue = 1),
+                                    Reward(emoji = particleEmoji, countValue = 1, resource = resource),
                                     Reward(emoji = "🪙", moneyValue = 4, countValue = 0)
                                 )
                             } else {
@@ -132,11 +131,7 @@ class PurpleOnion : BaseVegetable() {
                                 teleport()
                             }
 
-                            flyingParticles = currentRewards.flatMap { reward ->
-                                List(if (reward.moneyValue > 0) reward.moneyValue else 1) {
-                                    FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
-                                }
-                            }
+                            flyingParticles = flyingParticles + createRewardParticles(currentRewards)
                         }
                 )
 

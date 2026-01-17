@@ -136,6 +136,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             fruitCounts = newCounts
             
             item.unlocked = true
+            currentItem = item // Autoselect the newly bought item
             saveData()
         }
     }
