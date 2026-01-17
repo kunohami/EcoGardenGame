@@ -36,7 +36,7 @@ class BellPepper : BaseVegetable() {
     override val particleEmoji: String = "🫑"
 
     override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1),
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
         Reward(emoji = "🪙", moneyValue = 3, countValue = 0)
     )
 
@@ -149,13 +149,13 @@ class BellPepper : BaseVegetable() {
                             indication = null
                         ) {
                             onVegetableClick(baseRewards)
+                            
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
-                            flyingParticles = baseRewards.map { reward ->
-                                FlyingParticle(id = Random.nextLong(), emoji = reward.emoji)
-                            }
+                            
+                            flyingParticles = flyingParticles + createRewardParticles(baseRewards)
                         }
                 )
 
