@@ -43,11 +43,12 @@ class BellPepper : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit
+        onVegetableClick: (List<Reward>) -> Unit,
+        activeModifiers: List<GameplayModifier>
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
-        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
 
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
@@ -98,7 +99,7 @@ class BellPepper : BaseVegetable() {
                                 val limitY = (parentHeight - itemSizePx) / 2
 
                                 if (abs(posX) >= limitX) {
-                                    dirX *= -1
+                                    dirX = -dirX
                                     dirY += (Random.nextFloat() - 0.5f) * 0.2f
                                     val norm = sqrt(dirX*dirX + dirY*dirY)
                                     dirX /= norm
@@ -106,7 +107,7 @@ class BellPepper : BaseVegetable() {
                                     posX = posX.coerceIn(-limitX, limitX)
                                 }
                                 if (abs(posY) >= limitY) {
-                                    dirY *= -1
+                                    dirY = -dirY
                                     dirX += (Random.nextFloat() - 0.5f) * 0.2f
                                     val norm = sqrt(dirX*dirX + dirY*dirY)
                                     dirX /= norm
@@ -150,19 +151,33 @@ class BellPepper : BaseVegetable() {
                         ) {
                             onVegetableClick(baseRewards)
                             
+                            val currentX = posX
+                            val currentY = posY
+
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
                             
-                            flyingParticles = flyingParticles + createRewardParticles(baseRewards)
+                            val newOnes = createRewardParticles(
+                                rewards = baseRewards,
+                                offsetX = currentX,
+                                offsetY = currentY
+                            )
+
+                            val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                            val overflow = (activeCount + newOnes.size) - 20
+                            if (overflow > 0) {
+                                flyingParticles.filter { !it.isManuallyRemoved }
+                                    .take(overflow)
+                                    .forEach { it.isManuallyRemoved = true }
+                            }
+                            flyingParticles.addAll(newOnes)
                         }
                 )
-
-                ParticleEffect(flyingParticles) {
-                    flyingParticles = it
-                }
             }
+
+            ParticleEffect(flyingParticles)
         }
     }
 }

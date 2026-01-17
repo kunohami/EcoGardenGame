@@ -55,11 +55,12 @@ class Squash : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit
+        onVegetableClick: (List<Reward>) -> Unit,
+        activeModifiers: List<GameplayModifier>
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
-        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
@@ -140,27 +141,13 @@ class Squash : BaseVegetable() {
                                     scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 }
                                 
-                                val newRewards = baseRewards.map { reward ->
-                                    val isMoney = reward.moneyValue > 0
-                                    val amount = if (isMoney) reward.moneyValue else reward.countValue
-                                    
-                                    val angle = Random.nextDouble(0.0, 360.0)
-                                    val radius = Random.nextFloat() * 80f + 40f
-                                    val radians = angle * (PI / 180.0)
-                                    val startX = (cos(radians) * radius).toFloat()
-                                    val startY = (sin(radians) * radius).toFloat()
-
-                                    FlyingParticle(
-                                        id = Random.nextLong(), 
-                                        emoji = reward.emoji,
-                                        resource = if (isMoney) null else reward.resource,
-                                        text = "+$amount",
-                                        animatableX = Animatable(startX),
-                                        animatableY = Animatable(startY),
-                                        animatableAlpha = Animatable(0f)
-                                    )
+                                val newOnes = createRewardParticles(baseRewards)
+                                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                                val overflow = (activeCount + newOnes.size) - 20
+                                if (overflow > 0) {
+                                    flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
                                 }
-                                flyingParticles = flyingParticles + newRewards
+                                flyingParticles.addAll(newOnes)
                             }
                         }
                 )
@@ -198,9 +185,7 @@ class Squash : BaseVegetable() {
             }
 
             // Particles
-            ParticleEffect(flyingParticles) {
-                flyingParticles = it
-            }
+            ParticleEffect(flyingParticles)
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -44,7 +45,7 @@ data class ItemCost(
 /**
  * Now each particle carries its own emoji and optional resource for animation!
  */
-data class FlyingParticle(
+class FlyingParticle(
     val id: Long,
     val emoji: String,
     val resource: DrawableResource? = null,
@@ -52,6 +53,18 @@ data class FlyingParticle(
     val animatableX: Animatable<Float, *> = Animatable(0f),
     val animatableY: Animatable<Float, *> = Animatable(0f),
     val animatableAlpha: Animatable<Float, *> = Animatable(0f)
+) {
+    var isManuallyRemoved by mutableStateOf(false)
+}
+
+data class GameplayModifier(
+    val id: String,
+    val name: String,
+    val description: String,
+    val unlockCost: ItemCost,
+    val targetItemId: String,
+    var isUnlocked: Boolean = false,
+    var isEnabled: Boolean = false
 )
 
 interface GameItem {
@@ -64,15 +77,17 @@ interface GameItem {
     val particleEmoji: String
     
     val baseRewards: List<Reward>
+    val modifiers: List<GameplayModifier>
 
     @Composable
     fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit
+        onVegetableClick: (List<Reward>) -> Unit,
+        activeModifiers: List<GameplayModifier>
     )
 
     @Composable
-    fun ParticleEffect(particles: List<FlyingParticle>, updateParticles: (List<FlyingParticle>) -> Unit)
+    fun ParticleEffect(particles: SnapshotStateList<FlyingParticle>)
 }
 
 abstract class BaseVegetable : GameItem {
@@ -81,11 +96,17 @@ abstract class BaseVegetable : GameItem {
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
         Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
     )
+    
+    override val modifiers: List<GameplayModifier> = emptyList()
 
     /**
      * Helper to generate particles with consistent visual style and dispersion.
      */
-    fun createRewardParticles(rewards: List<Reward>): List<FlyingParticle> {
+    fun createRewardParticles(
+        rewards: List<Reward>,
+        offsetX: Float = 0f,
+        offsetY: Float = 0f
+    ): List<FlyingParticle> {
         return rewards.map { reward ->
             val isMoney = reward.moneyValue > 0
             val amount = if (isMoney) reward.moneyValue else reward.countValue
@@ -93,8 +114,8 @@ abstract class BaseVegetable : GameItem {
             val angle = Random.nextDouble(0.0, 360.0)
             val radius = Random.nextFloat() * 80f + 40f
             val radians = angle * (PI / 180.0)
-            val startX = (cos(radians) * radius).toFloat()
-            val startY = (sin(radians) * radius).toFloat()
+            val startX = (cos(radians) * radius).toFloat() + offsetX
+            val startY = (sin(radians) * radius).toFloat() + offsetY
 
             FlyingParticle(
                 id = Random.nextLong(), 
@@ -111,11 +132,12 @@ abstract class BaseVegetable : GameItem {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit
+        onVegetableClick: (List<Reward>) -> Unit,
+        activeModifiers: List<GameplayModifier>
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
-        var flyingParticles by remember { mutableStateOf<List<FlyingParticle>>(emptyList()) }
+        val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
 
         Box(contentAlignment = Alignment.Center) {
             SpriteAnimation(
@@ -138,86 +160,94 @@ abstract class BaseVegetable : GameItem {
                             scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                         }
                         
-                        flyingParticles = flyingParticles + createRewardParticles(baseRewards)
+                        val newOnes = createRewardParticles(baseRewards)
+                        
+                        // Limit to 20 active ones
+                        val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                        val overflow = (activeCount + newOnes.size) - 20
+                        if (overflow > 0) {
+                            flyingParticles.filter { !it.isManuallyRemoved }
+                                .take(overflow)
+                                .forEach { it.isManuallyRemoved = true }
+                        }
+                        
+                        flyingParticles.addAll(newOnes)
                     }
             )
 
-            ParticleEffect(flyingParticles) {
-                flyingParticles = it
-            }
+            ParticleEffect(flyingParticles)
         }
     }
     
     @Composable
-    override fun ParticleEffect(
-        particles: List<FlyingParticle>,
-        updateParticles: (List<FlyingParticle>) -> Unit
-    ) {
+    override fun ParticleEffect(particles: SnapshotStateList<FlyingParticle>) {
         particles.forEach { particle ->
-            LaunchedEffect(particle.id) {
-                val moveDistance = 100f
-                val animationDuration = 1200
-
-                launch {
-                    particle.animatableAlpha.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(durationMillis = 300)
-                    )
-                    delay(500)
-                    particle.animatableAlpha.animateTo(
-                        targetValue = 0f,
-                        animationSpec = tween(durationMillis = 400)
-                    )
-                }
-                
-                launch {
-                    particle.animatableY.animateTo(
-                        targetValue = particle.animatableY.value - moveDistance,
-                        animationSpec = tween(durationMillis = animationDuration, easing = LinearEasing)
-                    )
-                    updateParticles(particles.filterNot { it.id == particle.id })
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .offset {
-                        IntOffset(
-                            x = particle.animatableX.value.toInt(),
-                            y = particle.animatableY.value.toInt()
-                        )
+            key(particle.id) {
+                LaunchedEffect(particle.isManuallyRemoved) {
+                    if (particle.isManuallyRemoved) {
+                        particle.animatableAlpha.animateTo(0f, tween(250))
+                        particles.remove(particle)
+                        return@LaunchedEffect
                     }
-                    .alpha(particle.animatableAlpha.value),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(4.dp)
+
+                    val moveDistance = 100f
+                    val animationDuration = 1200
+
+                    launch {
+                        particle.animatableAlpha.animateTo(1f, tween(300))
+                        delay(500)
+                        particle.animatableAlpha.animateTo(0f, tween(400))
+                    }
+                    
+                    launch {
+                        particle.animatableY.animateTo(
+                            targetValue = particle.animatableY.value - moveDistance,
+                            animationSpec = tween(durationMillis = animationDuration, easing = LinearEasing)
+                        )
+                        particles.remove(particle)
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .offset {
+                            IntOffset(
+                                x = particle.animatableX.value.toInt(),
+                                y = particle.animatableY.value.toInt()
+                            )
+                        }
+                        .alpha(particle.animatableAlpha.value),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = particle.text,
-                        fontSize = 24.sp,
-                        color = androidx.compose.ui.graphics.Color.White,
-                        style = androidx.compose.material3.LocalTextStyle.current.copy(
-                            shadow = androidx.compose.ui.graphics.Shadow(
-                                color = androidx.compose.ui.graphics.Color.Black,
-                                offset = androidx.compose.ui.geometry.Offset(2f, 2f),
-                                blurRadius = 4f
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Text(
+                            text = particle.text,
+                            fontSize = 24.sp,
+                            color = androidx.compose.ui.graphics.Color.White,
+                            style = androidx.compose.material3.LocalTextStyle.current.copy(
+                                shadow = androidx.compose.ui.graphics.Shadow(
+                                    color = androidx.compose.ui.graphics.Color.Black,
+                                    offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                                    blurRadius = 4f
+                                )
                             )
                         )
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    if (particle.resource != null) {
-                        SpriteAnimation(
-                            painter = painterResource(particle.resource),
-                            frameCount = 3,
-                            modifier = Modifier.size(30.dp)
-                        )
-                    } else {
-                        Text(
-                            text = particle.emoji,
-                            fontSize = 24.sp
-                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        if (particle.resource != null) {
+                            SpriteAnimation(
+                                painter = painterResource(particle.resource),
+                                frameCount = 3,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        } else {
+                            Text(
+                                text = particle.emoji,
+                                fontSize = 24.sp
+                            )
+                        }
                     }
                 }
             }
