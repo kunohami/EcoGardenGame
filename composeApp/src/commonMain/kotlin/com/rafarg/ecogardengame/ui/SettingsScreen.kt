@@ -32,10 +32,43 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(16.dp)
         ) {
             Text("Settings", style = MaterialTheme.typography.displayMedium)
             
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // --- VIBRATION SECTION ---
+            Text("General", style = MaterialTheme.typography.titleMedium, color = Color.Gray)
+            
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Vibration")
+                        Switch(
+                            checked = viewModel.vibrationEnabled,
+                            onCheckedChange = { viewModel.setVibration(it) }
+                        )
+                    }
+                    
+                    if (viewModel.vibrationEnabled) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Intensity: ${viewModel.vibrationIntensity.toInt()}ms", style = MaterialTheme.typography.labelSmall)
+                        Slider(
+                            value = viewModel.vibrationIntensity,
+                            onValueChange = { viewModel.updateVibrationIntensity(it) },
+                            valueRange = 5f..100f,
+                            steps = 19
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             // Debug/Testing Section
