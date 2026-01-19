@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.Res
@@ -29,24 +30,33 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // --- TOP COUNTER (Money Only) ---
-        Row(
+        // --- TOP UI BAR (Z-Index Protection) ---
+        Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(top = 16.dp)
+                .zIndex(1f) // Ensure it's above the game area
         ) {
-            Text("🪙", fontSize = 24.sp)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "${viewModel.money}",
-                style = MaterialTheme.typography.headlineSmall
-            )
+            Row(
+                modifier = Modifier.align(Alignment.TopCenter),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("🪙", fontSize = 24.sp)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${viewModel.money}",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
         }
 
-        // --- MAIN GAME AREA ---
+        // --- MAIN GAME AREA (Safe Zone Restricted) ---
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 80.dp, bottom = 100.dp) // Define safe zone margins
+                .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ) {
             viewModel.currentItem.Content(
@@ -61,6 +71,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
+                .zIndex(1f)
         ) {
             val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -79,6 +90,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
+                .zIndex(1f)
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 Text(
@@ -95,7 +107,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
         }
 
         // --- FLOATING MENU ICON ---
-        Box(modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)) {
+        Box(modifier = Modifier.align(Alignment.TopEnd).padding(16.dp).zIndex(2f)) {
             SpriteAnimation(
                 painter = painterResource(Res.drawable.apple_strip),
                 frameCount = 3,
@@ -113,6 +125,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     .padding(top = 80.dp, end = 16.dp)
                     .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                     .padding(8.dp)
+                    .zIndex(2f)
             ) {
                 viewModel.itemsList.forEach { item ->
                     Row(

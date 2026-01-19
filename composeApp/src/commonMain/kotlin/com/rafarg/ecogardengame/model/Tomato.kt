@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
+import com.rafarg.ecogardengame.util.vibrate
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.tomato_strip
 import kotlinx.coroutines.launch
@@ -30,6 +31,16 @@ class Tomato : BaseVegetable() {
     override var unlocked: Boolean = true
     override val particleEmoji: String = "🍅"
 
+    override val modifiers: List<GameplayModifier> = listOf(
+        GameplayModifier(
+            id = "tomato_precision_vibration",
+            name = "Haptic Timing",
+            description = "Vibrates when the super reward is ready.",
+            unlockCost = ItemCost(money = 300, vegetableCosts = mapOf("tomato" to 150)),
+            targetItemId = "tomato"
+        )
+    )
+
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -43,6 +54,8 @@ class Tomato : BaseVegetable() {
         var cycleStartTime by remember { mutableStateOf(0L) }
         var currentTime by remember { mutableStateOf(0L) }
         var lastClickTime by remember { mutableStateOf(0L) }
+
+        val hasPrecisionVibration = activeModifiers.any { it.id == "tomato_precision_vibration" && it.isEnabled }
 
         LaunchedEffect(Unit) {
             var firstFrame = true
@@ -62,12 +75,20 @@ class Tomato : BaseVegetable() {
         val cycleProgress = (elapsed % cycleDuration.toLong()) / cycleDuration
         
         // Super reward check for visual feedback
-        val isPrecisionWindowActive = cycleProgress > 0.95f && (currentTime - lastClickTime) > 1500
+        val isPrecisionWindowActive = cycleProgress > 0.90f && (currentTime - lastClickTime) > 1500
+
+        // Continuous vibration logic if modifier is enabled
+        LaunchedEffect(isPrecisionWindowActive) {
+            if (isPrecisionWindowActive && hasPrecisionVibration) {
+                vibrate(30) // Small pulse when it starts being active
+            }
+        }
 
         // Vibration and visuals based on progress
         val vibrationIntensity = cycleProgress * 15f
         val vibrationValue = if (cycleProgress > 0.1f) {
-            sin(currentTime.toFloat() / 30f) * vibrationIntensity
+            // Fix: Changed 'Leonard' typo to toDouble() and ensured return is Float
+            (sin(currentTime.toDouble() / 30.0) * vibrationIntensity.toDouble()).toFloat()
         } else 0f
         
         val growthScale = 1f + (cycleProgress * 0.4f)

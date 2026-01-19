@@ -43,6 +43,16 @@ class Garlic : BaseVegetable() {
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧄"
 
+    override val modifiers: List<GameplayModifier> = listOf(
+        GameplayModifier(
+            id = "garlic_cluster",
+            name = "Garlic Cluster",
+            description = "Double the small garlics after explosion, +150% final reward.",
+            unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("garlic" to 150, "purple_onion" to 30)),
+            targetItemId = "garlic"
+        )
+    )
+
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -55,6 +65,8 @@ class Garlic : BaseVegetable() {
         var isExploded by remember { mutableStateOf(false) }
         val pieces = remember { mutableStateListOf<GarlicPiece>() }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
+
+        val isClusterActive = activeModifiers.any { it.id == "garlic_cluster" && it.isEnabled }
 
         val vibrationIntensity = (clickCount.toFloat() / 10f) * 10f
         val infiniteTransition = rememberInfiniteTransition()
@@ -88,9 +100,10 @@ class Garlic : BaseVegetable() {
                                 clickCount++
                                 if (clickCount >= 10) {
                                     pieces.clear()
-                                    repeat(10) {
-                                        val targetX = (Random.nextFloat() - 0.5f) * 500f
-                                        val targetY = (Random.nextFloat() - 0.5f) * 700f
+                                    val pieceCount = if (isClusterActive) 20 else 10
+                                    repeat(pieceCount) {
+                                        val targetX = (Random.nextFloat() - 0.5f) * 600f
+                                        val targetY = (Random.nextFloat() - 0.5f) * 800f
                                         val piece = GarlicPiece(
                                             id = Random.nextLong(),
                                             animatableX = Animatable(0f),
@@ -147,9 +160,11 @@ class Garlic : BaseVegetable() {
                                             piece.isVisible = false
                                             
                                             if (pieces.none { it.isVisible }) {
+                                                // 2.5 multiplier means original 100% + 150% additional = 250% total
+                                                val multiplier = if (isClusterActive) 2.5f else 1.0f
                                                 val bonusRewards = listOf(
-                                                    Reward(emoji = "🪙", moneyValue = 20, countValue = 0),
-                                                    Reward(emoji = particleEmoji, countValue = 10, resource = resource)
+                                                    Reward(emoji = "🪙", moneyValue = (20 * multiplier).toInt(), countValue = 0),
+                                                    Reward(emoji = particleEmoji, countValue = (10 * multiplier).toInt(), resource = resource)
                                                 )
                                                 onVegetableClick(bonusRewards)
                                                 
