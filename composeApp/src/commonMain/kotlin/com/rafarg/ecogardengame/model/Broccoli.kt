@@ -20,11 +20,7 @@ import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.broccoli_strip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 class Broccoli : BaseVegetable() {
     override val id: String = "broccoli"
@@ -50,6 +46,13 @@ class Broccoli : BaseVegetable() {
             description = "Double size, but requires 2 clicks for reward.",
             unlockCost = ItemCost(money = 500, vegetableCosts = mapOf("broccoli" to 100)),
             targetItemId = "broccoli"
+        ),
+        GameplayModifier(
+            id = "broccoli_speed",
+            name = "Overclocked",
+            description = "Double movement speed and double rewards.",
+            unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("broccoli" to 250, "bell_pepper" to 50)),
+            targetItemId = "broccoli"
         )
     )
 
@@ -65,34 +68,39 @@ class Broccoli : BaseVegetable() {
         
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
-        var velX by remember { mutableStateOf(4f) }
-        var velY by remember { mutableStateOf(4f) }
+        var baseVelX by remember { mutableStateOf(4f) }
+        var baseVelY by remember { mutableStateOf(4f) }
 
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         
         val isGiant = activeModifiers.any { it.id == "broccoli_giant" && it.isEnabled }
+        val isFast = activeModifiers.any { it.id == "broccoli_speed" && it.isEnabled }
+        
         val itemSize = if (isGiant) 200.dp else 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
+        val speedMultiplier = if (isFast) 2f else 1f
+        val rewardMultiplier = if (isFast) 2 else 1
+
         var clickCounter by remember { mutableStateOf(0) }
 
-        LaunchedEffect(parentWidth, parentHeight) {
+        LaunchedEffect(parentWidth, parentHeight, speedMultiplier) {
             if (parentWidth > 0 && parentHeight > 0) {
                 while (true) {
                     withFrameMillis { _ ->
-                        posX += velX
-                        posY += velY
+                        posX += baseVelX * speedMultiplier
+                        posY += baseVelY * speedMultiplier
 
                         val limitX = (parentWidth - itemSizePx) / 2
                         val limitY = (parentHeight - itemSizePx) / 2
 
                         if (posX <= -limitX || posX >= limitX) {
-                            velX *= -1
+                            baseVelX *= -1
                             posX = posX.coerceIn(-limitX, limitX)
                         }
                         if (posY <= -limitY || posY >= limitY) {
-                            velY *= -1
+                            baseVelY *= -1
                             posY = posY.coerceIn(-limitY, limitY)
                         }
                     }
@@ -132,20 +140,33 @@ class Broccoli : BaseVegetable() {
                             val currentX = posX
                             val currentY = posY
                             
-                            val rewardsToGive = if (isGiant) {
+                            val rewardsToGive = mutableListOf<Reward>()
+                            
+                            if (isGiant) {
                                 clickCounter++
                                 if (clickCounter >= 2) {
                                     clickCounter = 0
-                                    baseRewards
-                                } else emptyList()
+                                    rewardsToGive.addAll(baseRewards)
+                                }
                             } else {
-                                baseRewards
+                                rewardsToGive.addAll(baseRewards)
                             }
 
                             if (rewardsToGive.isNotEmpty()) {
-                                onVegetableClick(rewardsToGive)
+                                // Apply double rewards if Overclocked
+                                val finalRewards = if (rewardMultiplier > 1) {
+                                    rewardsToGive.map { it.copy(
+                                        moneyValue = it.moneyValue * rewardMultiplier,
+                                        countValue = it.countValue * rewardMultiplier
+                                    ) }
+                                } else {
+                                    rewardsToGive
+                                }
+
+                                onVegetableClick(finalRewards)
+                                
                                 val newOnes = createRewardParticles(
-                                    rewards = rewardsToGive,
+                                    rewards = finalRewards,
                                     offsetX = currentX,
                                     offsetY = currentY
                                 )

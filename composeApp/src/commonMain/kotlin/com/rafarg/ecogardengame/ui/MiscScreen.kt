@@ -10,14 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 
-/**
- * Screen for miscellaneous settings and actions like resetting progress.
- * Now contains navigation to Settings and About screens.
- */
 @Composable
 fun MiscScreen(
     viewModel: GameViewModel,
     onNavigateToSettings: () -> Unit,
+    onNavigateToThemes: () -> Unit,
     onNavigateToAbout: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -33,20 +30,12 @@ fun MiscScreen(
                 Text("Settings")
             }
 
-            Button(onClick = onNavigateToAbout, modifier = Modifier.fillMaxWidth(0.6f)) {
-                Text("About")
+            Button(onClick = onNavigateToThemes, modifier = Modifier.fillMaxWidth(0.6f)) {
+                Text("Themes")
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = { viewModel.resetGame() },
-                modifier = Modifier.fillMaxWidth(0.6f),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Text("Reset Game Progress")
+            Button(onClick = onNavigateToAbout, modifier = Modifier.fillMaxWidth(0.6f)) {
+                Text("About")
             }
         }
     }

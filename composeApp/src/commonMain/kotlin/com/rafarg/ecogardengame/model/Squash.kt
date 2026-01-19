@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -25,15 +22,13 @@ import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.squash_strip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
- * Squash implementation with a "Circular Timing Challenge" gameplay.
- * Moves vertically bouncing off the screen edges. Only clickable inside a central circle.
+ * Squash implementation with a "Zelda Tennis" timing gameplay.
+ * Moves vertically. Only clickable in the bottom 25% of the screen.
+ * Hits before the bounce give better rewards.
  */
 class Squash : BaseVegetable() {
     override val id: String = "squash"
@@ -49,7 +44,12 @@ class Squash : BaseVegetable() {
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 5, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
+    )
+
+    private val bonusRewards: List<Reward> get() = listOf(
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+        Reward(emoji = "🪙", moneyValue = 6, countValue = 0)
     )
 
     @Composable
@@ -66,9 +66,6 @@ class Squash : BaseVegetable() {
         var parentHeight by remember { mutableStateOf(0f) }
         val density = LocalDensity.current
         
-        // Circle size is half the previous square size (250/2 = 125)
-        val circleSize = 125.dp
-        val circleSizePx = with(density) { circleSize.toPx() }
         val itemSize = 150.dp
         val itemSizePx = with(density) { itemSize.toPx() }
 
@@ -76,7 +73,7 @@ class Squash : BaseVegetable() {
         var posY by remember { mutableStateOf(0f) }
         var directionY by remember { mutableStateOf(1f) }
         
-        // CONSTANT SPEED: Defined in dp per second for consistency
+        // Speed: 800 dp per second
         val speedDpPerSecond = 800.dp
         val speedPxPerSecond = with(density) { speedDpPerSecond.toPx() }
 
@@ -90,9 +87,12 @@ class Squash : BaseVegetable() {
                             posY += directionY * speedPxPerSecond * deltaSeconds
                             
                             val limitY = (parentHeight - itemSizePx) / 2
-                            if (kotlin.math.abs(posY) >= limitY) {
-                                directionY *= -1
-                                posY = posY.coerceIn(-limitY, limitY)
+                            if (posY >= limitY) {
+                                directionY = -1f
+                                posY = limitY
+                            } else if (posY <= -limitY) {
+                                directionY = 1f
+                                posY = -limitY
                             }
                         }
                         lastFrameTime = frameTime
@@ -110,7 +110,27 @@ class Squash : BaseVegetable() {
                 },
             contentAlignment = Alignment.Center
         ) {
+            // --- BOUNDARY LINE ---
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val activeZoneHeight = size.height * 0.25f
+                val activeZoneTop = size.height - activeZoneHeight
+                
+                // Draw a simple separating line
+                drawLine(
+                    color = Color.White.copy(alpha = 0.5f),
+                    start = androidx.compose.ui.geometry.Offset(0f, activeZoneTop),
+                    end = androidx.compose.ui.geometry.Offset(size.width, activeZoneTop),
+                    strokeWidth = 2.dp.toPx()
+                )
+            }
+
             // --- THE SQUASH ---
+            val activeZoneHeight = parentHeight * 0.25f
+            val bottomLimit = (parentHeight - itemSizePx) / 2
+            val activeZoneStart = bottomLimit - activeZoneHeight
+            
+            val isInsideActiveZone = posY >= activeZoneStart
+
             Box(
                 modifier = Modifier
                     .offset { IntOffset(0, posY.roundToInt()) }
@@ -130,61 +150,37 @@ class Squash : BaseVegetable() {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            // --- HITBOX INCREASE ---
-                            val hitboxTolerance = with(density) { 50.dp.toPx() }
-                            val isInsideCircle = kotlin.math.abs(posY) < (circleSizePx / 2 + hitboxTolerance)
-                            
-                            if (isInsideCircle) {
-                                onVegetableClick(baseRewards)
+                            if (isInsideActiveZone) {
+                                // Hit before reaching bottom (moving down)
+                                val isBonus = directionY > 0
+                                val rewards = if (isBonus) bonusRewards else baseRewards
+                                
+                                onVegetableClick(rewards)
                                 scope.launch {
                                     scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                     scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 }
                                 
-                                val newOnes = createRewardParticles(baseRewards)
+                                val newOnes = createRewardParticles(
+                                    rewards = rewards,
+                                    offsetX = 0f,
+                                    offsetY = posY
+                                )
                                 val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                                 val overflow = (activeCount + newOnes.size) - 20
                                 if (overflow > 0) {
                                     flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
                                 }
                                 flyingParticles.addAll(newOnes)
+                                
+                                // Bounce it back!
+                                directionY = -1f
                             }
                         }
                 )
             }
 
-            // --- THE OVERLAY FILTER (With Circular hole) ---
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val circlePath = Path().apply {
-                    addOval(
-                        androidx.compose.ui.geometry.Rect(
-                            center = center,
-                            radius = circleSizePx / 2
-                        )
-                    )
-                }
-
-                // Draw grey filter everywhere EXCEPT the central circle
-                clipPath(circlePath, clipOp = ClipOp.Difference) {
-                    drawRect(Color.Black.copy(alpha = 0.5f))
-                }
-            }
-            
-            // Central Circle Border
-            Box(
-                modifier = Modifier
-                    .size(circleSize)
-            ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawCircle(
-                        color = Color.White.copy(alpha = 0.4f),
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 4f),
-                        radius = size.minDimension / 2
-                    )
-                }
-            }
-
-            // Particles
+            // Particles layer
             ParticleEffect(flyingParticles)
         }
     }

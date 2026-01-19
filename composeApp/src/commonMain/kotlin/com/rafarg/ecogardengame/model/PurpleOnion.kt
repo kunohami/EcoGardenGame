@@ -159,7 +159,7 @@ class PurpleOnion : BaseVegetable() {
             
             rotation.animateTo(
                 targetValue = 360f,
-                animationSpec = tween(1000, easing = LinearEasing)
+                animationSpec = tween(350, easing = LinearEasing)
             )
         }
 

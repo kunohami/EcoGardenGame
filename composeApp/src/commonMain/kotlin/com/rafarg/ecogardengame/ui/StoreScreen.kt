@@ -79,13 +79,18 @@ fun StoreScreen(viewModel: GameViewModel) {
 @Composable
 fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameItem) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(enabled = item.unlocked) { onShowUpgrades(item) },
-        colors = CardDefaults.cardColors()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = item.unlocked) { onShowUpgrades(item) },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Use the animated bitmap for the item icon in the store
             Box(modifier = Modifier.size(60.dp)) {
                 SpriteAnimation(
                     painter = painterResource(item.resource),
@@ -99,6 +104,7 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.name, style = MaterialTheme.typography.titleMedium)
                 
+                // Show Costs in a Column to allow multiple lines
                 if (!item.unlocked) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("Unlock Cost:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
@@ -117,6 +123,7 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             }
             
             if (item.unlocked) {
+                // Show purchased checkmark
                 Text("✅", fontSize = 32.sp)
             } else {
                 val canAfford = viewModel.canAfford(item.unlockCost)
@@ -139,7 +146,7 @@ fun ModifierCard(modifier: GameplayModifier, viewModel: GameViewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (modifier.isUnlocked) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+            containerColor = if (modifier.isUnlocked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
