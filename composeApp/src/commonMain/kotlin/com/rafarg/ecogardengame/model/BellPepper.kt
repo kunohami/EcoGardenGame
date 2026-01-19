@@ -40,6 +40,16 @@ class BellPepper : BaseVegetable() {
         Reward(emoji = "🪙", moneyValue = 3, countValue = 0)
     )
 
+    override val modifiers: List<GameplayModifier> = listOf(
+        GameplayModifier(
+            id = "bell_pepper_turbo",
+            name = "Turbo Harvest",
+            description = "Half movement cycle duration, but double rewards.",
+            unlockCost = ItemCost(money = 2000, vegetableCosts = mapOf("bell_pepper" to 100, "broccoli" to 50)),
+            targetItemId = "bell_pepper"
+        )
+    )
+
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -59,13 +69,17 @@ class BellPepper : BaseVegetable() {
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
 
+        val isTurbo = activeModifiers.any { it.id == "bell_pepper_turbo" && it.isEnabled }
+        
         val itemSize = 120.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
-        val stationaryDuration = 1000L
-        val movingDuration = 2000L
+        
+        // Halve the durations if Turbo is active
+        val stationaryDuration = if (isTurbo) 500L else 1000L
+        val movingDuration = if (isTurbo) 1000L else 2000L
         val maxBaseSpeed = 100f
 
-        LaunchedEffect(parentWidth, parentHeight) {
+        LaunchedEffect(parentWidth, parentHeight, isTurbo) {
             if (parentWidth > 0 && parentHeight > 0) {
                 val angle = Random.nextFloat() * 2 * PI.toFloat()
                 dirX = cos(angle)
@@ -149,18 +163,24 @@ class BellPepper : BaseVegetable() {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            onVegetableClick(baseRewards)
-                            
                             val currentX = posX
                             val currentY = posY
+                            
+                            val finalRewards = if (isTurbo) {
+                                baseRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
+                            } else {
+                                baseRewards
+                            }
 
+                            onVegetableClick(finalRewards)
+                            
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
                             
                             val newOnes = createRewardParticles(
-                                rewards = baseRewards,
+                                rewards = finalRewards,
                                 offsetX = currentX,
                                 offsetY = currentY
                             )

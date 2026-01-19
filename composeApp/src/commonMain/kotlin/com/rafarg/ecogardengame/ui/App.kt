@@ -22,6 +22,17 @@ val items: List<GameItem> = listOf(
     Squash()
 )
 
+enum class Screen(val title: String, val showInBottomBar: Boolean = true) {
+    GAME("Garden", true),
+    STORE("Shop", true),
+    STATS("Stats", true),
+    PROFILE("Profile", true),
+    MISC("Misc", true),
+    SETTINGS("Settings", false),
+    THEMES("Themes", false),
+    ABOUT("About", false)
+}
+
 /**
  * The main application entry point with bottom navigation.
  */
@@ -32,7 +43,7 @@ fun App(prefs: DataStore<Preferences>? = null) {
     val viewModel: GameViewModel = viewModel { GameViewModel(prefs) }
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
     
-    MaterialTheme {
+    EcoGardenTheme(useDarkTheme = viewModel.isDarkTheme) {
         Scaffold(
             bottomBar = {
                 NavigationBar {
@@ -75,9 +86,14 @@ fun App(prefs: DataStore<Preferences>? = null) {
                     Screen.MISC -> MiscScreen(
                         viewModel = viewModel,
                         onNavigateToSettings = { currentScreen = Screen.SETTINGS },
+                        onNavigateToThemes = { currentScreen = Screen.THEMES },
                         onNavigateToAbout = { currentScreen = Screen.ABOUT }
                     )
                     Screen.SETTINGS -> SettingsScreen(
+                        viewModel = viewModel,
+                        onBack = { currentScreen = Screen.MISC }
+                    )
+                    Screen.THEMES -> ThemesScreen(
                         viewModel = viewModel,
                         onBack = { currentScreen = Screen.MISC }
                     )

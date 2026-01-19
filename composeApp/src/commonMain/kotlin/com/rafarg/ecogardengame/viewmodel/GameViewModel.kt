@@ -12,6 +12,7 @@ import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.model.GameplayModifier
 import com.rafarg.ecogardengame.model.Reward
 import com.rafarg.ecogardengame.ui.items
+import com.rafarg.ecogardengame.util.vibrate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -42,6 +43,16 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     var currentCps by mutableStateOf(0.0f)
         private set
 
+    // --- VIBRATION SETTINGS ---
+    var vibrationEnabled by mutableStateOf(false)
+        private set
+    var vibrationIntensity by mutableStateOf(10f) // Milliseconds
+        private set
+
+    // --- THEME SETTINGS ---
+    var isDarkTheme by mutableStateOf(false)
+        private set
+
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(items.first())
         private set
@@ -53,6 +64,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     private val totalClicksKey = intPreferencesKey("total_clicks")
     private val moneyKey = intPreferencesKey("money")
     private val totalMoneyEarnedKey = intPreferencesKey("total_money_earned")
+    private val vibrationEnabledKey = booleanPreferencesKey("vibration_enabled")
+    private val vibrationIntensityKey = floatPreferencesKey("vibration_intensity")
+    private val darkThemeKey = booleanPreferencesKey("dark_theme")
 
     init {
         loadData()
@@ -84,6 +98,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 totalClicks = prefs[totalClicksKey] ?: 0
                 money = prefs[moneyKey] ?: 0
                 totalMoneyEarned = prefs[totalMoneyEarnedKey] ?: 0
+                vibrationEnabled = prefs[vibrationEnabledKey] ?: false
+                vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f
+                isDarkTheme = prefs[darkThemeKey] ?: false
                 
                 val newFruitCounts = mutableMapOf<String, Int>()
                 val newTotalHarvested = mutableMapOf<String, Int>()
@@ -119,6 +136,10 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         totalClicks++
         clickTimestamps.add(currentTimeMillis())
         
+        if (vibrationEnabled) {
+            vibrate(vibrationIntensity.toLong())
+        }
+
         val newFruitCounts = fruitCounts.toMutableMap()
         val newTotalHarvested = totalFruitHarvested.toMutableMap()
         var moneyGain = 0
@@ -142,6 +163,21 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         fruitCounts = newFruitCounts
         totalFruitHarvested = newTotalHarvested
 
+        saveData()
+    }
+
+    fun setVibration(enabled: Boolean) {
+        vibrationEnabled = enabled
+        saveData()
+    }
+
+    fun updateVibrationIntensity(intensity: Float) {
+        vibrationIntensity = intensity
+        saveData()
+    }
+
+    fun setTheme(dark: Boolean) {
+        isDarkTheme = dark
         saveData()
     }
 
@@ -196,9 +232,6 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
     }
 
-    /**
-     * Testing function to cheat resources
-     */
     fun debugAddResources() {
         money += 100000
         totalMoneyEarned += 100000
@@ -241,6 +274,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 prefs[totalClicksKey] = totalClicks
                 prefs[moneyKey] = money
                 prefs[totalMoneyEarnedKey] = totalMoneyEarned
+                prefs[vibrationEnabledKey] = vibrationEnabled
+                prefs[vibrationIntensityKey] = vibrationIntensity
+                prefs[darkThemeKey] = isDarkTheme
                 
                 itemsList.forEach { item ->
                     val countKey = intPreferencesKey("fruit_count_${item.id}")

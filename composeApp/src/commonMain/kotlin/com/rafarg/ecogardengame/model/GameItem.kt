@@ -57,15 +57,18 @@ class FlyingParticle(
     var isManuallyRemoved by mutableStateOf(false)
 }
 
-data class GameplayModifier(
+class GameplayModifier(
     val id: String,
     val name: String,
     val description: String,
     val unlockCost: ItemCost,
     val targetItemId: String,
-    var isUnlocked: Boolean = false,
-    var isEnabled: Boolean = false
-)
+    isUnlockedInitial: Boolean = false,
+    isEnabledInitial: Boolean = false
+) {
+    var isUnlocked by mutableStateOf(isUnlockedInitial)
+    var isEnabled by mutableStateOf(isEnabledInitial)
+}
 
 interface GameItem {
     val id: String
@@ -107,23 +110,27 @@ abstract class BaseVegetable : GameItem {
         offsetX: Float = 0f,
         offsetY: Float = 0f
     ): List<FlyingParticle> {
-        return rewards.map { reward ->
+        // Pick a base random position for the group of rewards from this click
+        val angle = Random.nextDouble(0.0, 360.0)
+        val radius = Random.nextFloat() * 80f + 40f
+        val radians = angle * (PI / 180.0)
+        val baseStartX = (cos(radians) * radius).toFloat() + offsetX
+        val baseStartY = (sin(radians) * radius).toFloat() + offsetY
+
+        return rewards.mapIndexed { index, reward ->
             val isMoney = reward.moneyValue > 0
             val amount = if (isMoney) reward.moneyValue else reward.countValue
             
-            val angle = Random.nextDouble(0.0, 360.0)
-            val radius = Random.nextFloat() * 80f + 40f
-            val radians = angle * (PI / 180.0)
-            val startX = (cos(radians) * radius).toFloat() + offsetX
-            val startY = (sin(radians) * radius).toFloat() + offsetY
+            // Apply vertical offset so they appear in separate lines stacked vertically
+            val lineOffset = index * 70f
 
             FlyingParticle(
                 id = Random.nextLong(), 
                 emoji = reward.emoji,
                 resource = if (isMoney) null else reward.resource,
                 text = "+$amount",
-                animatableX = Animatable(startX),
-                animatableY = Animatable(startY),
+                animatableX = Animatable(baseStartX),
+                animatableY = Animatable(baseStartY + lineOffset),
                 animatableAlpha = Animatable(0f)
             )
         }
@@ -241,7 +248,7 @@ abstract class BaseVegetable : GameItem {
                                 painter = painterResource(particle.resource),
                                 frameCount = 3,
                                 modifier = Modifier.size(30.dp)
-                            )
+                              )
                         } else {
                             Text(
                                 text = particle.emoji,
