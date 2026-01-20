@@ -10,6 +10,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.rafarg.ecogardengame.ui.App
 import com.rafarg.ecogardengame.util.initVibrator
 import com.rafarg.ecogardengame.util.initShakeDetector
+import com.rafarg.ecogardengame.util.initRotationDetector
+import com.rafarg.ecogardengame.util.initProximityDetector
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,6 +20,8 @@ class MainActivity : ComponentActivity() {
 
         initVibrator(this)
         initShakeDetector(this)
+        initRotationDetector(this)
+        initProximityDetector(this)
 
         setContent {
             val prefs = remember { createDataStore(applicationContext) }

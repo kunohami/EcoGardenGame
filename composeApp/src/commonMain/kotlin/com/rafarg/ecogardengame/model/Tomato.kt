@@ -44,7 +44,7 @@ class Tomato : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -141,7 +141,7 @@ class Tomato : BaseVegetable() {
                             baseRewards
                         }
 
-                        onVegetableClick(rewards)
+                        val finalRewards = onVegetableClick(rewards)
                         lastClickTime = now
                         cycleStartTime = now // Restart the 5s cycle
 
@@ -150,7 +150,7 @@ class Tomato : BaseVegetable() {
                             punchScale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                         }
                         
-                        val newOnes = createRewardParticles(rewards)
+                        val newOnes = createRewardParticles(finalRewards)
                         val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                         val overflow = (activeCount + newOnes.size) - 20
                         if (overflow > 0) {

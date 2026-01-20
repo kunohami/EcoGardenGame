@@ -53,7 +53,7 @@ class BellPepper : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -168,13 +168,13 @@ class BellPepper : BaseVegetable() {
                             val currentX = posX
                             val currentY = posY
                             
-                            val finalRewards = if (isTurbo) {
+                            val rewards = if (isTurbo) {
                                 baseRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
                             } else {
                                 baseRewards
                             }
 
-                            onVegetableClick(finalRewards)
+                            val finalRewards = onVegetableClick(rewards)
                             
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))

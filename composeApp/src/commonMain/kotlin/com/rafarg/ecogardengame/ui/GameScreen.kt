@@ -43,7 +43,17 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Specific Fruit Counter
+                // Money Counter (Now on the left)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("🪙", fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${viewModel.money}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+
+                // Specific Fruit Counter (Now on the right)
                 val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(viewModel.currentItem.particleEmoji, fontSize = 18.sp)
@@ -52,16 +62,6 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         text = "$fruitCount",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                // Money Counter
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("🪙", fontSize = 18.sp)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "${viewModel.money}",
-                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }

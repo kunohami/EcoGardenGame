@@ -19,7 +19,8 @@ val items: List<GameItem> = listOf(
     BellPepper(),
     Garlic(),
     PurpleOnion(),
-    Squash()
+    Squash(),
+    Apple()
 )
 
 enum class Screen(val title: String, val showInBottomBar: Boolean = true) {

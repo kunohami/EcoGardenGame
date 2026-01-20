@@ -70,7 +70,7 @@ class PurpleOnion : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -142,7 +142,7 @@ class PurpleOnion : BaseVegetable() {
     @Composable
     private fun SingleOnion(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         coinReduction: Int,
         spinDuration: Int,
         baseRewards: List<Reward>,
@@ -228,7 +228,7 @@ class PurpleOnion : BaseVegetable() {
                             canClick = false
 
                             val isRotating = rotation.value > 0 && rotation.value < 360
-                            var currentRewards = if (isRotating) {
+                            var rewards = if (isRotating) {
                                 listOf(
                                     Reward(emoji = particleEmoji, countValue = 1, resource = resource),
                                     Reward(emoji = "🪙", moneyValue = (5 - coinReduction).coerceAtLeast(1), countValue = 0)
@@ -237,7 +237,7 @@ class PurpleOnion : BaseVegetable() {
                                 baseRewards
                             }
 
-                            onVegetableClick(currentRewards)
+                            val finalRewards = onVegetableClick(rewards)
                             
                             val captureX = posX
                             val captureY = posY
@@ -249,7 +249,7 @@ class PurpleOnion : BaseVegetable() {
                             }
 
                             val newOnes = createRewardParticles(
-                                rewards = currentRewards,
+                                rewards = finalRewards,
                                 offsetX = captureX,
                                 offsetY = captureY
                             )
