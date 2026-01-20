@@ -9,19 +9,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.model.GameplayModifier
+import com.rafarg.ecogardengame.model.GlobalUpgrade
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import org.jetbrains.compose.resources.painterResource
 
-/**
- * Screen for purchasing upgrades and new items using multi-currency costs.
- */
 @Composable
 fun StoreScreen(viewModel: GameViewModel) {
     var selectedItemForUpgrades by remember { mutableStateOf<GameItem?>(null) }
+    var selectedTab by remember { mutableStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -32,7 +32,6 @@ fun StoreScreen(viewModel: GameViewModel) {
         Text("Garden Shop", style = MaterialTheme.typography.displaySmall)
         Spacer(modifier = Modifier.height(8.dp))
         
-        // Current balance display
         Row(
             modifier = Modifier.fillMaxWidth().padding(8.dp),
             horizontalArrangement = Arrangement.Center
@@ -40,26 +39,42 @@ fun StoreScreen(viewModel: GameViewModel) {
             Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         if (selectedItemForUpgrades == null) {
-            Text("Vegetables", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp))
+            TabRow(selectedTabIndex = selectedTab, containerColor = Color.Transparent) {
+                Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
+                    Text("Vegetables", modifier = Modifier.padding(16.dp))
+                }
+                Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
+                    Text("Upgrades", modifier = Modifier.padding(16.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(viewModel.itemsList) { item ->
-                    UnlockCard(item, viewModel, onShowUpgrades = { selectedItemForUpgrades = it })
+                if (selectedTab == 0) {
+                    items(viewModel.itemsList) { item ->
+                        UnlockCard(item, viewModel, onShowUpgrades = { selectedItemForUpgrades = it })
+                    }
+                } else {
+                    items(viewModel.globalUpgrades) { upgrade ->
+                        GlobalUpgradeCard(upgrade, viewModel)
+                    }
                 }
             }
         } else {
-            // Upgrades View for a specific item
+            // Modifiers View for a specific item
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { selectedItemForUpgrades = null }) {
                     Text("Back")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text("Upgrades: ${selectedItemForUpgrades?.name}", style = MaterialTheme.typography.titleLarge)
+                Text("Modifiers: ${selectedItemForUpgrades?.name}", style = MaterialTheme.typography.titleLarge)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -70,6 +85,53 @@ fun StoreScreen(viewModel: GameViewModel) {
             ) {
                 items(selectedItemForUpgrades?.modifiers ?: emptyList()) { modifier ->
                     ModifierCard(modifier, viewModel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
+    val nextCost = upgrade.getNextLevelCost()
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (upgrade.isMaxLevel) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(upgrade.name, style = MaterialTheme.typography.titleMedium)
+                    Text("Level: ${upgrade.unlockedLevel} / ${upgrade.maxLevel}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                    Text(upgrade.description, style = MaterialTheme.typography.bodySmall)
+                }
+                
+                if (upgrade.isMaxLevel) {
+                    Text("MAX", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                } else {
+                    val canAfford = viewModel.canAfford(nextCost)
+                    Button(
+                        onClick = { viewModel.tryUnlockGlobalUpgrade(upgrade) },
+                        enabled = canAfford
+                    ) {
+                        Text(if (upgrade.unlockedLevel == 0) "Buy" else "Upgrade")
+                    }
+                }
+            }
+            
+            if (!upgrade.isMaxLevel) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Upgrade Cost:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (nextCost.money > 0) {
+                        Text("🪙 ${nextCost.money}", style = MaterialTheme.typography.labelSmall)
+                    }
+                    nextCost.vegetableCosts.forEach { (vegId, amount) ->
+                        val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
+                        Text("$vegEmoji $amount", style = MaterialTheme.typography.labelSmall)
+                    }
                 }
             }
         }
@@ -90,7 +152,6 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Use the animated bitmap for the item icon in the store
             Box(modifier = Modifier.size(60.dp)) {
                 SpriteAnimation(
                     painter = painterResource(item.resource),
@@ -104,7 +165,6 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.name, style = MaterialTheme.typography.titleMedium)
                 
-                // Show Costs in a Column to allow multiple lines
                 if (!item.unlocked) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("Unlock Cost:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
@@ -118,12 +178,11 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
                         Text("$vegEmoji $amount", style = MaterialTheme.typography.bodySmall)
                     }
                 } else {
-                    Text("Purchased - Tap for Upgrades", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    Text("Purchased - Tap for Modifiers", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 }
             }
             
             if (item.unlocked) {
-                // Show purchased checkmark
                 Text("✅", fontSize = 32.sp)
             } else {
                 val canAfford = viewModel.canAfford(item.unlockCost)

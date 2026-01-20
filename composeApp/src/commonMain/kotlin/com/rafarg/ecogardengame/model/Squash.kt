@@ -55,7 +55,7 @@ class Squash : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -157,14 +157,15 @@ class Squash : BaseVegetable() {
                                 val isBonus = directionY > 0
                                 val rewards = if (isBonus) bonusRewards else baseRewards
                                 
-                                onVegetableClick(rewards)
+                                val finalRewards = onVegetableClick(rewards)
+                                
                                 scope.launch {
                                     scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                     scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 }
                                 
                                 val newOnes = createRewardParticles(
-                                    rewards = rewards,
+                                    rewards = finalRewards,
                                     offsetX = 0f,
                                     offsetY = posY
                                 )

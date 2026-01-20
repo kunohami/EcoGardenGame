@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
+import com.rafarg.ecogardengame.util.startListeningForProximity
+import com.rafarg.ecogardengame.util.stopListeningForProximity
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.broccoli_strip
 import kotlinx.coroutines.launch
@@ -53,13 +55,20 @@ class Broccoli : BaseVegetable() {
             description = "Double movement speed and double rewards.",
             unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("broccoli" to 250, "bell_pepper" to 50)),
             targetItemId = "broccoli"
+        ),
+        GameplayModifier(
+            id = "broccoli_proximity",
+            name = "Air Harvest",
+            description = "Collect rewards by waving your hand over the screen sensor.",
+            unlockCost = ItemCost(money = 2000, vegetableCosts = mapOf("broccoli" to 100, "garlic" to 10)),
+            targetItemId = "broccoli"
         )
     )
 
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -78,6 +87,7 @@ class Broccoli : BaseVegetable() {
         
         val isGiant = activeModifiers.any { it.id == "broccoli_giant" && it.isEnabled }
         val isFast = activeModifiers.any { it.id == "broccoli_speed" && it.isEnabled }
+        val isAirHarvest = activeModifiers.any { it.id == "broccoli_proximity" && it.isEnabled }
         
         val itemSize = if (isGiant) 200.dp else 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
@@ -86,6 +96,57 @@ class Broccoli : BaseVegetable() {
         val rewardMultiplier = if (isFast) 2 else 1
 
         var clickCounter by remember { mutableStateOf(0) }
+
+        val handleInteraction = {
+            val currentX = posX
+            val currentY = posY
+            
+            val rewardsToGive = mutableListOf<Reward>()
+            
+            if (isGiant) {
+                clickCounter++
+                if (clickCounter >= 2) {
+                    clickCounter = 0
+                    rewardsToGive.addAll(baseRewards)
+                }
+            } else {
+                rewardsToGive.addAll(baseRewards)
+            }
+
+            if (rewardsToGive.isNotEmpty()) {
+                val basePlusMultipliers = if (rewardMultiplier > 1) {
+                    rewardsToGive.map { it.copy(
+                        moneyValue = it.moneyValue * rewardMultiplier,
+                        countValue = it.countValue * rewardMultiplier
+                    ) }
+                } else {
+                    rewardsToGive
+                }
+
+                // Call ViewModel and get FINAL rewards (including global upgrades)
+                val finalRewards = onVegetableClick(basePlusMultipliers)
+                
+                val newOnes = createRewardParticles(
+                    rewards = finalRewards,
+                    offsetX = currentX,
+                    offsetY = currentY
+                )
+                
+                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                val overflow = (activeCount + newOnes.size) - 20
+                if (overflow > 0) {
+                    flyingParticles.filter { !it.isManuallyRemoved }
+                        .take(overflow)
+                        .forEach { it.isManuallyRemoved = true }
+                }
+                flyingParticles.addAll(newOnes)
+            }
+            
+            scope.launch {
+                scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
+                scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
+            }
+        }
 
         LaunchedEffect(parentWidth, parentHeight, speedMultiplier) {
             if (parentWidth > 0 && parentHeight > 0) {
@@ -107,6 +168,18 @@ class Broccoli : BaseVegetable() {
                         }
                     }
                 }
+            }
+        }
+
+        // Proximity sensor logic
+        DisposableEffect(isAirHarvest) {
+            if (isAirHarvest) {
+                startListeningForProximity {
+                    handleInteraction()
+                }
+            }
+            onDispose {
+                stopListeningForProximity()
             }
         }
 
@@ -139,54 +212,7 @@ class Broccoli : BaseVegetable() {
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            val currentX = posX
-                            val currentY = posY
-                            
-                            val rewardsToGive = mutableListOf<Reward>()
-                            
-                            if (isGiant) {
-                                clickCounter++
-                                if (clickCounter >= 2) {
-                                    clickCounter = 0
-                                    rewardsToGive.addAll(baseRewards)
-                                }
-                            } else {
-                                rewardsToGive.addAll(baseRewards)
-                            }
-
-                            if (rewardsToGive.isNotEmpty()) {
-                                // Apply double rewards if Overclocked
-                                val finalRewards = if (rewardMultiplier > 1) {
-                                    rewardsToGive.map { it.copy(
-                                        moneyValue = it.moneyValue * rewardMultiplier,
-                                        countValue = it.countValue * rewardMultiplier
-                                    ) }
-                                } else {
-                                    rewardsToGive
-                                }
-
-                                onVegetableClick(finalRewards)
-                                
-                                val newOnes = createRewardParticles(
-                                    rewards = finalRewards,
-                                    offsetX = currentX,
-                                    offsetY = currentY
-                                )
-                                
-                                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
-                                val overflow = (activeCount + newOnes.size) - 20
-                                if (overflow > 0) {
-                                    flyingParticles.filter { !it.isManuallyRemoved }
-                                        .take(overflow)
-                                        .forEach { it.isManuallyRemoved = true }
-                                }
-                                flyingParticles.addAll(newOnes)
-                            }
-                            
-                            scope.launch {
-                                scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                                scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                            }
+                            handleInteraction()
                         }
                 )
             }

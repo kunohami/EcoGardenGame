@@ -66,7 +66,7 @@ class Garlic : BaseVegetable() {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -116,13 +116,14 @@ class Garlic : BaseVegetable() {
                         Reward(emoji = "🪙", moneyValue = (20 * multiplier).toInt(), countValue = 0),
                         Reward(emoji = particleEmoji, countValue = (10 * multiplier).toInt(), resource = resource)
                     )
-                    onVegetableClick(bonusRewards)
+                    
+                    val finalRewards = onVegetableClick(bonusRewards)
                     
                     val captureX = piece.animatableX.value
                     val captureY = piece.animatableY.value
                     
                     val newOnes = createRewardParticles(
-                        rewards = bonusRewards,
+                        rewards = finalRewards,
                         offsetX = captureX,
                         offsetY = captureY
                     )
@@ -189,13 +190,13 @@ class Garlic : BaseVegetable() {
                                     }
                                     isExploded = true
                                 } else {
-                                    onVegetableClick(baseRewards)
+                                    val finalRewards = onVegetableClick(baseRewards)
                                     scope.launch {
                                         scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                         scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                     }
                                     
-                                    val newOnes = createRewardParticles(baseRewards)
+                                    val newOnes = createRewardParticles(finalRewards)
                                     val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                                     val overflow = (activeCount + newOnes.size) - 20
                                     if (overflow > 0) {

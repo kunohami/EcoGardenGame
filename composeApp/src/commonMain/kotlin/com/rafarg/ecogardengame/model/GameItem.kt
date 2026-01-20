@@ -10,6 +10,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,8 @@ data class Reward(
     val emoji: String, 
     val moneyValue: Int = 0, 
     val countValue: Int = 1,
-    val resource: DrawableResource? = null
+    val resource: DrawableResource? = null,
+    val isLucky: Boolean = false // New field to mark lucky rewards
 )
 
 /**
@@ -52,7 +54,8 @@ class FlyingParticle(
     val text: String = "",
     val animatableX: Animatable<Float, *> = Animatable(0f),
     val animatableY: Animatable<Float, *> = Animatable(0f),
-    val animatableAlpha: Animatable<Float, *> = Animatable(0f)
+    val animatableAlpha: Animatable<Float, *> = Animatable(0f),
+    val isLucky: Boolean = false // New field for visual feedback
 ) {
     var isManuallyRemoved by mutableStateOf(false)
 }
@@ -70,6 +73,31 @@ class GameplayModifier(
     var isEnabled by mutableStateOf(isEnabledInitial)
 }
 
+class GlobalUpgrade(
+    val id: String,
+    val name: String,
+    val description: String,
+    val baseCost: ItemCost,
+    val maxLevel: Int = 1,
+    unlockedLevelInitial: Int = 0
+) {
+    var unlockedLevel by mutableStateOf(unlockedLevelInitial)
+    
+    val isUnlocked: Boolean get() = unlockedLevel > 0
+    val isMaxLevel: Boolean get() = unlockedLevel >= maxLevel
+
+    /**
+     * Calculate cost for the NEXT level
+     */
+    fun getNextLevelCost(): ItemCost {
+        val multiplier = unlockedLevel + 1
+        return ItemCost(
+            money = baseCost.money * multiplier,
+            vegetableCosts = baseCost.vegetableCosts.mapValues { it.value * multiplier }
+        )
+    }
+}
+
 interface GameItem {
     val id: String
     val name: String
@@ -85,7 +113,7 @@ interface GameItem {
     @Composable
     fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -133,7 +161,8 @@ abstract class BaseVegetable : GameItem {
                 text = "+$amount",
                 animatableX = Animatable(baseStartX),
                 animatableY = Animatable(baseStartY + lineOffset),
-                animatableAlpha = Animatable(0f)
+                animatableAlpha = Animatable(0f),
+                isLucky = reward.isLucky // Pass flag to particle
             )
         }
     }
@@ -141,7 +170,7 @@ abstract class BaseVegetable : GameItem {
     @Composable
     override fun Content(
         modifier: Modifier,
-        onVegetableClick: (List<Reward>) -> Unit,
+        onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
@@ -164,14 +193,14 @@ abstract class BaseVegetable : GameItem {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        onVegetableClick(baseRewards)
+                        val finalRewards = onVegetableClick(baseRewards)
                         
                         scope.launch {
                             scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                         }
                         
-                        val newOnes = createRewardParticles(baseRewards)
+                        val newOnes = createRewardParticles(finalRewards)
                         
                         // Limit to 20 active ones
                         val activeCount = flyingParticles.count { !it.isManuallyRemoved }
@@ -236,8 +265,9 @@ abstract class BaseVegetable : GameItem {
                     ) {
                         Text(
                             text = particle.text,
-                            fontSize = 24.sp,
-                            color = androidx.compose.ui.graphics.Color.White,
+                            fontSize = if (particle.isLucky) 32.sp else 24.sp, // Slightly bigger if lucky
+                            color = if (particle.isLucky) Color.Yellow else Color.White, // Yellow if lucky
+                            fontWeight = if (particle.isLucky) androidx.compose.ui.text.font.FontWeight.Bold else null,
                             style = androidx.compose.material3.LocalTextStyle.current.copy(
                                 shadow = androidx.compose.ui.graphics.Shadow(
                                     color = androidx.compose.ui.graphics.Color.Black,
@@ -251,12 +281,12 @@ abstract class BaseVegetable : GameItem {
                             SpriteAnimation(
                                 painter = painterResource(particle.resource),
                                 frameCount = 3,
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(if (particle.isLucky) 40.dp else 30.dp)
                               )
                         } else {
                             Text(
                                 text = particle.emoji,
-                                fontSize = 24.sp
+                                fontSize = if (particle.isLucky) 32.sp else 24.sp
                             )
                         }
                     }
