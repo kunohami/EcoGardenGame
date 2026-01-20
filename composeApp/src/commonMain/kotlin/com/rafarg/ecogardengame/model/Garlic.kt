@@ -14,6 +14,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
+import com.rafarg.ecogardengame.util.vibrate
+import com.rafarg.ecogardengame.util.startListeningForShake
+import com.rafarg.ecogardengame.util.stopListeningForShake
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.garlic_strip
 import kotlinx.coroutines.delay
@@ -50,6 +53,13 @@ class Garlic : BaseVegetable() {
             description = "Double the small garlics after explosion, +150% final reward.",
             unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("garlic" to 150, "purple_onion" to 30)),
             targetItemId = "garlic"
+        ),
+        GameplayModifier(
+            id = "garlic_shake",
+            name = "Shake to Harvest",
+            description = "Collect 5 small garlics at once by shaking your phone.",
+            unlockCost = ItemCost(money = 3000, vegetableCosts = mapOf("garlic" to 300, "squash" to 20)),
+            targetItemId = "garlic"
         )
     )
 
@@ -57,7 +67,9 @@ class Garlic : BaseVegetable() {
     override fun Content(
         modifier: Modifier,
         onVegetableClick: (List<Reward>) -> Unit,
-        activeModifiers: List<GameplayModifier>
+        activeModifiers: List<GameplayModifier>,
+        vibrationEnabled: Boolean,
+        vibrationIntensity: Float
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
@@ -67,17 +79,79 @@ class Garlic : BaseVegetable() {
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
 
         val isClusterActive = activeModifiers.any { it.id == "garlic_cluster" && it.isEnabled }
+        val isShakeActive = activeModifiers.any { it.id == "garlic_shake" && it.isEnabled }
 
-        val vibrationIntensity = (clickCount.toFloat() / 10f) * 10f
+        val vibrationIntensityVal = (clickCount.toFloat() / 10f) * 10f
         val infiniteTransition = rememberInfiniteTransition()
         val vibX by infiniteTransition.animateFloat(
-            initialValue = -vibrationIntensity,
-            targetValue = vibrationIntensity,
+            initialValue = -vibrationIntensityVal,
+            targetValue = vibrationIntensityVal,
             animationSpec = infiniteRepeatable(
                 animation = tween(50, easing = LinearEasing),
                 repeatMode = RepeatMode.Reverse
             )
         )
+
+        // Function to collect pieces (either by click or by shake)
+        fun collectPieces(count: Int, pieceToCollect: GarlicPiece? = null) {
+            val piecesToProcess = if (pieceToCollect != null) {
+                listOf(pieceToCollect)
+            } else {
+                pieces.filter { it.isVisible }.take(count)
+            }
+            
+            if (piecesToProcess.isEmpty()) return
+
+            if (vibrationEnabled) {
+                vibrate(vibrationIntensity.toLong())
+            }
+
+            piecesToProcess.forEach { piece ->
+                piece.isVisible = false
+                
+                // Final reward logic
+                if (pieces.none { it.isVisible }) {
+                    val multiplier = if (isClusterActive) 2.5f else 1.0f
+                    val bonusRewards = listOf(
+                        Reward(emoji = "🪙", moneyValue = (20 * multiplier).toInt(), countValue = 0),
+                        Reward(emoji = particleEmoji, countValue = (10 * multiplier).toInt(), resource = resource)
+                    )
+                    onVegetableClick(bonusRewards)
+                    
+                    val captureX = piece.animatableX.value
+                    val captureY = piece.animatableY.value
+                    
+                    val newOnes = createRewardParticles(
+                        rewards = bonusRewards,
+                        offsetX = captureX,
+                        offsetY = captureY
+                    )
+                    
+                    val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                    val overflow = (activeCount + newOnes.size) - 20
+                    if (overflow > 0) {
+                        flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
+                    }
+                    flyingParticles.addAll(newOnes)
+                    
+                    isExploded = false
+                    clickCount = 0
+                    pieces.clear()
+                }
+            }
+        }
+
+        // Shake detection logic
+        DisposableEffect(isExploded, isShakeActive) {
+            if (isExploded && isShakeActive) {
+                startListeningForShake {
+                    collectPieces(5)
+                }
+            }
+            onDispose {
+                stopListeningForShake()
+            }
+        }
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (!isExploded) {
@@ -157,37 +231,8 @@ class Garlic : BaseVegetable() {
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = null
                                         ) {
-                                            piece.isVisible = false
-                                            
-                                            if (pieces.none { it.isVisible }) {
-                                                // 2.5 multiplier means original 100% + 150% additional = 250% total
-                                                val multiplier = if (isClusterActive) 2.5f else 1.0f
-                                                val bonusRewards = listOf(
-                                                    Reward(emoji = "🪙", moneyValue = (20 * multiplier).toInt(), countValue = 0),
-                                                    Reward(emoji = particleEmoji, countValue = (10 * multiplier).toInt(), resource = resource)
-                                                )
-                                                onVegetableClick(bonusRewards)
-                                                
-                                                val captureX = piece.animatableX.value
-                                                val captureY = piece.animatableY.value
-                                                
-                                                val newOnes = createRewardParticles(
-                                                    rewards = bonusRewards,
-                                                    offsetX = captureX,
-                                                    offsetY = captureY
-                                                )
-                                                
-                                                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
-                                                val overflow = (activeCount + newOnes.size) - 20
-                                                if (overflow > 0) {
-                                                    flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
-                                                }
-                                                flyingParticles.addAll(newOnes)
-                                                
-                                                isExploded = false
-                                                clickCount = 0
-                                                pieces.clear()
-                                            }
+                                            // Fix: Pass the specific piece to ensure the clicked one disappears
+                                            collectPieces(1, piece)
                                         }
                                 )
                             }

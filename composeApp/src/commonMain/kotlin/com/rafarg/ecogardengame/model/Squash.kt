@@ -56,7 +56,9 @@ class Squash : BaseVegetable() {
     override fun Content(
         modifier: Modifier,
         onVegetableClick: (List<Reward>) -> Unit,
-        activeModifiers: List<GameplayModifier>
+        activeModifiers: List<GameplayModifier>,
+        vibrationEnabled: Boolean,
+        vibrationIntensity: Float
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
