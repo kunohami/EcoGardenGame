@@ -30,59 +30,68 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // --- TOP UI BAR (Z-Index Protection) ---
+        // --- COMPACT TOP BAR (Status Bar Style) ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(top = 16.dp)
-                .zIndex(1f) // Ensure it's above the game area
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .zIndex(2f)
         ) {
             Row(
-                modifier = Modifier.align(Alignment.TopCenter),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.align(Alignment.CenterStart),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text("🪙", fontSize = 24.sp)
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${viewModel.money}",
-                    style = MaterialTheme.typography.headlineSmall
-                )
+                // Specific Fruit Counter
+                val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(viewModel.currentItem.particleEmoji, fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "$fruitCount",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // Money Counter
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("🪙", fontSize = 18.sp)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${viewModel.money}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
             }
+
+            // Menu Icon (Integrated into Top Bar)
+            SpriteAnimation(
+                painter = painterResource(Res.drawable.apple_strip),
+                frameCount = 3,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(40.dp)
+                    .clickable { menuVisible = !menuVisible }
+            )
         }
 
-        // --- MAIN GAME AREA (Safe Zone Restricted) ---
+        // --- MAIN GAME AREA (Expanded to the bottom) ---
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 80.dp, bottom = 100.dp) // Define safe zone margins
+                .padding(top = 60.dp, bottom = 0.dp) 
                 .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ) {
             viewModel.currentItem.Content(
                 modifier = Modifier,
                 onVegetableClick = { rewards -> viewModel.onVegetableClick(rewards) },
-                activeModifiers = viewModel.currentItem.modifiers
+                activeModifiers = viewModel.currentItem.modifiers,
+                vibrationEnabled = viewModel.vibrationEnabled,
+                vibrationIntensity = viewModel.vibrationIntensity
             )
-        }
-
-        // --- BOTTOM LEFT COUNTER (Specific Fruit) ---
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp)
-                .zIndex(1f)
-        ) {
-            val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(viewModel.currentItem.particleEmoji, fontSize = 28.sp)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "$fruitCount",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
         }
 
         // --- BOTTOM RIGHT COUNTER (CPS Meter) ---
@@ -95,7 +104,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "${viewModel.currentCps.toInt()}",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
@@ -106,26 +115,15 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- FLOATING MENU ICON ---
-        Box(modifier = Modifier.align(Alignment.TopEnd).padding(16.dp).zIndex(2f)) {
-            SpriteAnimation(
-                painter = painterResource(Res.drawable.apple_strip),
-                frameCount = 3,
-                modifier = Modifier
-                    .size(60.dp)
-                    .clickable { menuVisible = !menuVisible }
-            )
-        }
-
         // --- FLOATING MENU ---
         if (menuVisible) {
             Column(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = 80.dp, end = 16.dp)
+                    .padding(top = 60.dp, end = 16.dp)
                     .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                     .padding(8.dp)
-                    .zIndex(2f)
+                    .zIndex(3f)
             ) {
                 viewModel.itemsList.forEach { item ->
                     Row(
@@ -150,7 +148,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                             SpriteAnimation(
                                 painter = painterResource(item.resource),
                                 frameCount = 3,
-                                modifier = Modifier.size(40.dp),
+                                modifier = Modifier.size(32.dp),
                                 colorFilter = colorFilter
                             )
                         }
@@ -158,6 +156,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = item.name,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = if (item.unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     }
@@ -175,14 +174,12 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         Text("You need the following to unlock this item:")
                         Spacer(modifier = Modifier.height(8.dp))
                         
-                        // Show Money Cost
                         val hasMoney = viewModel.money >= item.unlockCost.money
                         Row {
                             Text("🪙 ${item.unlockCost.money} (You have: ${viewModel.money})", 
                                 color = if (hasMoney) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
                         }
                         
-                        // Show Vegetable Costs
                         item.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
                             val currentCount = viewModel.fruitCounts[vegId] ?: 0
                             val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"

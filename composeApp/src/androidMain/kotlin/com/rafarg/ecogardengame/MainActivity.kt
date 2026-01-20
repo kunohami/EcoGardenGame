@@ -5,11 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import com.rafarg.ecogardengame.ui.App
 import com.rafarg.ecogardengame.util.initVibrator
+import com.rafarg.ecogardengame.util.initShakeDetector
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         initVibrator(this)
+        initShakeDetector(this)
 
         setContent {
             val prefs = remember { createDataStore(applicationContext) }

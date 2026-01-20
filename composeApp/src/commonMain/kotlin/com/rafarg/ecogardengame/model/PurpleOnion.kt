@@ -37,17 +37,32 @@ class PurpleOnion : BaseVegetable() {
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧅"
 
+    // Base reward when NOT spinning: 1 money, 1 onion
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
     )
 
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
-            id = "purple_onion_double",
-            name = "Double Onion",
-            description = "Two onions appear, but they give 1 less coin.",
+            id = "purple_onion_plus_1",
+            name = "+1 Onion",
+            description = "One extra onion appears, but bonus coins are reduced by 1.",
             unlockCost = ItemCost(money = 1000, vegetableCosts = mapOf("purple_onion" to 50)),
+            targetItemId = "purple_onion"
+        ),
+        GameplayModifier(
+            id = "purple_onion_plus_2",
+            name = "+1 Onion II",
+            description = "A third onion appears, bonus coins reduced further.",
+            unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("purple_onion" to 150, "bell_pepper" to 30)),
+            targetItemId = "purple_onion"
+        ),
+        GameplayModifier(
+            id = "purple_onion_long_spin",
+            name = "Sturdy Roots",
+            description = "Onions rotate for longer, extending the bonus window.",
+            unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("purple_onion" to 100, "broccoli" to 40)),
             targetItemId = "purple_onion"
         )
     )
@@ -56,10 +71,27 @@ class PurpleOnion : BaseVegetable() {
     override fun Content(
         modifier: Modifier,
         onVegetableClick: (List<Reward>) -> Unit,
-        activeModifiers: List<GameplayModifier>
+        activeModifiers: List<GameplayModifier>,
+        vibrationEnabled: Boolean,
+        vibrationIntensity: Float
     ) {
-        val isDouble = activeModifiers.any { it.id == "purple_onion_double" && it.isEnabled }
-        val onionCount = if (isDouble) 2 else 1
+        val hasPlus1 = activeModifiers.any { it.id == "purple_onion_plus_1" && it.isEnabled }
+        val hasPlus2 = activeModifiers.any { it.id == "purple_onion_plus_2" && it.isEnabled }
+        val hasLongSpin = activeModifiers.any { it.id == "purple_onion_long_spin" && it.isEnabled }
+        
+        val onionCount = when {
+            hasPlus2 -> 3
+            hasPlus1 -> 2
+            else -> 1
+        }
+        
+        val coinReduction = when {
+            hasPlus2 -> 2
+            hasPlus1 -> 1
+            else -> 0
+        }
+
+        val spinDuration = if (hasLongSpin) 700 else 350
         
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
@@ -88,7 +120,8 @@ class PurpleOnion : BaseVegetable() {
                         SingleOnion(
                             modifier = modifier,
                             onVegetableClick = onVegetableClick,
-                            isDouble = isDouble,
+                            coinReduction = coinReduction,
+                            spinDuration = spinDuration,
                             baseRewards = baseRewards,
                             parentWidth = parentWidth,
                             parentHeight = parentHeight,
@@ -110,7 +143,8 @@ class PurpleOnion : BaseVegetable() {
     private fun SingleOnion(
         modifier: Modifier,
         onVegetableClick: (List<Reward>) -> Unit,
-        isDouble: Boolean,
+        coinReduction: Int,
+        spinDuration: Int,
         baseRewards: List<Reward>,
         parentWidth: Float,
         parentHeight: Float,
@@ -159,7 +193,7 @@ class PurpleOnion : BaseVegetable() {
             
             rotation.animateTo(
                 targetValue = 360f,
-                animationSpec = tween(350, easing = LinearEasing)
+                animationSpec = tween(spinDuration, easing = LinearEasing)
             )
         }
 
@@ -197,17 +231,10 @@ class PurpleOnion : BaseVegetable() {
                             var currentRewards = if (isRotating) {
                                 listOf(
                                     Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-                                    Reward(emoji = "🪙", moneyValue = 4, countValue = 0)
+                                    Reward(emoji = "🪙", moneyValue = (5 - coinReduction).coerceAtLeast(1), countValue = 0)
                                 )
                             } else {
                                 baseRewards
-                            }
-
-                            if (isDouble) {
-                                currentRewards = currentRewards.map {
-                                    if (it.moneyValue > 0) it.copy(moneyValue = (it.moneyValue - 1).coerceAtLeast(1))
-                                    else it
-                                }
                             }
 
                             onVegetableClick(currentRewards)

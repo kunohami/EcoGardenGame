@@ -45,7 +45,9 @@ class Tomato : BaseVegetable() {
     override fun Content(
         modifier: Modifier,
         onVegetableClick: (List<Reward>) -> Unit,
-        activeModifiers: List<GameplayModifier>
+        activeModifiers: List<GameplayModifier>,
+        vibrationEnabled: Boolean,
+        vibrationIntensity: Float
     ) {
         val scope = rememberCoroutineScope()
         val punchScale = remember { Animatable(1f) }
@@ -79,16 +81,15 @@ class Tomato : BaseVegetable() {
 
         // Continuous vibration logic if modifier is enabled
         LaunchedEffect(isPrecisionWindowActive) {
-            if (isPrecisionWindowActive && hasPrecisionVibration) {
+            if (isPrecisionWindowActive && hasPrecisionVibration && vibrationEnabled) {
                 vibrate(30) // Small pulse when it starts being active
             }
         }
 
         // Vibration and visuals based on progress
-        val vibrationIntensity = cycleProgress * 15f
+        val vibrationIntensityVal = cycleProgress * 15f
         val vibrationValue = if (cycleProgress > 0.1f) {
-            // Fix: Changed 'Leonard' typo to toDouble() and ensured return is Float
-            (sin(currentTime.toDouble() / 30.0) * vibrationIntensity.toDouble()).toFloat()
+            (sin(currentTime.toDouble() / 30.0) * vibrationIntensityVal.toDouble()).toFloat()
         } else 0f
         
         val growthScale = 1f + (cycleProgress * 0.4f)
@@ -129,9 +130,9 @@ class Tomato : BaseVegetable() {
                         indication = null
                     ) {
                         val now = currentTime
-                        val rewards = if (isPrecisionWindowActive) {
-                            // Reset cycle on successful precision click
-                            cycleStartTime = now
+                        val isPrecisionClick = isPrecisionWindowActive
+                        
+                        val rewards = if (isPrecisionClick) {
                             listOf(
                                 Reward(emoji = "🪙", moneyValue = 30, countValue = 0),
                                 Reward(emoji = particleEmoji, countValue = 20, resource = resource)
@@ -142,6 +143,7 @@ class Tomato : BaseVegetable() {
 
                         onVegetableClick(rewards)
                         lastClickTime = now
+                        cycleStartTime = now // Restart the 5s cycle
 
                         scope.launch {
                             punchScale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
