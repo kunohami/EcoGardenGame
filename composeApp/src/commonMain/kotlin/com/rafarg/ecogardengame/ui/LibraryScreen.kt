@@ -23,13 +23,16 @@ fun LibraryScreen(viewModel: GameViewModel) {
     var selectedCategory by remember { mutableStateOf<LibraryCategory?>(null) }
     var entryToShowInDialog by remember { mutableStateOf<LibraryEntry?>(null) }
 
+    // Use a local copy to ensure safety during recomposition when switching back
+    val currentCategory = selectedCategory
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (selectedCategory == null) {
+        if (currentCategory == null) {
             Text("Knowledge Library", style = MaterialTheme.typography.displaySmall)
             Spacer(modifier = Modifier.height(8.dp))
             
@@ -59,7 +62,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                     Text("Back")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(selectedCategory!!.name, style = MaterialTheme.typography.titleLarge)
+                Text(currentCategory.name, style = MaterialTheme.typography.titleLarge)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -68,7 +71,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(selectedCategory!!.entries) { entry ->
+                items(currentCategory.entries) { entry ->
                     EntryListItem(entry, viewModel) {
                         entryToShowInDialog = it
                     }
@@ -141,10 +144,10 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, onShowContent: 
                         if (entry.cost.money > 0) {
                             Text("🪙 ${entry.cost.money}", style = MaterialTheme.typography.labelSmall)
                         }
-                        entry.cost.vegetableCosts.forEach { (id, amount) ->
-                            val emoji = items.find { it.id == id }?.particleEmoji ?: ""
+                        entry.cost.vegetableCosts.forEach { cost ->
+                            val emoji = viewModel.itemsList.find { it.id == cost.key }?.particleEmoji ?: ""
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("$emoji $amount", style = MaterialTheme.typography.labelSmall)
+                            Text("$emoji ${cost.value}", style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }
