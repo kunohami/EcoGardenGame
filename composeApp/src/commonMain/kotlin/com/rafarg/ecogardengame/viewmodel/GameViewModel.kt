@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafarg.ecogardengame.model.*
-import com.rafarg.ecogardengame.ui.items
+import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlin.random.Random
 
-class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel() {
+class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(), GameItemProvider {
 
     // --- CURRENT CURRENCIES ---
     var totalClicks by mutableStateOf(0)
@@ -53,7 +53,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         private set
 
     // --- GLOBAL UPGRADES ---
-    var globalUpgrades = listOf(
+    override var globalUpgrades = listOf(
         GlobalUpgrade(
             id = "double_click_10",
             name = "Precise Harvest",
@@ -64,7 +64,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         GlobalUpgrade(
             id = "lucky_harvest",
             name = "Lucky Harvest",
-            description = "Provides a small chance to get 1000% (10x) rewards on click.",
+            description = "1% chance per level to get 1000% (10x) rewards on click.",
             baseCost = ItemCost(money = 5000, vegetableCosts = mapOf("apple" to 50, "garlic" to 50)),
             maxLevel = 5
         )
@@ -72,14 +72,32 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     private var globalClickCounter = 0
 
     // --- LIBRARY ---
-    val libraryCategories = LibraryRepository.categories
+    override val libraryCategories = LibraryRepository.categories
+
+    // --- ACHIEVEMENTS ---
+    val achievements = AchievementRepository.achievements
+    var unlockedAchievements = mutableStateListOf<String>()
+        private set
+    
+    // Toast state for achievement unlock
+    var achievementToast by mutableStateOf<Achievement?>(null)
+        private set
+
+    // --- PROFILE ---
+    var username by mutableStateOf("Farmer")
+        private set
+    var profileImageIndex by mutableStateOf(0)
+        private set
+    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🌦️")
 
     // --- STATE ---
-    var currentItem by mutableStateOf<GameItem>(items.first())
+    var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
         private set
 
-    var itemsList by mutableStateOf(items)
+    override var items by mutableStateOf(staticItemsList)
         private set
+
+    val itemsList: List<GameItem> get() = items
 
     // --- DATASTORE KEYS ---
     private val totalClicksKey = intPreferencesKey("total_clicks")
@@ -88,6 +106,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     private val vibrationEnabledKey = booleanPreferencesKey("vibration_enabled")
     private val vibrationIntensityKey = floatPreferencesKey("vibration_intensity")
     private val darkThemeKey = booleanPreferencesKey("dark_theme")
+    private val usernameKey = stringPreferencesKey("username")
+    private val profileImageKey = intPreferencesKey("profile_image_index")
+    private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
 
     init {
         loadData()
@@ -121,13 +142,18 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 vibrationEnabled = prefs[vibrationEnabledKey] ?: false
                 vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f
                 isDarkTheme = prefs[darkThemeKey] ?: false
+                username = prefs[usernameKey] ?: "Farmer"
+                profileImageIndex = prefs[profileImageKey] ?: 0
                 
-                // Load Global Upgrades
+                prefs[achievementsKey]?.let {
+                    unlockedAchievements.clear()
+                    unlockedAchievements.addAll(it)
+                }
+
                 globalUpgrades.forEach { upgrade ->
                     upgrade.unlockedLevel = prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] ?: 0
                 }
 
-                // Load Library Data
                 libraryCategories.forEach { category ->
                     category.entries.forEach { entry ->
                         entry.isUnlocked = prefs[booleanPreferencesKey("library_unlocked_${entry.id}")] ?: false
@@ -137,7 +163,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 val newFruitCounts = mutableMapOf<String, Int>()
                 val newTotalHarvested = mutableMapOf<String, Int>()
                 
-                val newList = itemsList.map { item ->
+                val newList = staticItemsList.map { item ->
                     val countKey = intPreferencesKey("fruit_count_${item.id}")
                     val totalHarvestedKey = intPreferencesKey("total_harvested_${item.id}")
                     val unlockedKey = booleanPreferencesKey("unlocked_${item.id}")
@@ -157,13 +183,13 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 
                 fruitCounts = newFruitCounts
                 totalFruitHarvested = newTotalHarvested
-                itemsList = newList
-                currentItem = itemsList.find { it.id == currentId } ?: itemsList.first()
+                items = newList
+                currentItem = items.find { it.id == currentItem.id } ?: items.first()
+
+                checkAchievements(isInitialLoad = true)
             }
         }
     }
-
-    private val currentId: String get() = currentItem.id
 
     fun onVegetableClick(rewards: List<Reward>): List<Reward> {
         totalClicks++
@@ -176,16 +202,14 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
 
         var finalRewards = rewards
         
-        // 1. Apply Lucky Harvest (1000% reward) - 1% to 5% chance
         val luckyLevel = globalUpgrades.find { it.id == "lucky_harvest" }?.unlockedLevel ?: 0
         if (luckyLevel > 0) {
-            val chance = luckyLevel / 100f // 0.01 to 0.05
+            val chance = luckyLevel / 100f 
             if (Random.nextFloat() < chance) {
                 finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10, isLucky = true) }
             }
         }
 
-        // 2. Apply Precise Harvest (Double reward) logic
         val preciseLevel = globalUpgrades.find { it.id == "double_click_10" }?.unlockedLevel ?: 0
         if (preciseLevel > 0) {
             val isDouble = when (preciseLevel) {
@@ -225,6 +249,29 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         return finalRewards
     }
 
+    private fun checkAchievements(isInitialLoad: Boolean = false) {
+        achievements.forEach { achievement ->
+            if (!unlockedAchievements.contains(achievement.id) && achievement.checkEarned(this)) {
+                unlockedAchievements.add(achievement.id)
+                
+                // Show notification toast if not initial load
+                if (!isInitialLoad) {
+                    showAchievementToast(achievement)
+                }
+            }
+        }
+    }
+
+    private fun showAchievementToast(achievement: Achievement) {
+        viewModelScope.launch {
+            achievementToast = achievement
+            delay(4000) // Show for 4 seconds
+            if (achievementToast?.id == achievement.id) {
+                achievementToast = null
+            }
+        }
+    }
+
     fun tryUnlockGlobalUpgrade(upgrade: GlobalUpgrade) {
         val nextCost = upgrade.getNextLevelCost()
         if (!upgrade.isMaxLevel && canAfford(nextCost)) {
@@ -235,6 +282,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             }
             fruitCounts = newCounts
             upgrade.unlockedLevel++
+            checkAchievements()
             saveData()
         }
     }
@@ -248,8 +296,19 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             }
             fruitCounts = newCounts
             entry.isUnlocked = true
+            checkAchievements()
             saveData()
         }
+    }
+
+    fun updateUsername(newUsername: String) {
+        username = newUsername
+        saveData()
+    }
+
+    fun updateProfileImage(index: Int) {
+        profileImageIndex = index
+        saveData()
     }
 
     fun setVibration(enabled: Boolean) {
@@ -293,6 +352,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             
             item.unlocked = true
             currentItem = item 
+            checkAchievements()
             saveData()
         }
     }
@@ -307,6 +367,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             fruitCounts = newCounts
             modifier.isUnlocked = true
             modifier.isEnabled = true
+            checkAchievements()
             saveData()
         }
     }
@@ -318,9 +379,6 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
     }
 
-    /**
-     * Testing function to cheat resources
-     */
     fun debugAddResources() {
         money += 100000
         totalMoneyEarned += 100000
@@ -328,13 +386,14 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         val newCounts = fruitCounts.toMutableMap()
         val newTotals = totalFruitHarvested.toMutableMap()
         
-        itemsList.forEach { item ->
+        items.forEach { item ->
             newCounts[item.id] = (newCounts[item.id] ?: 0) + 100000
             newTotals[item.id] = (newTotals[item.id] ?: 0) + 100000
         }
         
         fruitCounts = newCounts
         totalFruitHarvested = newTotals
+        checkAchievements()
         saveData()
     }
 
@@ -345,7 +404,10 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         totalMoneyEarned = 0
         fruitCounts = emptyMap()
         totalFruitHarvested = emptyMap()
-        itemsList = items.mapIndexed { index, item ->
+        unlockedAchievements.clear()
+        username = "Farmer"
+        profileImageIndex = 0
+        items = staticItemsList.mapIndexed { index, item ->
             item.apply { 
                 unlocked = (index == 0)
                 modifiers.forEach { 
@@ -356,7 +418,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
         globalUpgrades.forEach { it.unlockedLevel = 0 }
         libraryCategories.forEach { cat -> cat.entries.forEach { it.isUnlocked = false } }
-        currentItem = itemsList.first()
+        currentItem = items.first()
         saveData()
     }
 
@@ -369,6 +431,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 prefs[vibrationEnabledKey] = vibrationEnabled
                 prefs[vibrationIntensityKey] = vibrationIntensity
                 prefs[darkThemeKey] = isDarkTheme
+                prefs[usernameKey] = username
+                prefs[profileImageKey] = profileImageIndex
+                prefs[achievementsKey] = unlockedAchievements.toSet()
                 
                 globalUpgrades.forEach { upgrade ->
                     prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] = upgrade.unlockedLevel
@@ -380,7 +445,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                     }
                 }
 
-                itemsList.forEach { item ->
+                items.forEach { item ->
                     val countKey = intPreferencesKey("fruit_count_${item.id}")
                     val totalHarvestedKey = intPreferencesKey("total_harvested_${item.id}")
                     val unlockedKey = booleanPreferencesKey("unlocked_${item.id}")
