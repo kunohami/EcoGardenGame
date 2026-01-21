@@ -15,13 +15,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlin.random.Random
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(), GameItemProvider {
 
     // --- CURRENT CURRENCIES ---
-    var totalClicks by mutableStateOf(0)
+    override var totalClicks by mutableStateOf(0)
         private set
 
     var money by mutableStateOf(0)
@@ -130,7 +131,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     }
 
     private fun currentTimeMillis(): Long {
-        return Clock.System.now().toEpochMilliseconds()
+        // Usamos kotlinx.datetime.Clock que es lo habitual en KMP para milisegundos de época
+        return kotlin.time.Clock.System.now().toEpochMilliseconds()
     }
 
     private fun loadData() {
@@ -234,7 +236,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             moneyGain += reward.moneyValue
             
             if (reward.countValue > 0) {
-                val currentId = currentItem.id
+                val currentId = currentId()
                 newFruitCounts[currentId] = (newFruitCounts[currentId] ?: 0) + reward.countValue
                 newTotalHarvested[currentId] = (newTotalHarvested[currentId] ?: 0) + reward.countValue
             }
@@ -247,6 +249,10 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
 
         saveData()
         return finalRewards
+    }
+
+    private fun currentId(): String {
+        return currentItem.id
     }
 
     private fun checkAchievements(isInitialLoad: Boolean = false) {

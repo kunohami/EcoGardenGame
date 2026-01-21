@@ -31,6 +31,9 @@ class Tomato : BaseVegetable() {
     override var unlocked: Boolean = true
     override val particleEmoji: String = "🍅"
 
+    // Track critical hits for achievement
+    var criticalHits by mutableStateOf(0)
+
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "tomato_precision_vibration",
@@ -133,6 +136,7 @@ class Tomato : BaseVegetable() {
                         val isPrecisionClick = isPrecisionWindowActive
                         
                         val rewards = if (isPrecisionClick) {
+                            criticalHits++
                             listOf(
                                 Reward(emoji = "🪙", moneyValue = 30, countValue = 0),
                                 Reward(emoji = particleEmoji, countValue = 20, resource = resource)
