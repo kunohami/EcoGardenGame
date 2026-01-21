@@ -12,6 +12,7 @@ interface GameItemProvider {
     val items: List<GameItem>
     val globalUpgrades: List<GlobalUpgrade>
     val libraryCategories: List<LibraryCategory>
+    val totalClicks: Int
 }
 
 object AchievementRepository {
@@ -45,6 +46,58 @@ object AchievementRepository {
             description = "Max out all global upgrades in the shop.",
             emoji = "💎",
             checkEarned = { provider -> provider.globalUpgrades.all { it.isMaxLevel } }
+        ),
+
+        // --- SQUASH SPEED ---
+        Achievement(
+            id = "squash_sonic_speed",
+            name = "Sonic Squash",
+            description = "Reach a 10-hit streak with the Squash momentum modifier.",
+            emoji = "⚡",
+            checkEarned = { provider -> 
+                provider.items.filterIsInstance<Squash>().any { it.maxStreak >= 10 }
+            }
+        ),
+
+        // --- TOMATO CRITICAL ---
+        Achievement(
+            id = "tomato_critical_master",
+            name = "Tomato Sniper",
+            description = "Perform 50 critical hits on the Tomato.",
+            emoji = "🎯",
+            checkEarned = { provider -> 
+                provider.items.filterIsInstance<Tomato>().any { it.criticalHits >= 50 }
+            }
+        ),
+
+        // --- CLICK MILESTONES ---
+        Achievement(
+            id = "clicks_5000",
+            name = "Hard Worker",
+            description = "Reach 5,000 total clicks.",
+            emoji = "🖐️",
+            checkEarned = { it.totalClicks >= 5000 }
+        ),
+        Achievement(
+            id = "clicks_10000",
+            name = "Dedicated Farmer",
+            description = "Reach 10,000 total clicks.",
+            emoji = "💪",
+            checkEarned = { it.totalClicks >= 10000 }
+        ),
+        Achievement(
+            id = "clicks_15000",
+            name = "Clicking Machine",
+            description = "Reach 15,000 total clicks.",
+            emoji = "🤖",
+            checkEarned = { it.totalClicks >= 15000 }
+        ),
+        Achievement(
+            id = "clicks_20000",
+            name = "Legendary Tapper",
+            description = "Reach 20,000 total clicks.",
+            emoji = "👑",
+            checkEarned = { it.totalClicks >= 20000 }
         ),
 
         // --- LIBRARY CATEGORIES ---
