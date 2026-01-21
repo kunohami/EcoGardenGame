@@ -18,6 +18,7 @@ import com.rafarg.ecogardengame.model.GlobalUpgrade
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreScreen(viewModel: GameViewModel) {
     var selectedItemForUpgrades by remember { mutableStateOf<GameItem?>(null) }
@@ -42,7 +43,7 @@ fun StoreScreen(viewModel: GameViewModel) {
         Spacer(modifier = Modifier.height(8.dp))
 
         if (selectedItemForUpgrades == null) {
-            TabRow(selectedTabIndex = selectedTab, containerColor = Color.Transparent) {
+            PrimaryTabRow(selectedTabIndex = selectedTab, containerColor = Color.Transparent) {
                 Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
                     Text("Vegetables", modifier = Modifier.padding(16.dp))
                 }
@@ -69,12 +70,13 @@ fun StoreScreen(viewModel: GameViewModel) {
             }
         } else {
             // Modifiers View for a specific item
+            val item = selectedItemForUpgrades!!
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { selectedItemForUpgrades = null }) {
                     Text("Back")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text("Modifiers: ${selectedItemForUpgrades?.name}", style = MaterialTheme.typography.titleLarge)
+                Text("Modifiers: ${item.name}", style = MaterialTheme.typography.titleLarge)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -83,8 +85,8 @@ fun StoreScreen(viewModel: GameViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(selectedItemForUpgrades?.modifiers ?: emptyList()) { modifier ->
-                    ModifierCard(modifier, viewModel)
+                items(item.modifiers) { gpMod ->
+                    ModifierCard(gpMod, viewModel)
                 }
             }
         }
@@ -128,9 +130,9 @@ fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
                     if (nextCost.money > 0) {
                         Text("🪙 ${nextCost.money}", style = MaterialTheme.typography.labelSmall)
                     }
-                    nextCost.vegetableCosts.forEach { (vegId, amount) ->
-                        val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
-                        Text("$vegEmoji $amount", style = MaterialTheme.typography.labelSmall)
+                    for (costEntry in nextCost.vegetableCosts) {
+                        val vegEmoji = viewModel.itemsList.find { it.id == costEntry.key }?.particleEmoji ?: "?"
+                        Text("$vegEmoji ${costEntry.value}", style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }
@@ -173,9 +175,9 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
                         Text("🪙 ${item.unlockCost.money}", style = MaterialTheme.typography.bodySmall)
                     }
                     
-                    item.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
-                        val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
-                        Text("$vegEmoji $amount", style = MaterialTheme.typography.bodySmall)
+                    for (costEntry in item.unlockCost.vegetableCosts) {
+                        val vegEmoji = viewModel.itemsList.find { it.id == costEntry.key }?.particleEmoji ?: "?"
+                        Text("$vegEmoji ${costEntry.value}", style = MaterialTheme.typography.bodySmall)
                     }
                 } else {
                     Text("Purchased - Tap for Modifiers", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
@@ -201,29 +203,29 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
 }
 
 @Composable
-fun ModifierCard(modifier: GameplayModifier, viewModel: GameViewModel) {
+fun ModifierCard(gpMod: GameplayModifier, viewModel: GameViewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (modifier.isUnlocked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (gpMod.isUnlocked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(modifier.name, style = MaterialTheme.typography.titleMedium)
-                    Text(modifier.description, style = MaterialTheme.typography.bodySmall)
+                    Text(gpMod.name, style = MaterialTheme.typography.titleMedium)
+                    Text(gpMod.description, style = MaterialTheme.typography.bodySmall)
                 }
                 
-                if (modifier.isUnlocked) {
+                if (gpMod.isUnlocked) {
                     Switch(
-                        checked = modifier.isEnabled,
-                        onCheckedChange = { viewModel.toggleModifier(modifier) }
+                        checked = gpMod.isEnabled,
+                        onCheckedChange = { viewModel.toggleModifier(gpMod) }
                     )
                 } else {
-                    val canAfford = viewModel.canAfford(modifier.unlockCost)
+                    val canAfford = viewModel.canAfford(gpMod.unlockCost)
                     Button(
-                        onClick = { viewModel.tryUnlockModifier(modifier) },
+                        onClick = { viewModel.tryUnlockModifier(gpMod) },
                         enabled = canAfford
                     ) {
                         Text("Buy")
@@ -231,15 +233,15 @@ fun ModifierCard(modifier: GameplayModifier, viewModel: GameViewModel) {
                 }
             }
             
-            if (!modifier.isUnlocked) {
+            if (!gpMod.isUnlocked) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (modifier.unlockCost.money > 0) {
-                        Text("🪙 ${modifier.unlockCost.money}", style = MaterialTheme.typography.labelSmall)
+                    if (gpMod.unlockCost.money > 0) {
+                        Text("🪙 ${gpMod.unlockCost.money}", style = MaterialTheme.typography.labelSmall)
                     }
-                    modifier.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
-                        val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
-                        Text("$vegEmoji $amount", style = MaterialTheme.typography.labelSmall)
+                    for (costEntry in gpMod.unlockCost.vegetableCosts) {
+                        val vegEmoji = viewModel.itemsList.find { it.id == costEntry.key }?.particleEmoji ?: "?"
+                        Text("$vegEmoji ${costEntry.value}", style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }

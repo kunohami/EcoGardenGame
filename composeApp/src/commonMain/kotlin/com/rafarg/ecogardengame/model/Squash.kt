@@ -23,7 +23,6 @@ import ecogardengame.composeapp.generated.resources.squash_strip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 /**
  * Squash implementation with a "Zelda Tennis" timing gameplay.

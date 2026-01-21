@@ -71,6 +71,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     )
     private var globalClickCounter = 0
 
+    // --- LIBRARY ---
+    val libraryCategories = LibraryRepository.categories
+
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(items.first())
         private set
@@ -124,6 +127,13 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                     upgrade.unlockedLevel = prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] ?: 0
                 }
 
+                // Load Library Data
+                libraryCategories.forEach { category ->
+                    category.entries.forEach { entry ->
+                        entry.isUnlocked = prefs[booleanPreferencesKey("library_unlocked_${entry.id}")] ?: false
+                    }
+                }
+
                 val newFruitCounts = mutableMapOf<String, Int>()
                 val newTotalHarvested = mutableMapOf<String, Int>()
                 
@@ -171,7 +181,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         if (luckyLevel > 0) {
             val chance = luckyLevel / 100f // 0.01 to 0.05
             if (Random.nextFloat() < chance) {
-                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10) }
+                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10, isLucky = true) }
             }
         }
 
@@ -225,6 +235,19 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             }
             fruitCounts = newCounts
             upgrade.unlockedLevel++
+            saveData()
+        }
+    }
+
+    fun tryUnlockLibraryEntry(entry: LibraryEntry) {
+        if (!entry.isUnlocked && canAfford(entry.cost)) {
+            money -= entry.cost.money
+            val newCounts = fruitCounts.toMutableMap()
+            entry.cost.vegetableCosts.forEach { (vegId, amount) ->
+                newCounts[vegId] = (newCounts[vegId] ?: 0) - amount
+            }
+            fruitCounts = newCounts
+            entry.isUnlocked = true
             saveData()
         }
     }
@@ -295,6 +318,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         }
     }
 
+    /**
+     * Testing function to cheat resources
+     */
     fun debugAddResources() {
         money += 100000
         totalMoneyEarned += 100000
@@ -329,6 +355,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             }
         }
         globalUpgrades.forEach { it.unlockedLevel = 0 }
+        libraryCategories.forEach { cat -> cat.entries.forEach { it.isUnlocked = false } }
         currentItem = itemsList.first()
         saveData()
     }
@@ -345,6 +372,12 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 
                 globalUpgrades.forEach { upgrade ->
                     prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] = upgrade.unlockedLevel
+                }
+
+                libraryCategories.forEach { category ->
+                    category.entries.forEach { entry ->
+                        prefs[booleanPreferencesKey("library_unlocked_${entry.id}")] = entry.isUnlocked
+                    }
                 }
 
                 itemsList.forEach { item ->
