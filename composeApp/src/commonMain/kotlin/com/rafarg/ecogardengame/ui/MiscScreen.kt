@@ -15,6 +15,7 @@ fun MiscScreen(
     viewModel: GameViewModel,
     onNavigateToSettings: () -> Unit,
     onNavigateToThemes: () -> Unit,
+    onNavigateToStats: () -> Unit,
     onNavigateToAbout: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -32,6 +33,10 @@ fun MiscScreen(
 
             Button(onClick = onNavigateToThemes, modifier = Modifier.fillMaxWidth(0.6f)) {
                 Text("Themes")
+            }
+
+            Button(onClick = onNavigateToStats, modifier = Modifier.fillMaxWidth(0.6f)) {
+                Text("Stats")
             }
 
             Button(onClick = onNavigateToAbout, modifier = Modifier.fillMaxWidth(0.6f)) {

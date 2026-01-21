@@ -26,9 +26,10 @@ val items: List<GameItem> = listOf(
 enum class Screen(val title: String, val showInBottomBar: Boolean = true) {
     GAME("Garden", true),
     STORE("Shop", true),
-    STATS("Stats", true),
+    LIBRARY("Library", true),
     PROFILE("Profile", true),
     MISC("Misc", true),
+    STATS("Stats", false),
     SETTINGS("Settings", false),
     THEMES("Themes", false),
     ABOUT("About", false)
@@ -55,7 +56,7 @@ fun App(prefs: DataStore<Preferences>? = null) {
                                     text = when(screen) {
                                         Screen.GAME -> "🌱"
                                         Screen.STORE -> "💰"
-                                        Screen.STATS -> "📊"
+                                        Screen.LIBRARY -> "📖"
                                         Screen.PROFILE -> "👤"
                                         Screen.MISC -> "⚙️"
                                         else -> "❓"
@@ -82,13 +83,18 @@ fun App(prefs: DataStore<Preferences>? = null) {
                         onNavigateToStore = { currentScreen = Screen.STORE }
                     )
                     Screen.STORE -> StoreScreen(viewModel)
-                    Screen.STATS -> StatsScreen(viewModel)
+                    Screen.LIBRARY -> LibraryScreen(viewModel)
                     Screen.PROFILE -> ProfileScreen(viewModel)
                     Screen.MISC -> MiscScreen(
                         viewModel = viewModel,
                         onNavigateToSettings = { currentScreen = Screen.SETTINGS },
                         onNavigateToThemes = { currentScreen = Screen.THEMES },
+                        onNavigateToStats = { currentScreen = Screen.STATS },
                         onNavigateToAbout = { currentScreen = Screen.ABOUT }
+                    )
+                    Screen.STATS -> StatsScreen(
+                        viewModel = viewModel,
+                        onBack = { currentScreen = Screen.MISC }
                     )
                     Screen.SETTINGS -> SettingsScreen(
                         viewModel = viewModel,

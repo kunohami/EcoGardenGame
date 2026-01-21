@@ -11,24 +11,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 
-/**
- * Screen for displaying player statistics and achievements.
- */
 @Composable
-fun StatsScreen(viewModel: GameViewModel) {
+fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Statistics", style = MaterialTheme.typography.displaySmall)
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = onBack) {
+                Text("Back")
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Text("Statistics", style = MaterialTheme.typography.displaySmall)
+        }
         
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Total Clicks & Money Row
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Clicks Card
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
@@ -39,7 +40,6 @@ fun StatsScreen(viewModel: GameViewModel) {
                 }
             }
 
-            // Money Card
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
@@ -58,7 +58,6 @@ fun StatsScreen(viewModel: GameViewModel) {
         
         Spacer(modifier = Modifier.height(8.dp))
 
-        // List of all individual fruit counters
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
