@@ -26,7 +26,6 @@ fun StoreScreen(viewModel: GameViewModel) {
     
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
-    val tabTextColor = if (wavy) Color.White else Color.Unspecified
 
     Column(
         modifier = Modifier
