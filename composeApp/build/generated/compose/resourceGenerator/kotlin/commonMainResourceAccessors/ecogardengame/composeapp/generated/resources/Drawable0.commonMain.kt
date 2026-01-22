@@ -41,6 +41,12 @@ internal val Res.drawable.garlic_strip: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.infobunny_strip: DrawableResource by lazy {
+      DrawableResource("drawable:infobunny_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/infobunny_strip.png", -1, -1),
+      ))
+    }
+
 internal val Res.drawable.purpleonion_strip: DrawableResource by lazy {
       DrawableResource("drawable:purpleonion_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/purpleonion_strip.png", -1, -1),
@@ -84,6 +90,7 @@ internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, Drawab
   map.put("broccoli_strip", Res.drawable.broccoli_strip)
   map.put("compose_multiplatform", Res.drawable.compose_multiplatform)
   map.put("garlic_strip", Res.drawable.garlic_strip)
+  map.put("infobunny_strip", Res.drawable.infobunny_strip)
   map.put("purpleonion_strip", Res.drawable.purpleonion_strip)
   map.put("sickle_strip", Res.drawable.sickle_strip)
   map.put("sicklearm_strip", Res.drawable.sicklearm_strip)

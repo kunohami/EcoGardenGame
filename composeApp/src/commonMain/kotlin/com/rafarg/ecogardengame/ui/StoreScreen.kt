@@ -23,6 +23,10 @@ import org.jetbrains.compose.resources.painterResource
 fun StoreScreen(viewModel: GameViewModel) {
     var selectedItemForUpgrades by remember { mutableStateOf<GameItem?>(null) }
     var selectedTab by remember { mutableStateOf(0) }
+    
+    val wavy = viewModel.shaderBackgroundEnabled
+    val primaryText = if (wavy) Color.White else Color.Unspecified
+    val tabTextColor = if (wavy) Color.White else Color.Unspecified
 
     Column(
         modifier = Modifier
@@ -30,24 +34,38 @@ fun StoreScreen(viewModel: GameViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Garden Shop", style = MaterialTheme.typography.displaySmall)
+        Text("Garden Shop", style = MaterialTheme.typography.displaySmall, color = primaryText)
         Spacer(modifier = Modifier.height(8.dp))
         
         Row(
             modifier = Modifier.fillMaxWidth().padding(8.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge)
+            Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         if (selectedItemForUpgrades == null) {
-            PrimaryTabRow(selectedTabIndex = selectedTab, containerColor = Color.Transparent) {
-                Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
+            PrimaryTabRow(
+                selectedTabIndex = selectedTab, 
+                containerColor = Color.Transparent,
+                contentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary
+            ) {
+                Tab(
+                    selected = selectedTab == 0, 
+                    onClick = { selectedTab = 0 },
+                    selectedContentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
                     Text("Vegetables", modifier = Modifier.padding(16.dp))
                 }
-                Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
+                Tab(
+                    selected = selectedTab == 1, 
+                    onClick = { selectedTab = 1 },
+                    selectedContentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
                     Text("Upgrades", modifier = Modifier.padding(16.dp))
                 }
             }
@@ -76,7 +94,7 @@ fun StoreScreen(viewModel: GameViewModel) {
                     Text("Back")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text("Modifiers: ${item.name}", style = MaterialTheme.typography.titleLarge)
+                Text("Modifiers: ${item.name}", style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
             
             Spacer(modifier = Modifier.height(16.dp))

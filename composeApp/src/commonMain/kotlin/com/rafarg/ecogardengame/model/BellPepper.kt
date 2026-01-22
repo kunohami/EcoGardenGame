@@ -34,6 +34,7 @@ class BellPepper : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🫑"
+    override val tutorialText: String = "Bell peppers are erratic! They pause for a moment and then dash in a random direction. Wait for them to stop or try to catch them on the move!"
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),

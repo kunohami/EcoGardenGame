@@ -2,7 +2,9 @@ package com.rafarg.ecogardengame.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +22,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     var showDebugDialog by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     fun showToast(message: String) {
         scope.launch {
@@ -33,17 +36,21 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(16.dp)
         ) {
             Text("Settings", style = MaterialTheme.typography.displayMedium)
             
             Spacer(modifier = Modifier.height(8.dp))
 
-            // --- VIBRATION SECTION ---
+            // --- GENERAL SECTION ---
             Text("General", style = MaterialTheme.typography.titleMedium, color = Color.Gray)
             
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Column(modifier = Modifier.padding(16.dp)) {
+                    // Vibration Toggle
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,

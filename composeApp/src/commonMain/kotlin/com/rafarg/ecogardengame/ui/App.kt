@@ -54,9 +54,16 @@ fun App(prefs: DataStore<Preferences>? = null) {
     val viewModel: GameViewModel = viewModel { GameViewModel(prefs) }
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
     
-    EcoGardenTheme(useDarkTheme = viewModel.isDarkTheme) {
+    EcoGardenTheme(
+        useDarkTheme = viewModel.isDarkTheme,
+        useWavyTheme = viewModel.shaderBackgroundEnabled
+    ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // --- WAVY BACKGROUND LAYER ---
+            WavyBackground(enabled = viewModel.shaderBackgroundEnabled)
+
             Scaffold(
+                containerColor = if (viewModel.shaderBackgroundEnabled) Color.Transparent else MaterialTheme.colorScheme.background,
                 bottomBar = {
                     NavigationBar {
                         Screen.entries.filter { it.showInBottomBar }.forEach { screen ->
