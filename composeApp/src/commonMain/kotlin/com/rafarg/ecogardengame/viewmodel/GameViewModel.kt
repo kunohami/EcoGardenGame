@@ -93,7 +93,6 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         private set
     var profileImageIndex by mutableStateOf(0)
         private set
-    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🌦️")
 
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
@@ -136,8 +135,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     }
 
     private fun currentTimeMillis(): Long {
-        // Usamos kotlinx.datetime.Clock que es lo habitual en KMP para milisegundos de época
-        return kotlin.time.Clock.System.now().toEpochMilliseconds()
+        // Usamos la ruta completa para evitar conflictos de resolución con 'System'
+        return kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
     }
 
     private fun loadData() {
@@ -253,6 +252,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         fruitCounts = newFruitCounts
         totalFruitHarvested = newTotalHarvested
 
+        // Comprobamos logros en cada clic para que hitos de racha o críticos salten al momento
+        checkAchievements()
         saveData()
         return finalRewards
     }
