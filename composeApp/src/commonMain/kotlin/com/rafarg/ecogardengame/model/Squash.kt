@@ -25,7 +25,8 @@ import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.vibrate
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.squash_strip
-import ecogardengame.composeapp.generated.resources.sickle_strip
+import ecogardengame.composeapp.generated.resources.sicklearm_strip
+import ecogardengame.composeapp.generated.resources.sicklefarmer_strip
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
@@ -266,31 +267,6 @@ class Squash : BaseVegetable() {
                 },
             contentAlignment = Alignment.Center
         ) {
-            // --- THE SICKLE ---
-            val sickleHeight = 100.dp
-            val sickleWidth = sickleHeight * (109f / 207f)
-            val sickleOffsetX = 16.dp
-            val sickleOffsetY = (-16).dp 
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .width(sickleWidth)
-                    .height(sickleHeight)
-                    .offset(x = sickleOffsetX, y = sickleOffsetY)
-            ) {
-                SpriteAnimation(
-                    painter = painterResource(Res.drawable.sickle_strip),
-                    frameCount = 3,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            rotationZ = sickleRotation.value
-                            transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
-                        }
-                )
-            }
-            
             // --- THE SQUASH ---
             Box(
                 modifier = Modifier
@@ -324,6 +300,43 @@ class Squash : BaseVegetable() {
                             }
                             drawContent()
                         }
+                )
+            }
+
+            // --- THE SICKLE FARMER ---
+            val farmerSize = 125.dp
+            
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(farmerSize)
+                    .offset(x = (-10).dp, y = 10.dp)
+            ) {
+                // SICKLE ARM (behind the farmer)
+                val armSize = 60.dp
+                Box(
+                    modifier = Modifier
+                        .offset(x = (farmerSize / 2) + 8.dp, y = (farmerSize / 2) - armSize + 4.dp)
+                        .size(armSize)
+                ) {
+                    SpriteAnimation(
+                        painter = painterResource(Res.drawable.sicklearm_strip),
+                        frameCount = 3,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                rotationZ = sickleRotation.value - 30f
+                                // Pivot at the bottom-left of the arm box
+                                transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 1f)
+                            }
+                    )
+                }
+
+                // FARMER BODY (in front of the arm)
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.sicklefarmer_strip),
+                    frameCount = 3,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
