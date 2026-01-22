@@ -3,8 +3,6 @@ package com.rafarg.ecogardengame.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -32,16 +30,30 @@ fun ThemesScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             ThemeCard(
                 name = "Dry Sage (Default)",
                 colors = listOf(SageColor, BeigeColor, CornsilkColor, PapayaColor, BronzeColor),
-                isSelected = !viewModel.isDarkTheme,
-                onClick = { viewModel.setTheme(false) }
+                isSelected = !viewModel.isDarkTheme && !viewModel.shaderBackgroundEnabled,
+                onClick = { 
+                    viewModel.setTheme(false) 
+                    viewModel.setShaderBackground(false)
+                }
             )
 
             // Dark Theme Option
             ThemeCard(
                 name = "Ink Black",
                 colors = listOf(InkBlack, JetBlack, CharcoalBlue, DeepTeal, DarkSlateGrey, Evergreen),
-                isSelected = viewModel.isDarkTheme,
-                onClick = { viewModel.setTheme(true) }
+                isSelected = viewModel.isDarkTheme && !viewModel.shaderBackgroundEnabled,
+                onClick = { 
+                    viewModel.setTheme(true) 
+                    viewModel.setShaderBackground(false)
+                }
+            )
+
+            // Wavy Theme (Shader) Option
+            ThemeCard(
+                name = "Wavy Theme",
+                colors = listOf(Color(0xFF0D0221), Color(0xFF1B065E), Color(0xFF4A00E0), Color(0xFF8E2DE2)),
+                isSelected = viewModel.shaderBackgroundEnabled,
+                onClick = { viewModel.setShaderBackground(true) }
             )
 
             Spacer(modifier = Modifier.weight(1f))

@@ -36,6 +36,7 @@ class PurpleOnion : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧅"
+    override val tutorialText: String = "The purple onion teleports! Every time it appears, it starts a quick rotation. If you catch it while it's spinning, you get a significant coin bonus! Buying more onions will increase your chances, but reduce the individual bonus slightly."
 
     // Base reward when NOT spinning: 1 money, 1 onion
     override val baseRewards: List<Reward> get() = listOf(

@@ -50,6 +50,7 @@ class Squash : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥒"
+    override val tutorialText: String = "This is Zelda Tennis! The squash bounces back and forth. Click anywhere to slash with your sickle arm when the squash is near the bottom-left corner to hit it back. Don't miss, or you'll lose your momentum!"
 
     // Track max streak for achievement
     var maxStreak by mutableStateOf(0)

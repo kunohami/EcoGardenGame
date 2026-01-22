@@ -45,6 +45,7 @@ class Garlic : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧄"
+    override val tutorialText: String = "Tap the garlic 10 times to make it explode into small cloves! Collect all the cloves to get a big bonus. The 'Shake to Harvest' upgrade lets you collect multiple cloves at once just by shaking your device!"
 
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(

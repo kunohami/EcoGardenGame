@@ -106,6 +106,7 @@ interface GameItem {
     val unlockCost: ItemCost
     var unlocked: Boolean
     val particleEmoji: String
+    val tutorialText: String
     
     val baseRewards: List<Reward>
     val modifiers: List<GameplayModifier>

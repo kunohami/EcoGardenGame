@@ -30,6 +30,10 @@ fun ProfileScreen(viewModel: GameViewModel) {
     var showAvatarDialog by remember { mutableStateOf(false) }
 
     val currentAvatarItem = viewModel.itemsList.getOrNull(viewModel.profileImageIndex)
+    
+    val wavy = viewModel.shaderBackgroundEnabled
+    val primaryText = if (wavy) Color.White else Color.Unspecified
+    val secondaryText = if (wavy) Color.White.copy(alpha = 0.7f) else Color.Gray
 
     Column(
         modifier = Modifier
@@ -38,7 +42,6 @@ fun ProfileScreen(viewModel: GameViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // --- PROFILE HEADER ---
-        // Using Box with explicit clip and background instead of Surface to avoid internal shadows/squares
         Box(
             modifier = Modifier
                 .size(120.dp)
@@ -54,7 +57,7 @@ fun ProfileScreen(viewModel: GameViewModel) {
                     frameCount = 3,
                     modifier = Modifier
                         .size(85.dp)
-                        .clip(CircleShape) // Clip the animation itself just in case
+                        .clip(CircleShape)
                 )
             } else {
                 Text("👤", fontSize = 60.sp)
@@ -67,7 +70,8 @@ fun ProfileScreen(viewModel: GameViewModel) {
             Text(
                 text = viewModel.username,
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = primaryText
             )
             IconButton(onClick = { 
                 tempName = viewModel.username
@@ -84,7 +88,8 @@ fun ProfileScreen(viewModel: GameViewModel) {
             "Achievements",
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
+            color = primaryText
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -98,7 +103,8 @@ fun ProfileScreen(viewModel: GameViewModel) {
             items(viewModel.achievements) { achievement ->
                 AchievementBadge(
                     achievement = achievement,
-                    isUnlocked = viewModel.unlockedAchievements.contains(achievement.id)
+                    isUnlocked = viewModel.unlockedAchievements.contains(achievement.id),
+                    wavy = wavy
                 )
             }
         }
@@ -183,7 +189,7 @@ fun ProfileScreen(viewModel: GameViewModel) {
 }
 
 @Composable
-fun AchievementBadge(achievement: Achievement, isUnlocked: Boolean) {
+fun AchievementBadge(achievement: Achievement, isUnlocked: Boolean, wavy: Boolean) {
     var showDetail by remember { mutableStateOf(false) }
 
     Surface(

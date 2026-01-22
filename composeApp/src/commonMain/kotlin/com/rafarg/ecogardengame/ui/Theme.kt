@@ -63,12 +63,39 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = Color.White
 )
 
+// --- WAVY THEME (Special Shader Palette) ---
+private val WavyColorScheme = darkColorScheme(
+    primary = Color(0xFFEADDFF), // Light purple, almost white
+    onPrimary = Color(0xFF21005D),
+    primaryContainer = Color(0xFF4A00E0).copy(alpha = 0.5f),
+    onPrimaryContainer = Color(0xFFEADDFF),
+    
+    secondary = Color(0xFFD0BCFF),
+    onSecondary = Color(0xFF381E72),
+    secondaryContainer = Color(0xFF0D0221).copy(alpha = 0.5f),
+    onSecondaryContainer = Color(0xFFEADDFF),
+    
+    background = Color(0xFF0D0221),
+    onBackground = Color.White,
+    
+    surface = Color(0xFF1B065E).copy(alpha = 0.8f),
+    onSurface = Color.White,
+    
+    surfaceVariant = Color(0xFF4A00E0).copy(alpha = 0.3f),
+    onSurfaceVariant = Color.White
+)
+
 @Composable
 fun EcoGardenTheme(
     useDarkTheme: Boolean = false,
+    useWavyTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (useDarkTheme) DarkColorScheme else LightColorScheme
+    val colorScheme = when {
+        useWavyTheme -> WavyColorScheme
+        useDarkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,

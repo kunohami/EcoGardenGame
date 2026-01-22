@@ -52,6 +52,10 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     // --- THEME SETTINGS ---
     var isDarkTheme by mutableStateOf(false)
         private set
+    
+    // --- BACKGROUND SETTINGS ---
+    var shaderBackgroundEnabled by mutableStateOf(false)
+        private set
 
     // --- GLOBAL UPGRADES ---
     override var globalUpgrades = listOf(
@@ -107,6 +111,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     private val vibrationEnabledKey = booleanPreferencesKey("vibration_enabled")
     private val vibrationIntensityKey = floatPreferencesKey("vibration_intensity")
     private val darkThemeKey = booleanPreferencesKey("dark_theme")
+    private val shaderBackgroundEnabledKey = booleanPreferencesKey("shader_background_enabled")
     private val usernameKey = stringPreferencesKey("username")
     private val profileImageKey = intPreferencesKey("profile_image_index")
     private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
@@ -144,6 +149,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 vibrationEnabled = prefs[vibrationEnabledKey] ?: false
                 vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f
                 isDarkTheme = prefs[darkThemeKey] ?: false
+                shaderBackgroundEnabled = prefs[shaderBackgroundEnabledKey] ?: false
                 username = prefs[usernameKey] ?: "Farmer"
                 profileImageIndex = prefs[profileImageKey] ?: 0
                 
@@ -331,6 +337,11 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         isDarkTheme = dark
         saveData()
     }
+    
+    fun setShaderBackground(enabled: Boolean) {
+        shaderBackgroundEnabled = enabled
+        saveData()
+    }
 
     fun selectItem(item: GameItem) {
         if (item.unlocked) {
@@ -437,6 +448,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 prefs[vibrationEnabledKey] = vibrationEnabled
                 prefs[vibrationIntensityKey] = vibrationIntensity
                 prefs[darkThemeKey] = isDarkTheme
+                prefs[shaderBackgroundEnabledKey] = shaderBackgroundEnabled
                 prefs[usernameKey] = username
                 prefs[profileImageKey] = profileImageIndex
                 prefs[achievementsKey] = unlockedAchievements.toSet()

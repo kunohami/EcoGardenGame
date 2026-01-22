@@ -41,6 +41,7 @@ class Apple : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🍎"
+    override val tutorialText: String = "The apple moves in a circle, and you need to rotate your device like a compass to point at it. When the indicator turns green and you see 'COLLECTING!', rewards will be harvested automatically! No clicking required."
 
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(

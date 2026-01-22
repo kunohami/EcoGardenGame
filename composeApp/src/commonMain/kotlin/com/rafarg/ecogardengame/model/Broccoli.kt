@@ -35,6 +35,7 @@ class Broccoli : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥦"
+    override val tutorialText: String = "This broccoli moves! Tap it while it's zooming around to collect rewards. The 'Air Harvest' upgrade lets you collect rewards just by waving your hand near the sensor!"
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),

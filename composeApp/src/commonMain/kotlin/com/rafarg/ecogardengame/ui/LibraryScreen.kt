@@ -25,6 +25,10 @@ fun LibraryScreen(viewModel: GameViewModel) {
 
     // Use a local copy to ensure safety during recomposition when switching back
     val currentCategory = selectedCategory
+    
+    val wavy = viewModel.shaderBackgroundEnabled
+    val primaryText = if (wavy) Color.White else Color.Unspecified
+    val secondaryText = if (wavy) Color.White.copy(alpha = 0.7f) else Color.Gray
 
     Column(
         modifier = Modifier
@@ -33,14 +37,14 @@ fun LibraryScreen(viewModel: GameViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (currentCategory == null) {
-            Text("Knowledge Library", style = MaterialTheme.typography.displaySmall)
+            Text("Knowledge Library", style = MaterialTheme.typography.displaySmall, color = primaryText)
             Spacer(modifier = Modifier.height(8.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge)
+                Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -50,7 +54,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(viewModel.libraryCategories) { category ->
-                    CategoryCard(category) {
+                    CategoryCard(category, secondaryText) {
                         selectedCategory = it
                     }
                 }
@@ -62,7 +66,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                     Text("Back")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(currentCategory.name, style = MaterialTheme.typography.titleLarge)
+                Text(currentCategory.name, style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -72,7 +76,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(currentCategory.entries) { entry ->
-                    EntryListItem(entry, viewModel) {
+                    EntryListItem(entry, viewModel, wavy) {
                         entryToShowInDialog = it
                     }
                 }
@@ -96,7 +100,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
 }
 
 @Composable
-fun CategoryCard(category: LibraryCategory, onClick: (LibraryCategory) -> Unit) {
+fun CategoryCard(category: LibraryCategory, labelColor: Color, onClick: (LibraryCategory) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,13 +116,15 @@ fun CategoryCard(category: LibraryCategory, onClick: (LibraryCategory) -> Unit) 
             Text(category.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.weight(1f))
             val unlockedCount = category.entries.count { it.isUnlocked }
-            Text("$unlockedCount / 10", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text("$unlockedCount / 10", style = MaterialTheme.typography.labelSmall, color = labelColor)
         }
     }
 }
 
 @Composable
-fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, onShowContent: (LibraryEntry) -> Unit) {
+fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, onShowContent: (LibraryEntry) -> Unit) {
+    val lockColor = if (wavy) Color.White.copy(alpha = 0.5f) else Color.Gray
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,18 +142,18 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, onShowContent: 
                     text = entry.title,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (entry.isUnlocked) MaterialTheme.colorScheme.onSecondaryContainer else Color.Gray
+                    color = if (entry.isUnlocked) MaterialTheme.colorScheme.onSecondaryContainer else lockColor
                 )
                 if (!entry.isUnlocked) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (entry.cost.money > 0) {
-                            Text("🪙 ${entry.cost.money}", style = MaterialTheme.typography.labelSmall)
+                            Text("🪙 ${entry.cost.money}", style = MaterialTheme.typography.labelSmall, color = lockColor)
                         }
                         entry.cost.vegetableCosts.forEach { cost ->
                             val emoji = viewModel.itemsList.find { it.id == cost.key }?.particleEmoji ?: ""
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("$emoji ${cost.value}", style = MaterialTheme.typography.labelSmall)
+                            Text("$emoji ${cost.value}", style = MaterialTheme.typography.labelSmall, color = lockColor)
                         }
                     }
                 }

@@ -30,6 +30,7 @@ class Tomato : BaseVegetable() {
     override val unlockCost: ItemCost = ItemCost(money = 0)
     override var unlocked: Boolean = true
     override val particleEmoji: String = "🍅"
+    override val tutorialText: String = "You can spam clicks for small rewards, or wait 5 seconds until the tomato vibrates and glows intensely to get a massive 20x bonus! The Haptic Timing upgrade will help you feel exactly when the bonus is ready."
 
     // Track critical hits for achievement
     var criticalHits by mutableStateOf(0)

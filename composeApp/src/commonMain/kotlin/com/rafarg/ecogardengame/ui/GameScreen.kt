@@ -3,10 +3,12 @@ package com.rafarg.ecogardengame.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
@@ -17,6 +19,7 @@ import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.apple_strip
+import ecogardengame.composeapp.generated.resources.infobunny_strip
 import org.jetbrains.compose.resources.painterResource
 
 /**
@@ -26,6 +29,10 @@ import org.jetbrains.compose.resources.painterResource
 fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
     var menuVisible by remember { mutableStateOf(false) }
     var itemToPurchase by remember { mutableStateOf<GameItem?>(null) }
+    var showTutorial by remember { mutableStateOf(false) }
+
+    val textColor = if (viewModel.shaderBackgroundEnabled) Color.White else Color.Unspecified
+    val secondaryTextColor = if (viewModel.shaderBackgroundEnabled) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.primary
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -49,7 +56,8 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${viewModel.money}",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        color = textColor
                     )
                 }
 
@@ -61,20 +69,35 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     Text(
                         text = "$fruitCount",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = secondaryTextColor
                     )
                 }
             }
 
-            // Menu Icon (Integrated into Top Bar)
-            SpriteAnimation(
-                painter = painterResource(Res.drawable.apple_strip),
-                frameCount = 3,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .size(40.dp)
-                    .clickable { menuVisible = !menuVisible }
-            )
+            // --- TOP RIGHT ACTION BUTTONS ---
+            Row(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Info Bunny Tooltip Button
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.infobunny_strip),
+                    frameCount = 3,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { showTutorial = true }
+                )
+
+                // Menu Icon (Vegetable Selector)
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.apple_strip),
+                    frameCount = 3,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { menuVisible = !menuVisible }
+                )
+            }
         }
 
         // --- MAIN GAME AREA (Expanded to the bottom) ---
@@ -105,12 +128,12 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                 Text(
                     text = "${viewModel.currentCps.toInt()}",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = if (viewModel.shaderBackgroundEnabled) Color.White else MaterialTheme.colorScheme.secondary
                 )
                 Text(
                     text = "CPS",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                    color = if (viewModel.shaderBackgroundEnabled) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
                 )
             }
         }
@@ -162,6 +185,41 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     }
                 }
             }
+        }
+
+        // --- TUTORIAL SPEECH BUBBLE / DIALOG ---
+        if (showTutorial) {
+            AlertDialog(
+                onDismissRequest = { showTutorial = false },
+                title = { 
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(viewModel.currentItem.particleEmoji)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(viewModel.currentItem.name + " Guide")
+                    }
+                },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(viewModel.currentItem.tutorialText)
+                        
+                        if (viewModel.currentItem.modifiers.isNotEmpty()) {
+                            HorizontalDivider()
+                            Text("Upgrades info:", style = MaterialTheme.typography.titleSmall)
+                            viewModel.currentItem.modifiers.forEach { mod ->
+                                Column {
+                                    Text(mod.name, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                                    Text(mod.description, style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showTutorial = false }) {
+                        Text("Thanks, Bunny!")
+                    }
+                }
+            )
         }
 
         // --- PURCHASE DIALOG ---
