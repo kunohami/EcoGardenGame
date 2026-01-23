@@ -59,6 +59,9 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     var isDarkTheme by mutableStateOf(false)
         private set
     
+    var isAutumnTheme by mutableStateOf(false)
+        private set
+    
     // --- BACKGROUND SETTINGS ---
     var shaderBackgroundEnabled by mutableStateOf(false)
         private set
@@ -123,6 +126,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     private val vibrationEnabledKey = booleanPreferencesKey("vibration_enabled")
     private val vibrationIntensityKey = floatPreferencesKey("vibration_intensity")
     private val darkThemeKey = booleanPreferencesKey("dark_theme")
+    private val autumnThemeKey = booleanPreferencesKey("autumn_theme")
     private val shaderBackgroundEnabledKey = booleanPreferencesKey("shader_background_enabled")
     private val languageKey = stringPreferencesKey("language")
     private val languageSetKey = booleanPreferencesKey("language_set")
@@ -150,7 +154,6 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     }
 
     private fun currentTimeMillis(): Long {
-        // Usamos kotlinx.datetime.Clock que es lo habitual en KMP para milisegundos de época
         return kotlin.time.Clock.System.now().toEpochMilliseconds()
     }
 
@@ -163,6 +166,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 vibrationEnabled = prefs[vibrationEnabledKey] ?: false
                 vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f
                 isDarkTheme = prefs[darkThemeKey] ?: false
+                isAutumnTheme = prefs[autumnThemeKey] ?: false
                 shaderBackgroundEnabled = prefs[shaderBackgroundEnabledKey] ?: false
                 language = prefs[languageKey] ?: "auto"
                 languageSet = prefs[languageSetKey] ?: false
@@ -247,7 +251,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             }
             
             if (isDouble) {
-                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
+                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10).copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
             }
         }
 
@@ -352,6 +356,11 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
 
     fun setTheme(dark: Boolean) {
         isDarkTheme = dark
+        saveData()
+    }
+    
+    fun updateAutumnTheme(autumn: Boolean) {
+        isAutumnTheme = autumn
         saveData()
     }
     
@@ -476,6 +485,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 prefs[vibrationEnabledKey] = vibrationEnabled
                 prefs[vibrationIntensityKey] = vibrationIntensity
                 prefs[darkThemeKey] = isDarkTheme
+                prefs[autumnThemeKey] = isAutumnTheme
                 prefs[shaderBackgroundEnabledKey] = shaderBackgroundEnabled
                 prefs[languageKey] = language
                 prefs[languageSetKey] = languageSet
