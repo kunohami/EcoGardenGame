@@ -16,9 +16,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
+import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.PI
 import kotlin.math.cos
@@ -62,8 +65,8 @@ class FlyingParticle(
 
 class GameplayModifier(
     val id: String,
-    val name: String,
-    val description: String,
+    val nameRes: StringResource,
+    val descriptionRes: StringResource,
     val unlockCost: ItemCost,
     val targetItemId: String,
     isUnlockedInitial: Boolean = false,
@@ -75,8 +78,8 @@ class GameplayModifier(
 
 class GlobalUpgrade(
     val id: String,
-    val name: String,
-    val description: String,
+    val nameRes: StringResource,
+    val descriptionRes: StringResource,
     val baseCost: ItemCost,
     val maxLevel: Int = 1,
     unlockedLevelInitial: Int = 0
@@ -100,13 +103,13 @@ class GlobalUpgrade(
 
 interface GameItem {
     val id: String
-    val name: String
+    val nameRes: StringResource
     val resource: DrawableResource
     val price: Int
     val unlockCost: ItemCost
     var unlocked: Boolean
     val particleEmoji: String
-    val tutorialText: String
+    val tutorialRes: StringResource
     
     val baseRewards: List<Reward>
     val modifiers: List<GameplayModifier>

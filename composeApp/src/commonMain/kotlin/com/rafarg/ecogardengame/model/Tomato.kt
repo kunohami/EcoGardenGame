@@ -15,8 +15,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.vibrate
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.tomato_strip
+import ecogardengame.composeapp.generated.resources.item_tomato
+import ecogardengame.composeapp.generated.resources.tutorial_tomato
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
@@ -24,13 +27,13 @@ import kotlin.math.sin
 
 class Tomato : BaseVegetable() {
     override val id: String = "tomato"
-    override val name: String = "Tomato"
+    override val nameRes = Res.string.item_tomato
     override val resource = Res.drawable.tomato_strip
     override val price: Int = 0
     override val unlockCost: ItemCost = ItemCost(money = 0)
     override var unlocked: Boolean = true
     override val particleEmoji: String = "🍅"
-    override val tutorialText: String = "You can spam clicks for small rewards, or wait 5 seconds until the tomato vibrates and glows intensely to get a massive 20x bonus! The Haptic Timing upgrade will help you feel exactly when the bonus is ready."
+    override val tutorialRes = Res.string.tutorial_tomato
 
     // Track critical hits for achievement
     var criticalHits by mutableStateOf(0)
@@ -38,8 +41,8 @@ class Tomato : BaseVegetable() {
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "tomato_precision_vibration",
-            name = "Haptic Timing",
-            description = "Vibrates when the super reward is ready.",
+            nameRes = Res.string.mod_tomato_haptic_name,
+            descriptionRes = Res.string.mod_tomato_haptic_desc,
             unlockCost = ItemCost(money = 300, vegetableCosts = mapOf("tomato" to 150)),
             targetItemId = "tomato"
         )

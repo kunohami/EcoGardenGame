@@ -7,8 +7,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MiscScreen(
@@ -18,29 +22,36 @@ fun MiscScreen(
     onNavigateToStats: () -> Unit,
     onNavigateToAbout: () -> Unit
 ) {
+    val wavy = viewModel.shaderBackgroundEnabled
+    val primaryText = if (wavy) Color.White else Color.Unspecified
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Misc", style = MaterialTheme.typography.displayMedium)
+            Text(
+                text = stringResource(Res.string.nav_misc), 
+                style = MaterialTheme.typography.displayMedium,
+                color = primaryText
+            )
             
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = onNavigateToSettings, modifier = Modifier.fillMaxWidth(0.6f)) {
-                Text("Settings")
+                Text(stringResource(Res.string.settings_title))
             }
 
             Button(onClick = onNavigateToThemes, modifier = Modifier.fillMaxWidth(0.6f)) {
-                Text("Themes")
+                Text(stringResource(Res.string.themes_title))
             }
 
             Button(onClick = onNavigateToStats, modifier = Modifier.fillMaxWidth(0.6f)) {
-                Text("Stats")
+                Text(stringResource(Res.string.stats_title))
             }
 
             Button(onClick = onNavigateToAbout, modifier = Modifier.fillMaxWidth(0.6f)) {
-                Text("About")
+                Text(stringResource(Res.string.about_title))
             }
         }
     }

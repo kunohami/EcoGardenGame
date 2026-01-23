@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.model.LibraryCategory
 import com.rafarg.ecogardengame.model.LibraryEntry
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LibraryScreen(viewModel: GameViewModel) {
@@ -37,7 +39,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (currentCategory == null) {
-            Text("Knowledge Library", style = MaterialTheme.typography.displaySmall, color = primaryText)
+            Text(stringResource(Res.string.library_title), style = MaterialTheme.typography.displaySmall, color = primaryText)
             Spacer(modifier = Modifier.height(8.dp))
             
             Row(
@@ -63,10 +65,10 @@ fun LibraryScreen(viewModel: GameViewModel) {
             // Category Detail View
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { selectedCategory = null }) {
-                    Text("Back")
+                    Text(stringResource(Res.string.back))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(currentCategory.name, style = MaterialTheme.typography.titleLarge, color = primaryText)
+                Text(stringResource(currentCategory.nameRes), style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -88,11 +90,11 @@ fun LibraryScreen(viewModel: GameViewModel) {
     entryToShowInDialog?.let { entry ->
         AlertDialog(
             onDismissRequest = { entryToShowInDialog = null },
-            title = { Text(entry.title) },
-            text = { Text(entry.content) },
+            title = { Text(stringResource(entry.titleRes)) },
+            text = { Text(stringResource(entry.contentRes)) },
             confirmButton = {
                 TextButton(onClick = { entryToShowInDialog = null }) {
-                    Text("Got it")
+                    Text(stringResource(Res.string.got_it))
                 }
             }
         )
@@ -113,7 +115,7 @@ fun CategoryCard(category: LibraryCategory, labelColor: Color, onClick: (Library
         ) {
             Text(category.icon, fontSize = 32.sp)
             Spacer(modifier = Modifier.width(16.dp))
-            Text(category.name, style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(category.nameRes), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.weight(1f))
             val unlockedCount = category.entries.count { it.isUnlocked }
             Text("$unlockedCount / 10", style = MaterialTheme.typography.labelSmall, color = labelColor)
@@ -139,7 +141,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = entry.title,
+                    text = stringResource(entry.titleRes),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = if (entry.isUnlocked) MaterialTheme.colorScheme.onSecondaryContainer else lockColor
@@ -168,7 +170,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
                     enabled = canAfford,
                     modifier = Modifier.height(36.dp)
                 ) {
-                    Text("Unlock", fontSize = 12.sp)
+                    Text(stringResource(Res.string.unlock_button), fontSize = 12.sp)
                 }
             }
         }

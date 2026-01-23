@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eco Jardín</string>
+
+    <!-- Navegación -->
+    <string name="nav_garden">Jardín</string>
+    <string name="nav_shop">Tienda</string>
+    <string name="nav_library">Biblioteca</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_misc">Varios</string>
+
+    <!-- Títulos -->
+    <string name="stats_title">Estadísticas</string>
+    <string name="settings_title">Ajustes</string>
+    <string name="themes_title">Temas</string>
+    <string name="about_title">Acerca de</string>
+    <string name="achievements_title">Logros</string>
+    <string name="language_title">Idioma</string>
+
+    <!-- Acerca de -->
+    <string name="app_version">EcoGarden Game v0.8</string>
+    <string name="developed_with">Desarrollado con Compose Multiplatform por Rafa R. G.</string>
+    <string name="human_made_art">Artista: kunohami</string>
+
+    <!-- Pantalla de Juego -->
+    <string name="cps_label">CPS</string>
+    <string name="bunny_guide_title">Guía de %1$s</string>
+    <string name="bunny_thanks">¡Gracias, conejito!</string>
+    <string name="upgrades_info">Información de mejoras:</string>
+    <string name="unlock_item_title">Desbloquear %1$s</string>
+    <string name="unlock_requirement">Necesitas lo siguiente para desbloquear este objeto:</string>
+    <string name="unlock_confirm">Desbloquear ahora</string>
+    <string name="go_to_store">Ir a la tienda</string>
+    <string name="close">Cerrar</string>
+    <string name="back">Atrás</string>
+
+    <!-- Pantalla de Tienda -->
+    <string name="shop_title">Tienda del Jardín</string>
+    <string name="tab_vegetables">Vegetales</string>
+    <string name="tab_upgrades">Mejoras</string>
+    <string name="modifiers_title">Modificadores: %1$s</string>
+    <string name="purchased_label">Comprado - Toca para modificadores</string>
+    <string name="buy">Comprar</string>
+    <string name="upgrade">Mejorar</string>
+    <string name="max_level">MÁX</string>
+    <string name="cost_label">Coste:</string>
+    <string name="upgrade_cost_label">Coste de mejora:</string>
+
+    <!-- Pantalla de Ajustes -->
+    <string name="general_section">General</string>
+    <string name="vibration_label">Vibración</string>
+    <string name="intensity_label">Intensidad: %1$dms</string>
+    <string name="dark_theme_label">Tema oscuro</string>
+    <string name="backgrounds_section">Fondos</string>
+    <string name="wavy_theme_label">Tema Ondulado</string>
+    <string name="wavy_theme_desc">Fondo de shader animado (Puede afectar a la batería)</string>
+    <string name="debug_options">Opciones de depuración</string>
+    <string name="add_resources">Añadir +100k recursos</string>
+    <string name="add_resources_confirm">¿Estás seguro de que quieres añadir 100k a todos los recursos? Esto es para fines de prueba.</string>
+    <string name="resources_added_toast">¡Recursos añadidos con éxito!</string>
+    <string name="reset_progress">Reiniciar progreso</string>
+    <string name="reset_progress_confirm">¿Estás absolutamente seguro? Esto borrará todo tu progreso, dinero y vegetales desbloqueados. Esta acción no se puede deshacer.</string>
+    <string name="reset_progress_toast">Progreso del juego reiniciado.</string>
+    <string name="back_to_misc">Volver a Varios</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Pantalla de Temas -->
+    <string name="theme_light">Salvia Seca (Por defecto)</string>
+    <string name="theme_dark">Negro Tinta</string>
+    <string name="theme_wavy">Tema Ondulado</string>
+
+    <!-- Pantalla de Perfil -->
+    <string name="set_username">Cambiar nombre</string>
+    <string name="enter_name_placeholder">Introduce tu nombre</string>
+    <string name="save">Guardar</string>
+    <string name="choose_avatar">Elegir Avatar</string>
+    <string name="status_unlocked">Estado: DESBLOQUEADO</string>
+    <string name="status_locked">Estado: BLOQUEADO</string>
+
+    <!-- Pantalla de Biblioteca -->
+    <string name="library_title">Biblioteca del conocimiento</string>
+    <string name="unlock_button">Desbloquear</string>
+    <string name="got_it">Entendido</string>
+
+    <!-- Achievement Toast -->
+    <string name="congratulations">¡Felicidades!</string>
+    <string name="unlocked_label">Desbloqueado: %1$s</string>
+
+    <!-- Vegetable Names -->
+    <string name="item_tomato">Tomate</string>
+    <string name="item_broccoli">Brócoli</string>
+    <string name="item_bell_pepper">Pimiento</string>
+    <string name="item_garlic">Ajo</string>
+    <string name="item_purple_onion">Cebolla Morada</string>
+    <string name="item_squash">Calabaza</string>
+    <string name="item_apple">Manzana</string>
+
+    <!-- Library Categories -->
+    <string name="lib_cat_plagues">Plagas</string>
+    <string name="lib_cat_farmers">Agricultores</string>
+    <string name="lib_cat_pesticides">Pesticidas</string>
+    <string name="lib_cat_genetic">Genética</string>
+
+    <!-- Tutorials -->
+    <string name="tutorial_tomato">¡Puedes pulsar rápidamente para obtener pequeñas recompensas, o esperar 5 segundos hasta que el tomate vibre y brille intensamente para obtener un bono masivo de 20x! La mejora de Sincronización Háptica te ayudará a sentir exactamente cuándo está lista la bonificación.</string>
+    <string name="tutorial_broccoli">¡Este brócoli se mueve! Tócalo mientras se desplaza para recoger recompensas. ¡La mejora \'Cosecha Aérea\' te permite recoger recompensas simplemente pasando la mano cerca del sensor!</string>
+    <string name="tutorial_bell_pepper">¡Los pimientos son erráticos! Se detienen un momento y luego salen disparados en una dirección aleatoria. ¡Espera a que se detengan o intenta atraparlos en movimiento!</string>
+    <string name="tutorial_garlic">¡Toca el ajo 10 veces para que explote en pequeños dientes! Recoge todos los dientes para obtener un gran bono. ¡La mejora \'Agitar para Cosechar\' te permite recoger varios dientes a la vez simplemente agitando tu dispositivo!</string>
+    <string name="tutorial_purple_onion">¡La cebolla morada se teleporta! Cada vez que aparece, comienza una rotación rápida. ¡Si la atrapas mientras gira, obtendrás un bono de monedas significativo! Comprar más cebollas aumentará tus posibilidades, pero reducirá ligeramente el bono individual.</string>
+    <string name="tutorial_squash">¡Esto es el Tenis de Zelda! La calabaza rebota de un lado a otro. Haz clic en cualquier lugar para dar un tajo con tu brazo de hoz cuando la calabaza esté cerca de la esquina inferior izquierda para devolverla. ¡No falles, o perderás tu impulso!</string>
+    <string name="tutorial_apple">La manzana se mueve en círculo y debes girar tu dispositivo como una brújula para apuntar hacia ella. Cuando el indicador se ponga verde y veas \'¡COSECHANDO!\', ¡las recompensas se recogerán automáticamente! No es necesario hacer clic.</string>
+
+    <!-- Library Content: Tomato -->
+    <string name="lib_tomato_t1">El origen andino</string>
+    <string name="lib_tomato_c1">El tomate se origina en los Andes sudamericanos, específicamente en las zonas que ahora se conocen como Perú, Ecuador y Chile.</string>
+    <string name="lib_tomato_t2">¿Fruta o verdura?</string>
+    <string name="lib_tomato_c2">Botánicamente, un tomate es una fruta porque se desarrolla a partir del ovario de una flor y contiene semillas.</string>
+    <string name="lib_tomato_t3">Manzanas doradas</string>
+    <string name="lib_tomato_c3">Los primeros tomates que llegaron a Europa eran amarillos, lo que llevó a los italianos a llamarlos \'pomi d\'oro\' (manzanas doradas).</string>
+    <string name="lib_tomato_t4">El poder del licopeno</string>
+    <string name="lib_tomato_c4">Los tomates son la principal fuente dietética de licopeno, un antioxidante vinculado a muchos beneficios para la salud, incluyendo la reducción del riesgo de enfermedades cardíacas.</string>
+    <string name="lib_tomato_t5">Diversidad genética</string>
+    <string name="lib_tomato_c5">Existen más de 10.000 variedades de tomates cultivados en todo el mundo, que van desde pequeños tomates cherry hasta gigantes de tipo beefsteak.</string>
+    <string name="lib_tomato_t6">Tomates espaciales</string>
+    <string name="lib_tomato_c6">Se han cultivado tomates con éxito en la Estación Espacial Internacional para estudiar el crecimiento de las plantas en microgravedad.</string>
+    <string name="lib_tomato_t7">Contenido de agua</string>
+    <string name="lib_tomato_c7">Un tomate fresco tiene aproximadamente un 95% de agua. El 5% restante consiste principalmente en carbohidratos y fibra.</string>
+    <string name="lib_tomato_t8">Beneficios al cocinar</string>
+    <string name="lib_tomato_c8">A diferencia de muchos vegetales, cocinar los tomates aumenta la cantidad de licopeno que tu cuerpo puede absorber.</string>
+    <string name="lib_tomato_t9">El tomate más pesado</string>
+    <string name="lib_tomato_c9">El récord Guinness del tomate más pesado pesó 3,51 kg (7,7 lb) y fue cultivado en los EE. UU.</string>
+    <string name="lib_tomato_t10">La Tomatina</string>
+    <string name="lib_tomato_c10">Cada año, el pueblo de Buñol en España celebra un festival donde se utilizan 150.000 tomates como proyectiles en una gigante batalla de comida.</string>
+
+    <!-- Library Content: Broccoli -->
+    <string name="lib_broccoli_t1">Primo de la col</string>
+    <string name="lib_broccoli_c1">El brócoli pertenece a la familia Brassicaceae, lo que lo convierte en un pariente cercano de la col, la col rizada y la coliflor.</string>
+    <string name="lib_broccoli_t2">Nombre italiano</string>
+    <string name="lib_broccoli_c2">El nombre \'brócoli\' proviene de la palabra italiana \'broccolo\', que significa la cresta floral de una col.</string>
+    <string name="lib_broccoli_t3">Gigante de vitamina C</string>
+    <string name="lib_broccoli_c3">Una taza de brócoli contiene tanta vitamina C como una naranja, ayudando a fortalecer el sistema inmunológico.</string>
+    <string name="lib_broccoli_t4">Control natural de plagas</string>
+    <string name="lib_broccoli_c4">El brócoli produce compuestos de azufre naturales que actúan como mecanismo de defensa contra insectos y enfermedades.</string>
+    <string name="lib_broccoli_t5">Básico romano</string>
+    <string name="lib_broccoli_c5">El brócoli era una comida popular en la antigua Roma, donde a menudo se servía con diversas especias y aceites.</string>
+    <string name="lib_broccoli_t6">Sulforafano</string>
+    <string name="lib_broccoli_c6">Contiene sulforafano, un compuesto que puede proteger contra ciertos tipos de cáncer y mejorar la salud del corazón.</string>
+    <string name="lib_broccoli_t7">Vapor para la salud</string>
+    <string name="lib_broccoli_c7">Cocer el brócoli al vapor es la mejor manera de cocinarlo si quieres conservar sus propiedades para reducir el colesterol.</string>
+    <string name="lib_broccoli_t8">Planta con flores</string>
+    <string name="lib_broccoli_c8">La cabeza del brócoli está compuesta en realidad por muchos diminutos brotes florales que aún no han florecido.</string>
+    <string name="lib_broccoli_t9">Producción de California</string>
+    <string name="lib_broccoli_c9">Más del 90% del brócoli cultivado en los Estados Unidos proviene de California debido a su clima favorable.</string>
+    <string name="lib_broccoli_t10">Congelado vs Fresco</string>
+    <string name="lib_broccoli_c10">El brócoli congelado a veces puede tener más nutrientes que el fresco porque se congela justo después de ser cosechado.</string>
+
+    <!-- Library Content: Bell Pepper -->
+    <string name="lib_bell_pepper_t1">Niveles de picante</string>
+    <string name="lib_bell_pepper_c1">Los pimientos son el único miembro de la familia Capsicum que no produce capsaicina, lo que los hace dulces.</string>
+    <string name="lib_bell_pepper_t2">Etapas de color</string>
+    <string name="lib_bell_pepper_c2">La mayoría de los pimientos verdes son solo pimientos rojos inmaduros. A medida que maduran, pasan de verde a amarillo, naranja y luego rojo.</string>
+    <string name="lib_bell_pepper_t3">Fuente de vitamina A</string>
+    <string name="lib_bell_pepper_c3">Los pimientos rojos tienen 11 veces más betacaroteno y 1,5 veces más vitamina C que los verdes.</string>
+    <string name="lib_bell_pepper_t4">Raíces sudamericanas</string>
+    <string name="lib_bell_pepper_c4">Se cultivaron por primera vez en Centro y Sudamérica hace más de 9.000 años.</string>
+    <string name="lib_bell_pepper_t5">Pimentón húngaro</string>
+    <string name="lib_bell_pepper_c5">El pimentón se elabora moliendo pimientos secos y otras variedades de chile, convirtiéndose en un básico de la cocina húngara.</string>
+    <string name="lib_bell_pepper_t6">De la flor al fruto</string>
+    <string name="lib_bell_pepper_c6">Las plantas de pimiento suelen producir flores blancas que eventualmente se convierten en los pimientos que comemos.</string>
+    <string name="lib_bell_pepper_t7">Vida útil</string>
+    <string name="lib_bell_pepper_c7">Debido a que contienen más azúcar, los pimientos rojos tienen una vida útil más corta que los pimientos verdes.</string>
+    <string name="lib_bell_pepper_t8">Versatilidad culinaria</string>
+    <string name="lib_bell_pepper_c8">Se pueden comer crudos, asados, rellenos o fritos, y son un ingrediente clave en el \'mirepoix\' o \'sofrito\'.</string>
+    <string name="lib_bell_pepper_t9">La variedad morada</string>
+    <string name="lib_bell_pepper_c9">¡Existen los pimientos morados! Son dulces como los verdes pero tienen una hermosa piel violeta.</string>
+    <string name="lib_bell_pepper_t10">Peso y densidad</string>
+    <string name="lib_bell_pepper_c10">Un pimiento de alta calidad debe sentirse pesado para su tamaño, lo que indica paredes gruesas e hidratadas.</string>
+
+    <!-- Library Content: Garlic -->
+    <string name="lib_garlic_t1">La rosa apestosa</string>
+    <string name="lib_garlic_c1">El ajo ha sido apodado \'La Rosa Apestosa\' debido a su fuerte aroma y propiedades beneficiosas.</string>
+    <string name="lib_garlic_t2">Medicina antigua</string>
+    <string name="lib_garlic_c2">Los antiguos egipcios usaban el ajo para tratar desde enfermedades cardíacas hasta parásitos e incluso mala circulación.</string>
+    <string name="lib_garlic_t3">Activación de la alicina</string>
+    <string name="lib_garlic_c3">El compuesto alicina solo se forma cuando el ajo se machaca o pica, lo que inicia una reacción química.</string>
+    <string name="lib_garlic_t4">Antiséptico de la I Guerra Mundial</string>
+    <string name="lib_garlic_c4">El ajo se usó durante la Primera Guerra Mundial como antiséptico para prevenir la gangrena en las heridas de los soldados.</string>
+    <string name="lib_garlic_t5">Leyenda de vampiros</string>
+    <string name="lib_garlic_c5">El folclore de que el ajo repele a los vampiros probablemente proviene de su uso como medicina tradicional contra enfermedades relacionadas con la sangre.</string>
+    <string name="lib_garlic_t6">Aliento a ajo</string>
+    <string name="lib_garlic_c6">Comer perejil o beber leche puede ayudar a neutralizar los compuestos de azufre que causan el aliento a ajo.</string>
+    <string name="lib_garlic_t7">Estructura del bulbo</string>
+    <string name="lib_garlic_c7">Un solo bulbo de ajo contiene unos 10 a 20 dientes individuales, cada uno protegido por una piel de papel.</string>
+    <string name="lib_garlic_t8">Gilroy, California</string>
+    <string name="lib_garlic_c8">Gilroy es conocida como la \'Capital Mundial del Ajo\' y organiza un festival anual del ajo que incluye helado de ajo.</string>
+    <string name="lib_garlic_t9">Antiinflamatorio</string>
+    <string name="lib_garlic_c9">Los estudios muestran que el ajo puede ayudar a reducir la inflamación y puede bajar la presión arterial en algunas personas.</string>
+    <string name="lib_garlic_t10">Secreto de longevidad</string>
+    <string name="lib_garlic_c10">El ajo ha sido un alimento básico en las dietas de algunas de las poblaciones más longevas del mundo, como en el Mediterráneo.</string>
+
+    <!-- Library Content: Purple Onion -->
+    <string name="lib_purple_onion_t1">Antocianinas</string>
+    <string name="lib_purple_onion_c1">El color púrpura proviene de las antocianinas, poderosos antioxidantes que también se encuentran en los arándanos y las uvas rojas.</string>
+    <string name="lib_purple_onion_t2">Suave y dulce</string>
+    <string name="lib_purple_onion_c2">En comparación con las cebollas blancas, las cebollas moradas suelen ser más suaves y dulces, lo que las hace perfectas para ensaladas crudas.</string>
+    <string name="lib_purple_onion_t3">Hacer llorar</string>
+    <string name="lib_purple_onion_c3">Las cebollas liberan un gas llamado syn-propanotial-S-óxido cuando se cortan, que reacciona con los ojos para formar ácido sulfúrico.</string>
+    <string name="lib_purple_onion_t4">Tinte natural</string>
+    <string name="lib_purple_onion_c4">Las pieles de las cebollas moradas se han utilizado durante siglos como tinte natural para telas y huevos de Pascua.</string>
+    <string name="lib_purple_onion_t5">Historia por capas</string>
+    <string name="lib_purple_onion_c5">Las cebollas eran adoradas en el antiguo Egipto; su forma esférica y sus anillos concéntricos representaban la vida eterna.</string>
+    <string name="lib_purple_onion_t6">Quercetina</string>
+    <string name="lib_purple_onion_c6">Las cebollas moradas son una de las fuentes más ricas de quercetina, un flavonoide que ayuda a combatir la inflamación.</string>
+    <string name="lib_purple_onion_t7">Salud del corazón</string>
+    <string name="lib_purple_onion_c7">El consumo regular de cebollas rojas puede ayudar a reducir el colesterol y disminuir el riesgo de enfermedades cardíacas.</string>
+    <string name="lib_purple_onion_t8">Consejo de almacenamiento</string>
+    <string name="lib_purple_onion_c8">Las cebollas deben almacenarse en un lugar fresco y seco, pero NO junto a las patatas, ya que liberan humedad que pudre las cebollas.</string>
+    <string name="lib_purple_onion_t9">Cebollas encurtidas</string>
+    <string name="lib_purple_onion_c9">Las cebollas moradas son la elección clásica para encurtir porque el ácido vuelve su color a un rosa neón vibrante.</string>
+    <string name="lib_purple_onion_t10">Alimento antiguo</string>
+    <string name="lib_purple_onion_c10">La evidencia arqueológica sugiere que las cebollas han sido un alimento básico para los humanos desde la Edad del Bronce (alrededor del 3000 a. C.).</string>
+
+    <!-- Library Content: Squash -->
+    <string name="lib_squash_t1">Las Tres Hermanas</string>
+    <string name="lib_squash_c1">Los indígenas americanos cultivaban calabazas junto con maíz y frijoles, un sistema conocido como las Tres Hermanas.</string>
+    <string name="lib_squash_t2">Invierno vs Verano</string>
+    <string name="lib_squash_c2">Las calabazas de invierno tienen pieles duras y se almacenan, mientras que las de verano (como el calabacín) se comen frescas.</string>
+    <string name="lib_squash_t3">Nativo de las Américas</string>
+    <string name="lib_squash_c3">La calabaza es uno de los cultivos más antiguos conocidos en el hemisferio occidental, que data de hace 10.000 años.</string>
+    <string name="lib_squash_t4">Flores comestibles</string>
+    <string name="lib_squash_c4">Las grandes flores de color amarillo brillante de la planta de calabaza son comestibles y a menudo se rellenan o fríen en muchas culturas.</string>
+    <string name="lib_squash_t5">Fibra y nutrientes</string>
+    <string name="lib_squash_c5">La calabaza está llena de vitamina A, potasio y fibra, lo que la hace excelente para la digestión y la visión.</string>
+    <string name="lib_squash_t6">Biodiversidad</string>
+    <string name="lib_squash_c6">Hay cientos de especies de calabazas, desde la pequeña pattypan hasta la masiva calabaza Atlantic Giant.</string>
+    <string name="lib_squash_t7">Grandes consumidoras</string>
+    <string name="lib_squash_c7">Las plantas de calabaza son \'grandes consumidoras\', lo que significa que requieren suelos muy ricos en nutrientes y mucha agua para prosperar.</string>
+    <string name="lib_squash_t8">La fruta más grande</string>
+    <string name="lib_squash_c8">La fruta más grande del mundo es una variedad de calabaza (el zapallo). El récord actual supera los 1.200 kg.</string>
+    <string name="lib_squash_t9">Contenedores naturales</string>
+    <string name="lib_squash_c9">Las calabazas secas eran utilizadas por los pueblos antiguos como recipientes de agua, cuencos e incluso instrumentos musicales.</string>
+    <string name="lib_squash_t10">Polinización</string>
+    <string name="lib_squash_c10">Las calabazas dependen mucho de las abejas para la polinización. Sin ellas, la planta produce frutos pequeños y marchitos o ninguno en absoluto.</string>
+
+    <!-- Library Content: Apple -->
+    <string name="lib_apple_t1">La familia de las rosas</string>
+    <string name="lib_apple_c1">Las manzanas son miembros de la familia Rosaceae, lo que las convierte en primas lejanas de la rosa y la fresa.</string>
+    <string name="lib_apple_t2">Raíces de Kazajistán</string>
+    <string name="lib_apple_c2">El ancestro salvaje de la manzana moderna es el Malus sieversii, que todavía crece en las montañas de Kazajistán.</string>
+    <string name="lib_apple_t3">Fruta flotante</string>
+    <string name="lib_apple_c3">Las manzanas tienen un 25% de aire, razón por la cual flotan en el agua. ¡Por eso es posible jugar a \'pescar manzanas\'!</string>
+    <string name="lib_apple_t4">7.500 variedades</string>
+    <string name="lib_apple_c4">Te tomaría más de 20 años probar cada variedad de manzana en el mundo si comieras una por día.</string>
+    <string name="lib_apple_t5">Ácido málico</string>
+    <string name="lib_apple_c5">La acidez de una manzana proviene del ácido málico. La palabra \'málico\' proviene de la palabra latina para manzana, \'malum\'.</string>
+    <string name="lib_apple_t6">Peligro de las semillas</string>
+    <string name="lib_apple_c6">Las semillas de manzana contienen una pequeña cantidad de cianuro. Sin embargo, necesitarías masticar y comer cientos para enfermarte.</string>
+    <string name="lib_apple_t7">Gas etileno</string>
+    <string name="lib_apple_c7">Las manzanas liberan gas etileno, que puede ayudar a madurar otras frutas como plátanos o tomates si se almacenan juntas.</string>
+    <string name="lib_apple_t8">¿Fruta prohibida?</string>
+    <string name="lib_apple_c8">La Biblia nunca especifica que el fruto del Edén fuera una manzana; probablemente fue una granada o un higo.</string>
+    <string name="lib_apple_t9">Anticolesterol</string>
+    <string name="lib_apple_c9">¡Una manzana al día realmente podría mantener alejado al médico! La pectina en las manzanas ayuda a reducir los niveles de colesterol \'malo\'.</string>
+    <string name="lib_apple_t10">Longevidad</string>
+    <string name="lib_apple_c10">Los manzanos pueden vivir más de 100 años, aunque sus años pico de producción suelen estar entre los 10 y los 50.</string>
+
+    <!-- Library Content: Plagues -->
+    <string name="lib_plagues_t1">Infestaciones de pulgones</string>
+    <string name="lib_plagues_c1">Los pulgones son diminutos insectos que succionan la savia de las plantas, debilitándolas y propagando enfermedades virales.</string>
+    <string name="lib_plagues_t2">La hambruna de la patata</string>
+    <string name="lib_plagues_c2">El tizón tardío (Phytophthora infestans) causó la Gran Hambruna Irlandesa, destruyendo los cultivos de patata en la década de 1840.</string>
+    <string name="lib_plagues_t3">Enjambres de langostas</string>
+    <string name="lib_plagues_c3">Las langostas del desierto pueden formar enjambres de miles de millones de insectos, capaces de comer la misma cantidad de comida que 35.000 personas en un día.</string>
+    <string name="lib_plagues_t4">Ácaros araña</string>
+    <string name="lib_plagues_c4">Estos diminutos arácnidos prosperan en condiciones calurosas y secas y pueden cubrir rápidamente una planta con telas finas y sofocantes.</string>
+    <string name="lib_plagues_t5">Amenaza de la mosca blanca</string>
+    <string name="lib_plagues_c5">Las moscas blancas secretan \'melaza\', lo que conduce al crecimiento de moho negro de hollín en las hojas de tus cultivos.</string>
+    <string name="lib_plagues_t6">Gusano del tomate</string>
+    <string name="lib_plagues_c6">Un solo gusano del tomate puede defoliar una planta entera de tomate en solo unos pocos días si no se controla.</string>
+    <string name="lib_plagues_t7">Marchitamiento fúngico</string>
+    <string name="lib_plagues_c7">Esta enfermedad fúngica hace que las plántulas jóvenes colapsen y mueran en la línea del suelo, a menudo debido al exceso de riego.</string>
+    <string name="lib_plagues_t8">Camuflaje de orugas</string>
+    <string name="lib_plagues_c8">Muchas plagas del jardín han evolucionado colores que se mezclan perfectamente con las hojas, haciéndolas difíciles de encontrar para los depradadores.</string>
+    <string name="lib_plagues_t9">Insectos beneficiosos</string>
+    <string name="lib_plagues_c9">Las mariquitas y las crisopas son los mejores amigos del jardinero, ya que cazan y comen naturalmente a los pulgones dañinos.</string>
+    <string name="lib_plagues_t10">Impacto climático</string>
+    <string name="lib_plagues_c10">Los inviernos más cálidos permiten que más plagas sobrevivan hasta la primavera, lo que lleva a brotes de plagas más grandes y frecuentes.</string>
+
+    <!-- Library Content: Farmers -->
+    <string name="lib_farmers_t1">La columna vertebral de la sociedad</string>
+    <string name="lib_farmers_c1">Los agricultores producen casi todo lo que comemos, sin embargo, representan menos del 2% de la población en muchas naciones desarrolladas.</string>
+    <string name="lib_farmers_t2">Científicos del suelo</string>
+    <string name="lib_farmers_c2">Los agricultores modernos deben comprender la química del suelo, los niveles de humedad y los ciclos de nutrientes para mantener la tierra sana.</string>
+    <string name="lib_farmers_t3">Agricultura de precisión</string>
+    <string name="lib_farmers_c3">Muchos agricultores ahora usan GPS e imágenes satelitales para plantar semillas y aplicar agua con una precisión de nivel centimétrico.</string>
+    <string name="lib_farmers_t4">Granjas familiares</string>
+    <string name="lib_farmers_c4">Aproximadamente el 90% de las granjas del mundo son operadas por familias, produciendo alrededor del 80% de los alimentos del mundo.</string>
+    <string name="lib_farmers_t5">Prácticas sostenibles</string>
+    <string name="lib_farmers_c5">La rotación de cultivos y el cultivo de cobertura son técnicas antiguas que los agricultores usan para prevenir el agotamiento del suelo.</string>
+    <string name="lib_farmers_t6">La edad promedio</string>
+    <string name="lib_farmers_c6">La edad promedio de un agricultor en muchos países es de unos 58 años, lo que resalta la necesidad de jóvenes en la agricultura.</string>
+    <string name="lib_farmers_t7">Socios de los apicultores</string>
+    <string name="lib_farmers_c7">Los agricultores a menudo alquilan colmenas durante las temporadas de floración para asegurar que sus cultivos sean polinizados adecuadamente.</string>
+    <string name="lib_farmers_t8">Agricultura vertical</string>
+    <string name="lib_farmers_c8">Una nueva generación de agricultores urbanos está cultivando cultivos en pilas verticales dentro de edificios para ahorrar espacio.</string>
+    <string name="lib_farmers_t9">Apostadores del clima</string>
+    <string name="lib_farmers_c9">La agricultura es una de las profesiones más arriesgadas del mundo porque depende completamente de patrones climáticos impredecibles.</string>
+    <string name="lib_farmers_t10">Certificación orgánica</string>
+    <string name="lib_farmers_c10">Los agricultores orgánicos deben seguir reglas estrictas, incluyendo el uso cero de pesticidas o fertilizantes sintéticos durante varios años.</string>
+
+    <!-- Library Content: Pesticides -->
+    <string name="lib_pesticides_t1">Productos químicos sintéticos</string>
+    <string name="lib_pesticides_c1">Los pesticidas sintéticos se utilizaron ampliamente por primera vez después de la Segunda Guerra Mundial para aumentar la producción de alimentos a nivel mundial.</string>
+    <string name="lib_pesticides_t2">Alternativas naturales</string>
+    <string name="lib_pesticides_c2">El aceite de neem y el agua con jabón son pesticidas naturales eficaces que son menos dañinos para el medio ambiente.</string>
+    <string name="lib_pesticides_t3">Impacto en las abejas</string>
+    <string name="lib_pesticides_c3">Ciertos pesticidas, como los neonicotinoides, se han relacionado con la disminución de las poblaciones de abejas melíferas en todo el mundo.</string>
+    <string name="lib_pesticides_t4">Bioacumulación</string>
+    <string name="lib_pesticides_c4">Los productos químicos pueden acumularse en la cadena alimentaria, concentrándose más en los animales que comen plantas tratadas.</string>
+    <string name="lib_pesticides_t5">Resistencia a los pesticidas</string>
+    <string name="lib_pesticides_c5">El uso excesivo de productos químicos hace que las plagas desarrollen resistencia, lo que obliga a los agricultores a usar fórmulas aún más fuertes.</string>
+    <string name="lib_pesticides_t6">Manejo Integrado de Plagas</string>
+    <string name="lib_pesticides_c6">El MIP es una estrategia que utiliza primero controles biológicos y productos químicos solo como último recurso.</string>
+    <string name="lib_pesticides_t7">Escorrentía de agua</string>
+    <string name="lib_pesticides_c7">La lluvia puede arrastrar los pesticidas a los ríos y lagos, afectando la vida acuática y contaminando el agua potable.</string>
+    <string name="lib_pesticides_t8">Uso de herbicidas</string>
+    <string name="lib_pesticides_c8">Los herbicidas son un tipo de pesticida utilizado específicamente para matar las malas hierbas que compiten con los cultivos por los nutrientes.</string>
+    <string name="lib_pesticides_t9">Equipo de seguridad</string>
+    <string name="lib_pesticides_c9">Los agricultores deben usar equipo de protección especializado al manipular productos químicos para prevenir la irritación de la piel y los pulmones.</string>
+    <string name="lib_pesticides_t10">Límites regulatorios</string>
+    <string name="lib_pesticides_c10">Los gobiernos establecen límites estrictos sobre la cantidad de residuos de pesticidas permitidos en las frutas y verduras que se venden en las tiendas.</string>
+
+    <!-- Library Content: Genetics -->
+    <string name="lib_genetic_t1">¿Qué es un OGM?</string>
+    <string name="lib_genetic_c1">Los Organismos Genéticamente Modificados han tenido su ADN alterado en un laboratorio para introducir rasgos deseables.</string>
+    <string name="lib_genetic_t2">Cruces selectivos</string>
+    <string name="lib_genetic_c2">Los humanos han estado \'modificando genéticamente\' las plantas durante miles de años mediante la cría selectiva.</string>
+    <string name="lib_genetic_t3">Arroz dorado</string>
+    <string name="lib_genetic_c3">El arroz dorado es un OGM diseñado para producir vitamina A, con el objetivo de prevenir la ceguera en los países en desarrollo.</string>
+    <string name="lib_genetic_t4">Resistencia a la sequía</string>
+    <string name="lib_genetic_c4">Los científicos están desarrollando cultivos que pueden sobrevivir con significativamente menos agua para combatir el cambio climático.</string>
+    <string name="lib_genetic_t5">Cultivos BT</string>
+    <string name="lib_genetic_c5">El maíz BT produce su propia toxina natural que mata insectos dañinos específicos, reduciendo la necesidad de rociar pesticidas.</string>
+    <string name="lib_genetic_t6">El Flavr Savr</string>
+    <string name="lib_genetic_c6">El tomate Flavr Savr fue el primer alimento de ingeniería genética que se vendió en las tiendas (1994).</string>
+    <string name="lib_genetic_t7">Mejora nutricional</string>
+    <string name="lib_genetic_c7">La ingeniería genética se puede utilizar para hacer que las verduras produzcan niveles más altos de vitaminas y minerales.</string>
+    <string name="lib_genetic_t8">Debate ético</string>
+    <string name="lib_genetic_c8">Los OGM están en el centro de un debate sobre la biodiversidad, el control corporativo de las semillas y la salud a largo plazo.</string>
+    <string name="lib_genetic_t9">Tecnología CRISPR</string>
+    <string name="lib_genetic_c9">CRISPR es una nueva herramienta que permite a los científicos editar los genomas de las plantas con mucha más precisión que los métodos anteriores.</string>
+    <string name="lib_genetic_t10">El futuro de la comida</string>
+    <string name="lib_genetic_c10">A medida que crece la población mundial, la modificación genética puede ser clave para asegurar que haya suficiente comida para todos.</string>
+
+    <!-- Mejoras Globales -->
+    <string name="upg_precise_harvest_name">Cosecha Precisa</string>
+    <string name="upg_precise_harvest_desc">Aumenta la frecuencia de recompensas dobles. Al Nivel 5, las recompensas se alternan (50% de probabilidad).</string>
+    <string name="upg_lucky_harvest_name">Cosecha Afortunada</string>
+    <string name="upg_lucky_harvest_desc">1% de probabilidad por nivel de obtener un 1000% (10x) de recompensa al pulsar.</string>
+
+    <!-- Modificadores -->
+    <string name="mod_tomato_haptic_name">Sincronización Háptica</string>
+    <string name="mod_tomato_haptic_desc">Vibra cuando la súper recompensa está lista.</string>
+    <string name="mod_broccoli_giant_name">Brócoli Gigante</string>
+    <string name="mod_broccoli_giant_desc">Doble tamaño, pero requiere 2 pulsaciones para obtener recompensa.</string>
+    <string name="mod_broccoli_overclocked_name">Acelerado</string>
+    <string name="mod_broccoli_overclocked_desc">Doble velocidad de movimiento y recompensas dobles.</string>
+    <string name="mod_broccoli_air_name">Cosecha Aérea</string>
+    <string name="mod_broccoli_air_desc">Recoge recompensas pasando la mano sobre el sensor de la pantalla.</string>
+    <string name="mod_bell_pepper_turbo_name">Cosecha Turbo</string>
+    <string name="mod_bell_pepper_turbo_desc">Ciclo de movimiento a mitad de duración, pero recompensas dobles.</string>
+    <string name="mod_garlic_cluster_name">Racimo de Ajos</string>
+    <string name="mod_garlic_cluster_desc">Doble de ajos pequeños tras la explosión, +150% de recompensa final.</string>
+    <string name="mod_garlic_shake_name">Agitar para Cosechar</string>
+    <string name="mod_garlic_shake_desc">Recoge 5 ajos pequeños a la vez agitando tu teléfono.</string>
+    <string name="mod_onion_plus1_name">+1 Cebolla</string>
+    <string name="mod_onion_plus1_desc">Aparece una cebolla extra, pero las monedas de bonificación se reducen en 1.</string>
+    <string name="mod_onion_plus2_name">+1 Cebolla II</string>
+    <string name="mod_onion_plus2_desc">Aparece una tercera cebolla, las monedas de bonificación se reducen más.</string>
+    <string name="mod_onion_sturdy_name">Raíces Fuertes</string>
+    <string name="mod_onion_sturdy_desc">Las cebollas rotan durante más tiempo, extendiendo la ventana de bonificación.</string>
+    <string name="mod_squash_momentum_name">Inercia de Velocidad</string>
+    <string name="mod_squash_momentum_desc">Cada golpe aumenta la velocidad un 10% y añade +1 Moneda y +1 Calabaza. Se reinicia al fallar.</string>
+    <string name="mod_apple_high_freq_name">Alta Frecuencia</string>
+    <string name="mod_apple_high_freq_desc">Doble velocidad de rotación, pero gana 5 monedas por tic.</string>
+
+    <!-- Logros -->
+    <string name="ach_master_gardener_name">Maestro Jardinero</string>
+    <string name="ach_master_gardener_desc">Desbloquea todas las frutas y verduras del jardín.</string>
+    <string name="ach_geneticist_name">Genetista</string>
+    <string name="ach_geneticist_desc">Desbloquea todos los modificadores específicos para cada planta.</string>
+    <string name="ach_shopaholic_name">Adicto a las compras</string>
+    <string name="ach_shopaholic_desc">Maximiza todas las mejoras globales de la tienda.</string>
+    <string name="ach_sonic_squash_name">Calabaza Sónica</string>
+    <string name="ach_sonic_squash_desc">Alcanza una racha de 10 golpes con el modificador de inercia de la calabaza.</string>
+    <string name="ach_tomato_sniper_name">Francotirador de Tomates</string>
+    <string name="ach_tomato_sniper_desc">Realiza 50 golpes críticos en el tomate.</string>
+    <string name="ach_hard_worker_name">Trabajador Incansable</string>
+    <string name="ach_hard_worker_desc">Alcanza 5.000 pulsaciones totales.</string>
+    <string name="ach_dedicated_farmer_name">Granjero Dedicado</string>
+    <string name="ach_dedicated_farmer_desc">Alcanza 10.000 pulsaciones totales.</string>
+    <string name="ach_clicking_machine_name">Máquina de Pulsar</string>
+    <string name="ach_clicking_machine_desc">Alcanza 15.000 pulsaciones totales.</string>
+    <string name="ach_legendary_tapper_name">Pulsador Legendario</string>
+    <string name="ach_legendary_tapper_desc">Alcanza 20.000 pulsaciones totales.</string>
+    <string name="ach_tomato_expert_name">Experto en Tomates</string>
+    <string name="ach_tomato_expert_desc">Lee todos los datos sobre los tomates.</string>
+    <string name="ach_broccoli_expert_name">Experto en Brócoli</string>
+    <string name="ach_broccoli_expert_desc">Lee todos los datos sobre el brócoli.</string>
+    <string name="ach_pepper_expert_name">Experto en Pimientos</string>
+    <string name="ach_pepper_expert_desc">Lee todos los datos sobre los pimientos.</string>
+    <string name="ach_garlic_expert_name">Experto en Ajos</string>
+    <string name="ach_garlic_expert_desc">Lee todos los datos sobre los ajos.</string>
+    <string name="ach_onion_expert_name">Experto en Cebollas</string>
+    <string name="ach_onion_expert_desc">Lee todos los datos sobre las cebollas moradas.</string>
+    <string name="ach_squash_expert_name">Experto en Calabazas</string>
+    <string name="ach_squash_expert_desc">Lee todos los datos sobre las calabazas.</string>
+    <string name="ach_apple_expert_name">Experto en Manzanas</string>
+    <string name="ach_apple_expert_desc">Lee todos los datos sobre las manzanas.</string>
+    <string name="ach_pest_control_name">Control de Plagas</string>
+    <string name="ach_pest_control_desc">Desbloquea toda la información sobre las plagas.</string>
+    <string name="ach_social_studies_name">Estudios Sociales</string>
+    <string name="ach_social_studies_desc">Desbloquea toda la información sobre los agricultores.</string>
+    <string name="ach_chemical_engineer_name">Ingeniero Químico</string>
+    <string name="ach_chemical_engineer_desc">Desbloquea toda la información sobre los pesticidas.</string>
+    <string name="ach_bio_technician_name">Biotécnico</string>
+    <string name="ach_bio_technician_desc">Desbloquea toda la información sobre la modificación genética.</string>
+</resources>

@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
@@ -21,10 +23,10 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Button(onClick = onBack) {
-                Text("Back")
+                Text(stringResource(Res.string.back))
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Text("Statistics", style = MaterialTheme.typography.displaySmall)
+            Text(stringResource(Res.string.stats_title), style = MaterialTheme.typography.displaySmall)
         }
         
         Spacer(modifier = Modifier.height(24.dp))
@@ -67,7 +69,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 val total = viewModel.totalFruitHarvested[item.id] ?: 0
                 
                 ListItem(
-                    headlineContent = { Text(item.name) },
+                    headlineContent = { Text(stringResource(item.nameRes)) },
                     supportingContent = { 
                         Column {
                             Text("Current: $current")

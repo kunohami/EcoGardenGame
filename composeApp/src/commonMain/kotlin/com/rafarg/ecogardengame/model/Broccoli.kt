@@ -18,15 +18,18 @@ import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.startListeningForProximity
 import com.rafarg.ecogardengame.util.stopListeningForProximity
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.broccoli_strip
+import ecogardengame.composeapp.generated.resources.item_broccoli
+import ecogardengame.composeapp.generated.resources.tutorial_broccoli
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
 class Broccoli : BaseVegetable() {
     override val id: String = "broccoli"
-    override val name: String = "Broccoli"
+    override val nameRes = Res.string.item_broccoli
     override val resource = Res.drawable.broccoli_strip
     override val price: Int = 50
     override val unlockCost: ItemCost = ItemCost(
@@ -35,7 +38,7 @@ class Broccoli : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥦"
-    override val tutorialText: String = "This broccoli moves! Tap it while it's zooming around to collect rewards. The 'Air Harvest' upgrade lets you collect rewards just by waving your hand near the sensor!"
+    override val tutorialRes = Res.string.tutorial_broccoli
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
@@ -45,22 +48,22 @@ class Broccoli : BaseVegetable() {
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "broccoli_giant",
-            name = "Giant Broccoli",
-            description = "Double size, but requires 2 clicks for reward.",
+            nameRes = Res.string.mod_broccoli_giant_name,
+            descriptionRes = Res.string.mod_broccoli_giant_desc,
             unlockCost = ItemCost(money = 500, vegetableCosts = mapOf("broccoli" to 100)),
             targetItemId = "broccoli"
         ),
         GameplayModifier(
             id = "broccoli_speed",
-            name = "Overclocked",
-            description = "Double movement speed and double rewards.",
+            nameRes = Res.string.mod_broccoli_overclocked_name,
+            descriptionRes = Res.string.mod_broccoli_overclocked_desc,
             unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("broccoli" to 250, "bell_pepper" to 50)),
             targetItemId = "broccoli"
         ),
         GameplayModifier(
             id = "broccoli_proximity",
-            name = "Air Harvest",
-            description = "Collect rewards by waving your hand over the screen sensor.",
+            nameRes = Res.string.mod_broccoli_air_name,
+            descriptionRes = Res.string.mod_broccoli_air_desc,
             unlockCost = ItemCost(money = 2000, vegetableCosts = mapOf("broccoli" to 100, "garlic" to 10)),
             targetItemId = "broccoli"
         )

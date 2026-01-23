@@ -16,7 +16,9 @@ import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.model.GameplayModifier
 import com.rafarg.ecogardengame.model.GlobalUpgrade
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +35,7 @@ fun StoreScreen(viewModel: GameViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Garden Shop", style = MaterialTheme.typography.displaySmall, color = primaryText)
+        Text(stringResource(Res.string.shop_title), style = MaterialTheme.typography.displaySmall, color = primaryText)
         Spacer(modifier = Modifier.height(8.dp))
         
         Row(
@@ -57,7 +59,7 @@ fun StoreScreen(viewModel: GameViewModel) {
                     selectedContentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
                     unselectedContentColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
-                    Text("Vegetables", modifier = Modifier.padding(16.dp))
+                    Text(stringResource(Res.string.tab_vegetables), modifier = Modifier.padding(16.dp))
                 }
                 Tab(
                     selected = selectedTab == 1, 
@@ -65,7 +67,7 @@ fun StoreScreen(viewModel: GameViewModel) {
                     selectedContentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
                     unselectedContentColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
-                    Text("Upgrades", modifier = Modifier.padding(16.dp))
+                    Text(stringResource(Res.string.tab_upgrades), modifier = Modifier.padding(16.dp))
                 }
             }
 
@@ -90,10 +92,10 @@ fun StoreScreen(viewModel: GameViewModel) {
             val item = selectedItemForUpgrades!!
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { selectedItemForUpgrades = null }) {
-                    Text("Back")
+                    Text(stringResource(Res.string.back))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text("Modifiers: ${item.name}", style = MaterialTheme.typography.titleLarge, color = primaryText)
+                Text(stringResource(Res.string.modifiers_title, stringResource(item.nameRes)), style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -122,27 +124,27 @@ fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(upgrade.name, style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(upgrade.nameRes), style = MaterialTheme.typography.titleMedium)
                     Text("Level: ${upgrade.unlockedLevel} / ${upgrade.maxLevel}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                    Text(upgrade.description, style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(upgrade.descriptionRes), style = MaterialTheme.typography.bodySmall)
                 }
                 
                 if (upgrade.isMaxLevel) {
-                    Text("MAX", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(Res.string.max_level), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 } else {
                     val canAfford = viewModel.canAfford(nextCost)
                     Button(
                         onClick = { viewModel.tryUnlockGlobalUpgrade(upgrade) },
                         enabled = canAfford
                     ) {
-                        Text(if (upgrade.unlockedLevel == 0) "Buy" else "Upgrade")
+                        Text(if (upgrade.unlockedLevel == 0) stringResource(Res.string.buy) else stringResource(Res.string.upgrade))
                     }
                 }
             }
             
             if (!upgrade.isMaxLevel) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Upgrade Cost:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                Text(stringResource(Res.string.upgrade_cost_label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (nextCost.money > 0) {
                         Text("🪙 ${nextCost.money}", style = MaterialTheme.typography.labelSmall)
@@ -182,11 +184,11 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.name, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(item.nameRes), style = MaterialTheme.typography.titleMedium)
                 
                 if (!item.unlocked) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Unlock Cost:", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
+                    Text(stringResource(Res.string.cost_label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
                     
                     if (item.unlockCost.money > 0) {
                         Text("🪙 ${item.unlockCost.money}", style = MaterialTheme.typography.bodySmall)
@@ -197,7 +199,7 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
                         Text("$vegEmoji ${costEntry.value}", style = MaterialTheme.typography.bodySmall)
                     }
                 } else {
-                    Text("Purchased - Tap for Modifiers", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(Res.string.purchased_label), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 }
             }
             
@@ -212,7 +214,7 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
                         containerColor = if (canAfford) MaterialTheme.colorScheme.primary else Color.Gray
                     )
                 ) {
-                    Text("Unlock")
+                    Text(stringResource(Res.string.unlock_button))
                 }
             }
         }
@@ -230,8 +232,8 @@ fun ModifierCard(gpMod: GameplayModifier, viewModel: GameViewModel) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(gpMod.name, style = MaterialTheme.typography.titleMedium)
-                    Text(gpMod.description, style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(gpMod.nameRes), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(gpMod.descriptionRes), style = MaterialTheme.typography.bodySmall)
                 }
                 
                 if (gpMod.isUnlocked) {
@@ -245,7 +247,7 @@ fun ModifierCard(gpMod: GameplayModifier, viewModel: GameViewModel) {
                         onClick = { viewModel.tryUnlockModifier(gpMod) },
                         enabled = canAfford
                     ) {
-                        Text("Buy")
+                        Text(stringResource(Res.string.buy))
                     }
                 }
             }

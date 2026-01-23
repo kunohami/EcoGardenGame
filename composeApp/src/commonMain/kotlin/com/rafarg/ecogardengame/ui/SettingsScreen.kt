@@ -13,8 +13,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
+import ecogardengame.composeapp.generated.resources.add_resources
+import ecogardengame.composeapp.generated.resources.add_resources_confirm
+import ecogardengame.composeapp.generated.resources.back_to_misc
+import ecogardengame.composeapp.generated.resources.cancel
+import ecogardengame.composeapp.generated.resources.confirm
+import ecogardengame.composeapp.generated.resources.debug_options
+import ecogardengame.composeapp.generated.resources.general_section
+import ecogardengame.composeapp.generated.resources.intensity_label
+import ecogardengame.composeapp.generated.resources.reset_progress
+import ecogardengame.composeapp.generated.resources.reset_progress_confirm
+import ecogardengame.composeapp.generated.resources.reset_progress_toast
+import ecogardengame.composeapp.generated.resources.resources_added_toast
+import ecogardengame.composeapp.generated.resources.settings_title
+import ecogardengame.composeapp.generated.resources.vibration_label
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
@@ -41,12 +58,12 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-            Text("Settings", style = MaterialTheme.typography.displayMedium)
+            Text(stringResource(Res.string.settings_title), style = MaterialTheme.typography.displayMedium)
             
             Spacer(modifier = Modifier.height(8.dp))
 
             // --- GENERAL SECTION ---
-            Text("General", style = MaterialTheme.typography.titleMedium, color = Color.Gray)
+            Text(stringResource(Res.string.general_section), style = MaterialTheme.typography.titleMedium, color = Color.Gray)
             
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -56,7 +73,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Vibration")
+                        Text(stringResource(Res.string.vibration_label))
                         Switch(
                             checked = viewModel.vibrationEnabled,
                             onCheckedChange = { viewModel.setVibration(it) }
@@ -65,7 +82,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     
                     if (viewModel.vibrationEnabled) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Intensity: ${viewModel.vibrationIntensity.toInt()}ms", style = MaterialTheme.typography.labelSmall)
+                        Text(stringResource(Res.string.intensity_label, viewModel.vibrationIntensity.toInt()), style = MaterialTheme.typography.labelSmall)
                         Slider(
                             value = viewModel.vibrationIntensity,
                             onValueChange = { viewModel.updateVibrationIntensity(it) },
@@ -79,66 +96,68 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Debug/Testing Section
-            Text("Debug Options", style = MaterialTheme.typography.titleMedium, color = Color.Gray)
+            Text(stringResource(Res.string.debug_options), style = MaterialTheme.typography.titleMedium, color = Color.Gray)
             
             Button(
                 onClick = { showDebugDialog = true },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
-                Text("Add +100k All Resources")
+                Text(stringResource(Res.string.add_resources))
             }
 
             Button(
                 onClick = { showResetDialog = true },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Reset Game Progress")
+                Text(stringResource(Res.string.reset_progress))
             }
 
             Spacer(modifier = Modifier.height(32.dp))
             
             Button(onClick = onBack) {
-                Text("Back to Misc")
+                Text(stringResource(Res.string.back_to_misc))
             }
         }
 
         // Confirmation Dialog for Debug
         if (showDebugDialog) {
+            val resourcesAddedToast = stringResource(Res.string.resources_added_toast)
             AlertDialog(
                 onDismissRequest = { showDebugDialog = false },
-                title = { Text("Add Resources") },
-                text = { Text("Are you sure you want to add 100k to all resources? This is for testing purposes.") },
+                title = { Text(stringResource(Res.string.add_resources)) },
+                text = { Text(stringResource(Res.string.add_resources_confirm)) },
                 confirmButton = {
                     TextButton(onClick = {
                         viewModel.debugAddResources()
                         showDebugDialog = false
-                        showToast("Resources added successfully!")
-                    }) { Text("Confirm") }
+                        showToast(resourcesAddedToast)
+                    }) { Text(stringResource(Res.string.confirm)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDebugDialog = false }) { Text("Cancel") }
+                    TextButton(onClick = { showDebugDialog = false }) { Text(stringResource(Res.string.cancel)) }
                 }
             )
         }
 
         // Confirmation Dialog for Reset
         if (showResetDialog) {
+            val resetProgressToast = stringResource(Res.string.reset_progress_toast)
             AlertDialog(
                 onDismissRequest = { showResetDialog = false },
-                title = { Text("Reset Progress") },
-                text = { Text("Are you absolutely sure? This will delete all your progress, money and unlocked vegetables. This action cannot be undone.") },
+                title = { Text(stringResource(Res.string.reset_progress)) },
+                text = { Text(stringResource(Res.string.reset_progress_confirm)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             viewModel.resetGame()
                             showResetDialog = false
-                            showToast("Game progress reset.")
+                            showToast(resetProgressToast)
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                    ) { Text("Reset Everything") }
+                    ) { Text(stringResource(Res.string.reset_progress)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showResetDialog = false }) { Text("Cancel") }
+                    TextButton(onClick = { showResetDialog = false }) { Text(stringResource(Res.string.cancel)) }
                 }
             )
         }

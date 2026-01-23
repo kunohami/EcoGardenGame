@@ -21,7 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.model.Achievement
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
+import ecogardengame.composeapp.generated.resources.achievements_title
+import ecogardengame.composeapp.generated.resources.cancel
+import ecogardengame.composeapp.generated.resources.choose_avatar
+import ecogardengame.composeapp.generated.resources.close
+import ecogardengame.composeapp.generated.resources.enter_name_placeholder
+import ecogardengame.composeapp.generated.resources.save
+import ecogardengame.composeapp.generated.resources.set_username
+import ecogardengame.composeapp.generated.resources.status_locked
+import ecogardengame.composeapp.generated.resources.status_unlocked
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProfileScreen(viewModel: GameViewModel) {
@@ -33,7 +45,6 @@ fun ProfileScreen(viewModel: GameViewModel) {
     
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
-    val secondaryText = if (wavy) Color.White.copy(alpha = 0.7f) else Color.Gray
 
     Column(
         modifier = Modifier
@@ -85,7 +96,7 @@ fun ProfileScreen(viewModel: GameViewModel) {
 
         // --- ACHIEVEMENTS SECTION ---
         Text(
-            "Achievements",
+            stringResource(Res.string.achievements_title),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start,
@@ -114,13 +125,13 @@ fun ProfileScreen(viewModel: GameViewModel) {
     if (showNameDialog) {
         AlertDialog(
             onDismissRequest = { showNameDialog = false },
-            title = { Text("Set Username") },
+            title = { Text(stringResource(Res.string.set_username)) },
             text = {
                 TextField(
                     value = tempName,
                     onValueChange = { tempName = it },
                     singleLine = true,
-                    placeholder = { Text("Enter your name") }
+                    placeholder = { Text(stringResource(Res.string.enter_name_placeholder)) }
                 )
             },
             confirmButton = {
@@ -128,11 +139,11 @@ fun ProfileScreen(viewModel: GameViewModel) {
                     viewModel.updateUsername(tempName)
                     showNameDialog = false
                 }) {
-                    Text("Save")
+                    Text(stringResource(Res.string.save))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showNameDialog = false }) { Text("Cancel") }
+                TextButton(onClick = { showNameDialog = false }) { Text(stringResource(Res.string.cancel)) }
             }
         )
     }
@@ -141,7 +152,7 @@ fun ProfileScreen(viewModel: GameViewModel) {
     if (showAvatarDialog) {
         AlertDialog(
             onDismissRequest = { showAvatarDialog = false },
-            title = { Text("Choose Avatar") },
+            title = { Text(stringResource(Res.string.choose_avatar)) },
             text = {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
@@ -181,7 +192,7 @@ fun ProfileScreen(viewModel: GameViewModel) {
             },
             confirmButton = {
                 TextButton(onClick = { showAvatarDialog = false }) {
-                    Text("Close")
+                    Text(stringResource(Res.string.close))
                 }
             }
         )
@@ -217,23 +228,23 @@ fun AchievementBadge(achievement: Achievement, isUnlocked: Boolean, wavy: Boolea
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(achievement.emoji)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(achievement.name)
+                    Text(stringResource(achievement.nameRes))
                 }
             },
             text = {
                 Column {
-                    Text(achievement.description)
+                    Text(stringResource(achievement.descriptionRes))
                     Spacer(modifier = Modifier.height(8.dp))
                     if (isUnlocked) {
-                        Text("Status: UNLOCKED", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+                        Text(stringResource(Res.string.status_unlocked), color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
                     } else {
-                        Text("Status: LOCKED", color = Color.Gray)
+                        Text(stringResource(Res.string.status_locked), color = Color.Gray)
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showDetail = false }) {
-                    Text("Close")
+                    Text(stringResource(Res.string.close))
                 }
             }
         )

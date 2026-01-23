@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.startListeningForRotation
 import com.rafarg.ecogardengame.util.stopListeningForRotation
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
-import ecogardengame.composeapp.generated.resources.apple_strip
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.painterResource
@@ -32,7 +32,7 @@ import kotlin.random.Random
  */
 class Apple : BaseVegetable() {
     override val id: String = "apple"
-    override val name: String = "Apple"
+    override val nameRes = Res.string.item_apple
     override val resource = Res.drawable.apple_strip
     override val price: Int = 500
     override val unlockCost: ItemCost = ItemCost(
@@ -41,13 +41,13 @@ class Apple : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🍎"
-    override val tutorialText: String = "The apple moves in a circle, and you need to rotate your device like a compass to point at it. When the indicator turns green and you see 'COLLECTING!', rewards will be harvested automatically! No clicking required."
+    override val tutorialRes = Res.string.tutorial_apple
 
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "apple_overclock",
-            name = "High Frequency",
-            description = "Double rotation speed, but earn 5 money per tick.",
+            nameRes = Res.string.mod_apple_high_freq_name,
+            descriptionRes = Res.string.mod_apple_high_freq_desc,
             unlockCost = ItemCost(money = 3000, vegetableCosts = mapOf("apple" to 200, "bell_pepper" to 40)),
             targetItemId = "apple"
         )
