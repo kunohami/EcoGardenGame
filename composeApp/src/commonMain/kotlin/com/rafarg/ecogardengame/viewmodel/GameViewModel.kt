@@ -8,12 +8,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rafarg.ecogardengame.auth.AuthRepository
+import com.rafarg.ecogardengame.auth.UserProfile
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -21,10 +25,20 @@ import kotlin.random.Random
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(), GameItemProvider {
+class GameViewModel(
+    private val dataStore: DataStore<Preferences>?,
+    private val authRepository: AuthRepository? = null
+) : ViewModel(), GameItemProvider {
 
     // --- LOADING STATE ---
     var isDataLoaded by mutableStateOf(false)
+        private set
+
+    // --- AUTH STATE ---
+    var currentUser by mutableStateOf<UserProfile?>(null)
+        private set
+    
+    var authError by mutableStateOf<String?>(null)
         private set
 
     // --- CURRENT CURRENCIES ---
@@ -108,7 +122,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         private set
     var profileImageIndex by mutableStateOf(0)
         private set
-    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🌦️")
+    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🏡")
 
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
@@ -137,6 +151,34 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     init {
         loadData()
         startCpsTracker()
+        observeAuth()
+    }
+
+    private fun observeAuth() {
+        viewModelScope.launch {
+            authRepository?.currentUser?.collect { user ->
+                currentUser = user
+                if (user != null && username == "Farmer") {
+                    username = user.name ?: "Farmer"
+                }
+            }
+        }
+    }
+
+    fun updateAuthError(error: String?) {
+        authError = error
+    }
+
+    fun signInWithGoogle() {
+        viewModelScope.launch {
+            authRepository?.signInWithGoogle()
+        }
+    }
+
+    fun onUserLoggedOut() {
+        viewModelScope.launch {
+            authRepository?.signOut()
+        }
     }
 
     private fun startCpsTracker() {
@@ -241,17 +283,10 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
 
         val preciseLevel = globalUpgrades.find { it.id == "double_click_10" }?.unlockedLevel ?: 0
         if (preciseLevel > 0) {
-            val isDouble = when (preciseLevel) {
-                1 -> globalClickCounter % 10 == 0
-                2 -> globalClickCounter % 5 == 0
-                3 -> (globalClickCounter % 10) % 3 == 0 
-                4 -> (globalClickCounter % 10) % 2 == 0 && (globalClickCounter % 10 != 0)
-                5 -> globalClickCounter % 2 == 0 
-                else -> false
-            }
+            val isDouble = globalClickCounter % (11 - preciseLevel * 2) == 0
             
             if (isDouble) {
-                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10).copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
+                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
             }
         }
 
@@ -275,6 +310,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         totalFruitHarvested = newTotalHarvested
 
         saveData()
+        syncWithCloud()
         return finalRewards
     }
 
@@ -317,6 +353,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             upgrade.unlockedLevel++
             checkAchievements()
             saveData()
+            syncWithCloud()
         }
     }
 
@@ -337,11 +374,13 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     fun updateUsername(newUsername: String) {
         username = newUsername
         saveData()
+        syncWithCloud()
     }
 
     fun updateProfileImage(index: Int) {
         profileImageIndex = index
         saveData()
+        syncWithCloud()
     }
 
     fun setVibration(enabled: Boolean) {
@@ -380,6 +419,10 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         saveData()
     }
 
+    private fun syncWithCloud() {
+        // This will be implemented when Firebase is ready
+    }
+
     fun selectItem(item: GameItem) {
         if (item.unlocked) {
             currentItem = item
@@ -408,6 +451,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             currentItem = item 
             checkAchievements()
             saveData()
+            syncWithCloud()
         }
     }
 
@@ -423,6 +467,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
             modifier.isEnabled = true
             checkAchievements()
             saveData()
+            syncWithCloud()
         }
     }
 

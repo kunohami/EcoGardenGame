@@ -16,6 +16,7 @@
     <string name="about_title">About</string>
     <string name="achievements_title">Achievements</string>
     <string name="language_title">Language</string>
+    <string name="login_title">Cloud Account</string>
 
     <!-- About Screen -->
     <string name="app_version">EcoGarden Game v0.8</string>
@@ -111,6 +112,13 @@
     <string name="tutorial_purple_onion">The purple onion teleports! Every time it appears, it starts a quick rotation. If you catch it while it\'s spinning, you get a significant coin bonus! Buying more onions will increase your chances, but reduce the individual bonus slightly.</string>
     <string name="tutorial_squash">This is Zelda Tennis! The squash bounces back and forth. Click anywhere to slash with your sickle arm when the squash is near the bottom-left corner to hit it back. Don\'t miss, or you\'ll lose your momentum!</string>
     <string name="tutorial_apple">The apple moves in a circle, and you need to rotate your device like a compass to point at it. When the indicator turns green and you see \'COLLECTING!\', rewards will be harvested automatically! No clicking required.</string>
+
+    <!-- Login Screen -->
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="login_desc">Sign in to save your achievements and profile to the cloud.</string>
+    <string name="logged_in_as">Logged in as: %1$s</string>
+    <string name="sync_notice">Achievements and profile are automatically synced.</string>
 
     <!-- Library Content: Tomato -->
     <string name="lib_tomato_t1">The Andean Origin</string>
