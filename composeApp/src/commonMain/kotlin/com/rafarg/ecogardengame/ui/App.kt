@@ -73,7 +73,8 @@ fun App(prefs: DataStore<Preferences>? = null) {
     
     EcoGardenTheme(
         useDarkTheme = viewModel.isDarkTheme,
-        useWavyTheme = viewModel.shaderBackgroundEnabled
+        useWavyTheme = viewModel.shaderBackgroundEnabled,
+        useAutumnTheme = viewModel.isAutumnTheme
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (!viewModel.isDataLoaded) {

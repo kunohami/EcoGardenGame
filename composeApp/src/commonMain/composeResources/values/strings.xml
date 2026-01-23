@@ -69,6 +69,7 @@
     <string name="theme_light">Dry Sage (Default)</string>
     <string name="theme_dark">Ink Black</string>
     <string name="theme_wavy">Wavy Theme</string>
+    <string name="theme_autumn">Autumn Woods</string>
 
     <!-- Profile Screen -->
     <string name="set_username">Set Username</string>

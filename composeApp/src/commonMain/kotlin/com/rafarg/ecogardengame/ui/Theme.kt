@@ -75,7 +75,7 @@ private val WavyColorScheme = darkColorScheme(
     secondaryContainer = Color(0xFF0D0221).copy(alpha = 0.5f),
     onSecondaryContainer = Color(0xFFEADDFF),
     
-    background = Color(0xFF0D0221),
+    background = Color(0xFF0D0221), 
     onBackground = Color.White,
     
     surface = Color(0xFF1B065E).copy(alpha = 0.8f),
@@ -85,14 +85,52 @@ private val WavyColorScheme = darkColorScheme(
     onSurfaceVariant = Color.White
 )
 
+// --- AUTUMN WOODS THEME (Earth Tones Palette) ---
+val DarkWalnut = Color(0xFF582F0E)
+val SaddleBrown = Color(0xFF7F4F24)
+val ToffeeBrown = Color(0xFF936639)
+val Camel = Color(0xFFA68A64)
+val KhakiBeige = Color(0xFFB6AD90)
+val DrySageLight = Color(0xFFC2C5AA)
+val DrySageDark = Color(0xFFA4AC86)
+val DustyOlive = Color(0xFF656D4A)
+val Ebony = Color(0xFF414833)
+val CharcoalBrown = Color(0xFF333D29)
+
+private val AutumnWoodsColorScheme = darkColorScheme(
+    primary = ToffeeBrown,
+    onPrimary = KhakiBeige,
+    primaryContainer = DarkWalnut,
+    onPrimaryContainer = SageColor,
+    
+    secondary = DustyOlive,
+    onSecondary = KhakiBeige,
+    secondaryContainer = Ebony,
+    onSecondaryContainer = DrySageLight,
+    
+    tertiary = Camel,
+    onTertiary = DarkWalnut,
+    
+    background = CharcoalBrown,
+    onBackground = DrySageLight,
+    
+    surface = Ebony,
+    onSurface = DrySageLight,
+    
+    surfaceVariant = SaddleBrown.copy(alpha = 0.4f),
+    onSurfaceVariant = KhakiBeige
+)
+
 @Composable
 fun EcoGardenTheme(
     useDarkTheme: Boolean = false,
     useWavyTheme: Boolean = false,
+    useAutumnTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         useWavyTheme -> WavyColorScheme
+        useAutumnTheme -> AutumnWoodsColorScheme
         useDarkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
