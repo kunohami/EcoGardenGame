@@ -17,6 +17,7 @@ import androidx.compose.ui.zIndex
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rafarg.ecogardengame.auth.AuthRepository
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
@@ -43,7 +44,8 @@ enum class Screen(val showInBottomBar: Boolean = true) {
     STATS(false),
     SETTINGS(false),
     THEMES(false),
-    ABOUT(false)
+    ABOUT(false),
+    LOGIN(false)
 }
 
 @Composable
@@ -58,6 +60,7 @@ fun Screen.getTitle(): String {
         Screen.SETTINGS -> Res.string.settings_title
         Screen.THEMES -> Res.string.themes_title
         Screen.ABOUT -> Res.string.about_title
+        Screen.LOGIN -> Res.string.login_title
     })
 }
 
@@ -67,8 +70,12 @@ fun Screen.getTitle(): String {
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
-fun App(prefs: DataStore<Preferences>? = null) {
-    val viewModel: GameViewModel = viewModel { GameViewModel(prefs) }
+fun App(
+    prefs: DataStore<Preferences>? = null,
+    authRepository: AuthRepository? = null,
+    onGoogleSignIn: () -> Unit = {}
+) {
+    val viewModel: GameViewModel = viewModel { GameViewModel(prefs, authRepository) }
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
     
     EcoGardenTheme(
@@ -133,7 +140,8 @@ fun App(prefs: DataStore<Preferences>? = null) {
                                 onNavigateToSettings = { currentScreen = Screen.SETTINGS },
                                 onNavigateToThemes = { currentScreen = Screen.THEMES },
                                 onNavigateToStats = { currentScreen = Screen.STATS },
-                                onNavigateToAbout = { currentScreen = Screen.ABOUT }
+                                onNavigateToAbout = { currentScreen = Screen.ABOUT },
+                                onNavigateToLogin = { currentScreen = Screen.LOGIN }
                             )
                             Screen.STATS -> StatsScreen(
                                 viewModel = viewModel,
@@ -150,6 +158,11 @@ fun App(prefs: DataStore<Preferences>? = null) {
                             Screen.ABOUT -> AboutScreen(
                                 viewModel = viewModel,
                                 onBack = { currentScreen = Screen.MISC }
+                            )
+                            Screen.LOGIN -> LoginScreen(
+                                viewModel = viewModel,
+                                onBack = { currentScreen = Screen.MISC },
+                                onGoogleSignIn = onGoogleSignIn
                             )
                         }
                     }
@@ -180,14 +193,16 @@ fun App(prefs: DataStore<Preferences>? = null) {
                             ) {
                                 Text(achievement.emoji, fontSize = 28.sp)
                                 Spacer(modifier = Modifier.width(12.dp))
+                                val congrats = stringResource(Res.string.congratulations)
+                                val unlockedText = stringResource(Res.string.unlocked_label, stringResource(achievement.nameRes))
                                 Column {
                                     Text(
-                                        stringResource(Res.string.congratulations),
+                                        congrats,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
-                                        stringResource(achievement.nameRes),
+                                        unlockedText,
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold
                                     )

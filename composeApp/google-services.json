@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "209061921114",
+    "project_id": "ecogardengame",
+    "storage_bucket": "ecogardengame.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209061921114:android:0f33c510e109aee5c67363",
+        "android_client_info": {
+          "package_name": "com.rafarg.ecogardengame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209061921114-a1qm2prhcjapljuh1d9sbh2b57elpcio.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBigGvtuBYd7eCfSab-LRmkccl_MsCFfM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "209061921114-a1qm2prhcjapljuh1d9sbh2b57elpcio.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
