@@ -16,8 +16,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.bellpepper_strip
+import ecogardengame.composeapp.generated.resources.item_bell_pepper
+import ecogardengame.composeapp.generated.resources.tutorial_bell_pepper
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.*
@@ -25,7 +28,7 @@ import kotlin.random.Random
 
 class BellPepper : BaseVegetable() {
     override val id: String = "bell_pepper"
-    override val name: String = "Bell Pepper"
+    override val nameRes = Res.string.item_bell_pepper
     override val resource = Res.drawable.bellpepper_strip
     override val price: Int = 100
     override val unlockCost: ItemCost = ItemCost(
@@ -34,7 +37,7 @@ class BellPepper : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🫑"
-    override val tutorialText: String = "Bell peppers are erratic! They pause for a moment and then dash in a random direction. Wait for them to stop or try to catch them on the move!"
+    override val tutorialRes = Res.string.tutorial_bell_pepper
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
@@ -44,8 +47,8 @@ class BellPepper : BaseVegetable() {
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "bell_pepper_turbo",
-            name = "Turbo Harvest",
-            description = "Half movement cycle duration, but double rewards.",
+            nameRes = Res.string.mod_bell_pepper_turbo_name,
+            descriptionRes = Res.string.mod_bell_pepper_turbo_desc,
             unlockCost = ItemCost(money = 2000, vegetableCosts = mapOf("bell_pepper" to 100, "broccoli" to 50)),
             targetItemId = "bell_pepper"
         )

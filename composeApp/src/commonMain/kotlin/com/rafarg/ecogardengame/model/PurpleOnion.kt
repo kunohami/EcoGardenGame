@@ -16,8 +16,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.purpleonion_strip
+import ecogardengame.composeapp.generated.resources.item_purple_onion
+import ecogardengame.composeapp.generated.resources.tutorial_purple_onion
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.pow
@@ -27,7 +30,7 @@ import kotlin.random.Random
 
 class PurpleOnion : BaseVegetable() {
     override val id: String = "purple_onion"
-    override val name: String = "Purple Onion"
+    override val nameRes = Res.string.item_purple_onion
     override val resource = Res.drawable.purpleonion_strip
     override val price: Int = 200
     override val unlockCost: ItemCost = ItemCost(
@@ -36,7 +39,7 @@ class PurpleOnion : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧅"
-    override val tutorialText: String = "The purple onion teleports! Every time it appears, it starts a quick rotation. If you catch it while it's spinning, you get a significant coin bonus! Buying more onions will increase your chances, but reduce the individual bonus slightly."
+    override val tutorialRes = Res.string.tutorial_purple_onion
 
     // Base reward when NOT spinning: 1 money, 1 onion
     override val baseRewards: List<Reward> get() = listOf(
@@ -47,22 +50,22 @@ class PurpleOnion : BaseVegetable() {
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "purple_onion_plus_1",
-            name = "+1 Onion",
-            description = "One extra onion appears, but bonus coins are reduced by 1.",
+            nameRes = Res.string.mod_onion_plus1_name,
+            descriptionRes = Res.string.mod_onion_plus1_desc,
             unlockCost = ItemCost(money = 1000, vegetableCosts = mapOf("purple_onion" to 50)),
             targetItemId = "purple_onion"
         ),
         GameplayModifier(
             id = "purple_onion_plus_2",
-            name = "+1 Onion II",
-            description = "A third onion appears, bonus coins reduced further.",
+            nameRes = Res.string.mod_onion_plus2_name,
+            descriptionRes = Res.string.mod_onion_plus2_desc,
             unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("purple_onion" to 150, "bell_pepper" to 30)),
             targetItemId = "purple_onion"
         ),
         GameplayModifier(
             id = "purple_onion_long_spin",
-            name = "Sturdy Roots",
-            description = "Onions rotate for longer, extending the bonus window.",
+            nameRes = Res.string.mod_onion_sturdy_name,
+            descriptionRes = Res.string.mod_onion_sturdy_desc,
             unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("purple_onion" to 100, "broccoli" to 40)),
             targetItemId = "purple_onion"
         )

@@ -17,8 +17,11 @@ import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.vibrate
 import com.rafarg.ecogardengame.util.startListeningForShake
 import com.rafarg.ecogardengame.util.stopListeningForShake
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.garlic_strip
+import ecogardengame.composeapp.generated.resources.item_garlic
+import ecogardengame.composeapp.generated.resources.tutorial_garlic
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -36,29 +39,29 @@ class GarlicPiece(
 
 class Garlic : BaseVegetable() {
     override val id: String = "garlic"
-    override val name: String = "Garlic"
+    override val nameRes = Res.string.item_garlic
     override val resource = Res.drawable.garlic_strip
     override val price: Int = 150
     override val unlockCost: ItemCost = ItemCost(
         money = 750,
-        vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 5)
+        vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15)
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧄"
-    override val tutorialText: String = "Tap the garlic 10 times to make it explode into small cloves! Collect all the cloves to get a big bonus. The 'Shake to Harvest' upgrade lets you collect multiple cloves at once just by shaking your device!"
+    override val tutorialRes = Res.string.tutorial_garlic
 
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "garlic_cluster",
-            name = "Garlic Cluster",
-            description = "Double the small garlics after explosion, +150% final reward.",
+            nameRes = Res.string.mod_garlic_cluster_name,
+            descriptionRes = Res.string.mod_garlic_cluster_desc,
             unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("garlic" to 150, "purple_onion" to 30)),
             targetItemId = "garlic"
         ),
         GameplayModifier(
             id = "garlic_shake",
-            name = "Shake to Harvest",
-            description = "Collect 5 small garlics at once by shaking your phone.",
+            nameRes = Res.string.mod_garlic_shake_name,
+            descriptionRes = Res.string.mod_garlic_shake_desc,
             unlockCost = ItemCost(money = 3000, vegetableCosts = mapOf("garlic" to 300, "squash" to 20)),
             targetItemId = "garlic"
         )

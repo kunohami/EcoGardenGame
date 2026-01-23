@@ -11,6 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
+import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -20,6 +22,10 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(), GameItemProvider {
+
+    // --- LOADING STATE ---
+    var isDataLoaded by mutableStateOf(false)
+        private set
 
     // --- CURRENT CURRENCIES ---
     override var totalClicks by mutableStateOf(0)
@@ -57,19 +63,25 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     var shaderBackgroundEnabled by mutableStateOf(false)
         private set
 
+    // --- LANGUAGE SETTINGS ---
+    var language by mutableStateOf("auto") // "auto", "en", "es"
+        private set
+    var languageSet by mutableStateOf(false)
+        private set
+
     // --- GLOBAL UPGRADES ---
     override var globalUpgrades = listOf(
         GlobalUpgrade(
             id = "double_click_10",
-            name = "Precise Harvest",
-            description = "Increases frequency of double rewards. At Level 5, rewards alternate (50% chance).",
+            nameRes = Res.string.upg_precise_harvest_name,
+            descriptionRes = Res.string.upg_precise_harvest_desc,
             baseCost = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 100)),
             maxLevel = 5
         ),
         GlobalUpgrade(
             id = "lucky_harvest",
-            name = "Lucky Harvest",
-            description = "1% chance per level to get 1000% (10x) rewards on click.",
+            nameRes = Res.string.upg_lucky_harvest_name,
+            descriptionRes = Res.string.upg_lucky_harvest_desc,
             baseCost = ItemCost(money = 5000, vegetableCosts = mapOf("apple" to 50, "garlic" to 50)),
             maxLevel = 5
         )
@@ -93,6 +105,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         private set
     var profileImageIndex by mutableStateOf(0)
         private set
+    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🌦️")
 
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
@@ -111,6 +124,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     private val vibrationIntensityKey = floatPreferencesKey("vibration_intensity")
     private val darkThemeKey = booleanPreferencesKey("dark_theme")
     private val shaderBackgroundEnabledKey = booleanPreferencesKey("shader_background_enabled")
+    private val languageKey = stringPreferencesKey("language")
+    private val languageSetKey = booleanPreferencesKey("language_set")
     private val usernameKey = stringPreferencesKey("username")
     private val profileImageKey = intPreferencesKey("profile_image_index")
     private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
@@ -135,8 +150,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     }
 
     private fun currentTimeMillis(): Long {
-        // Usamos la ruta completa para evitar conflictos de resolución con 'System'
-        return kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+        // Usamos kotlinx.datetime.Clock que es lo habitual en KMP para milisegundos de época
+        return kotlin.time.Clock.System.now().toEpochMilliseconds()
     }
 
     private fun loadData() {
@@ -149,6 +164,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f
                 isDarkTheme = prefs[darkThemeKey] ?: false
                 shaderBackgroundEnabled = prefs[shaderBackgroundEnabledKey] ?: false
+                language = prefs[languageKey] ?: "auto"
+                languageSet = prefs[languageSetKey] ?: false
                 username = prefs[usernameKey] ?: "Farmer"
                 profileImageIndex = prefs[profileImageKey] ?: 0
                 
@@ -194,6 +211,7 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 currentItem = items.find { it.id == currentItem.id } ?: items.first()
 
                 checkAchievements(isInitialLoad = true)
+                isDataLoaded = true
             }
         }
     }
@@ -252,8 +270,6 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
         fruitCounts = newFruitCounts
         totalFruitHarvested = newTotalHarvested
 
-        // Comprobamos logros en cada clic para que hitos de racha o críticos salten al momento
-        checkAchievements()
         saveData()
         return finalRewards
     }
@@ -341,6 +357,17 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
     
     fun setShaderBackground(enabled: Boolean) {
         shaderBackgroundEnabled = enabled
+        saveData()
+    }
+
+    fun updateLanguage(lang: String) {
+        language = lang
+        languageSet = true
+        saveData()
+    }
+
+    fun resetLanguage() {
+        languageSet = false
         saveData()
     }
 
@@ -450,6 +477,8 @@ class GameViewModel(private val dataStore: DataStore<Preferences>?) : ViewModel(
                 prefs[vibrationIntensityKey] = vibrationIntensity
                 prefs[darkThemeKey] = isDarkTheme
                 prefs[shaderBackgroundEnabledKey] = shaderBackgroundEnabled
+                prefs[languageKey] = language
+                prefs[languageSetKey] = languageSet
                 prefs[usernameKey] = username
                 prefs[profileImageKey] = profileImageIndex
                 prefs[achievementsKey] = unlockedAchievements.toSet()

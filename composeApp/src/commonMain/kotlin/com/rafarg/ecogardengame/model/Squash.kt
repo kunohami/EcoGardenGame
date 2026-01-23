@@ -23,10 +23,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.vibrate
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.squash_strip
 import ecogardengame.composeapp.generated.resources.sicklearm_strip
 import ecogardengame.composeapp.generated.resources.sicklefarmer_strip
+import ecogardengame.composeapp.generated.resources.item_squash
+import ecogardengame.composeapp.generated.resources.tutorial_squash
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
@@ -41,7 +44,7 @@ import kotlin.math.pow
  */
 class Squash : BaseVegetable() {
     override val id: String = "squash"
-    override val name: String = "Squash"
+    override val nameRes = Res.string.item_squash
     override val resource = Res.drawable.squash_strip
     override val price: Int = 250
     override val unlockCost: ItemCost = ItemCost(
@@ -50,7 +53,7 @@ class Squash : BaseVegetable() {
     )
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥒"
-    override val tutorialText: String = "This is Zelda Tennis! The squash bounces back and forth. Click anywhere to slash with your sickle arm when the squash is near the bottom-left corner to hit it back. Don't miss, or you'll lose your momentum!"
+    override val tutorialRes = Res.string.tutorial_squash
 
     // Track max streak for achievement
     var maxStreak by mutableStateOf(0)
@@ -68,8 +71,8 @@ class Squash : BaseVegetable() {
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "squash_speed_momentum",
-            name = "Speed Momentum",
-            description = "Every hit increases speed by 10% and adds +1 Coin and +1 Squash. Resets on miss.",
+            nameRes = Res.string.mod_squash_momentum_name,
+            descriptionRes = Res.string.mod_squash_momentum_desc,
             unlockCost = ItemCost(money = 5000, vegetableCosts = mapOf("squash" to 50)),
             targetItemId = id
         )

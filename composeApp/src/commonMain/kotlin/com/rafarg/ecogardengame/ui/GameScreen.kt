@@ -17,10 +17,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import ecogardengame.composeapp.generated.resources.apple_strip
 import ecogardengame.composeapp.generated.resources.infobunny_strip
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * The main game screen where the player clicks on vegetables.
@@ -131,7 +133,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     color = if (viewModel.shaderBackgroundEnabled) Color.White else MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    text = "CPS",
+                    text = stringResource(Res.string.cps_label),
                     style = MaterialTheme.typography.labelSmall,
                     color = if (viewModel.shaderBackgroundEnabled) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
                 )
@@ -178,7 +180,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = item.name,
+                            text = stringResource(item.nameRes),
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (item.unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
@@ -195,20 +197,20 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(viewModel.currentItem.particleEmoji)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(viewModel.currentItem.name + " Guide")
+                        Text(stringResource(Res.string.bunny_guide_title, stringResource(viewModel.currentItem.nameRes)))
                     }
                 },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(viewModel.currentItem.tutorialText)
+                        Text(stringResource(viewModel.currentItem.tutorialRes))
                         
                         if (viewModel.currentItem.modifiers.isNotEmpty()) {
                             HorizontalDivider()
-                            Text("Upgrades info:", style = MaterialTheme.typography.titleSmall)
+                            Text(stringResource(Res.string.upgrades_info), style = MaterialTheme.typography.titleSmall)
                             viewModel.currentItem.modifiers.forEach { mod ->
                                 Column {
-                                    Text(mod.name, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
-                                    Text(mod.description, style = MaterialTheme.typography.labelSmall)
+                                    Text(stringResource(mod.nameRes), fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                                    Text(stringResource(mod.descriptionRes), style = MaterialTheme.typography.labelSmall)
                                 }
                             }
                         }
@@ -216,7 +218,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                 },
                 confirmButton = {
                     TextButton(onClick = { showTutorial = false }) {
-                        Text("Thanks, Bunny!")
+                        Text(stringResource(Res.string.bunny_thanks))
                     }
                 }
             )
@@ -226,10 +228,10 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
         itemToPurchase?.let { item ->
             AlertDialog(
                 onDismissRequest = { itemToPurchase = null },
-                title = { Text("Unlock ${item.name}") },
+                title = { Text(stringResource(Res.string.unlock_item_title, stringResource(item.nameRes))) },
                 text = {
                     Column {
-                        Text("You need the following to unlock this item:")
+                        Text(stringResource(Res.string.unlock_requirement))
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         val hasMoney = viewModel.money >= item.unlockCost.money
@@ -254,20 +256,20 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                             itemToPurchase = null
                             menuVisible = false
                         }) {
-                            Text("Unlock Now")
+                            Text(stringResource(Res.string.unlock_confirm))
                         }
                     } else {
                         Button(onClick = { 
                             onNavigateToStore()
                             itemToPurchase = null
                         }) {
-                            Text("Go to Store")
+                            Text(stringResource(Res.string.go_to_store))
                         }
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { itemToPurchase = null }) {
-                        Text("Close")
+                        Text(stringResource(Res.string.close))
                     }
                 }
             )
