@@ -7,25 +7,35 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
+    kotlin("native.cocoapods")
 }
 
 
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
+        }
+    }
+
+    jvmToolchain(17)
+
+    cocoapods {
+        summary = "EcoGarden Game"
+        homepage = "https://github.com/rafarg/EcoGardenGame"
+        version = "1.0"
+        ios.deploymentTarget = "14.1"
+        pod("GoogleSignIn")
+        framework {
+            baseName = "composeApp"
+            isStatic = true
         }
     }
 
     listOf(
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
+    )
 
     sourceSets {
         androidMain.dependencies {
@@ -45,11 +55,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.kotlinx.datetime)
-
             
             // Firebase GitLive
             implementation(libs.firebase.auth)
             implementation(libs.firebase.firestore)
+
+            // Extended icons if needed
+            implementation(compose.materialIconsExtended)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -83,8 +95,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
