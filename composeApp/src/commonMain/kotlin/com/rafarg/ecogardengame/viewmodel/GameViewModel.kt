@@ -13,16 +13,25 @@ import com.rafarg.ecogardengame.auth.UserProfile
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.firestore.where
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.ExperimentalTime
+import kotlin.time.Clock
+
+data class PublicProfile(
+    val id: String,
+    val username: String,
+    val profileImageIndex: Int,
+    val achievements: List<String>
+)
 
 @OptIn(ExperimentalTime::class)
 class GameViewModel(
@@ -122,7 +131,16 @@ class GameViewModel(
         private set
     var profileImageIndex by mutableStateOf(0)
         private set
-    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🏡")
+    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🌦️")
+    
+    var lastProfileUpdateTime by mutableStateOf(0L)
+        private set
+    
+    var searchResults = mutableStateListOf<PublicProfile>()
+        private set
+    
+    var isSearching by mutableStateOf(false)
+        private set
 
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
@@ -147,6 +165,7 @@ class GameViewModel(
     private val usernameKey = stringPreferencesKey("username")
     private val profileImageKey = intPreferencesKey("profile_image_index")
     private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
+    private val lastProfileUpdateKey = longPreferencesKey("last_profile_update")
 
     init {
         loadData()
@@ -196,7 +215,7 @@ class GameViewModel(
     }
 
     private fun currentTimeMillis(): Long {
-        return kotlin.time.Clock.System.now().toEpochMilliseconds()
+        return Clock.System.now().toEpochMilliseconds()
     }
 
     private fun loadData() {
@@ -214,6 +233,7 @@ class GameViewModel(
                 languageSet = prefs[languageSetKey] ?: false
                 username = prefs[usernameKey] ?: "Farmer"
                 profileImageIndex = prefs[profileImageKey] ?: 0
+                lastProfileUpdateTime = prefs[lastProfileUpdateKey] ?: 0L
                 
                 prefs[achievementsKey]?.let {
                     unlockedAchievements.clear()
@@ -310,7 +330,6 @@ class GameViewModel(
         totalFruitHarvested = newTotalHarvested
 
         saveData()
-        syncWithCloud()
         return finalRewards
     }
 
@@ -323,7 +342,6 @@ class GameViewModel(
             if (!unlockedAchievements.contains(achievement.id) && achievement.checkEarned(this)) {
                 unlockedAchievements.add(achievement.id)
                 
-                // Show notification toast if not initial load
                 if (!isInitialLoad) {
                     showAchievementToast(achievement)
                 }
@@ -334,7 +352,7 @@ class GameViewModel(
     private fun showAchievementToast(achievement: Achievement) {
         viewModelScope.launch {
             achievementToast = achievement
-            delay(4000) // Show for 4 seconds
+            delay(4000) 
             if (achievementToast?.id == achievement.id) {
                 achievementToast = null
             }
@@ -353,7 +371,6 @@ class GameViewModel(
             upgrade.unlockedLevel++
             checkAchievements()
             saveData()
-            syncWithCloud()
         }
     }
 
@@ -374,13 +391,11 @@ class GameViewModel(
     fun updateUsername(newUsername: String) {
         username = newUsername
         saveData()
-        syncWithCloud()
     }
 
     fun updateProfileImage(index: Int) {
         profileImageIndex = index
         saveData()
-        syncWithCloud()
     }
 
     fun setVibration(enabled: Boolean) {
@@ -419,8 +434,64 @@ class GameViewModel(
         saveData()
     }
 
-    private fun syncWithCloud() {
-        // This will be implemented when Firebase is ready
+    fun updatePublicProfile(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val user = currentUser ?: return
+        val now = currentTimeMillis()
+        val cooldownMs = 30 * 60 * 1000L
+        
+        if (now - lastProfileUpdateTime < cooldownMs) {
+            val minutesLeft = ((cooldownMs - (now - lastProfileUpdateTime)) / (60 * 1000)).toInt()
+            onError(minutesLeft.toString())
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val firestore = Firebase.firestore
+                firestore.collection("users").document(user.id).set(
+                    mapOf(
+                        "username" to username,
+                        "profileImageIndex" to profileImageIndex,
+                        "achievements" to unlockedAchievements.toList()
+                    ),
+                    merge = true
+                )
+                lastProfileUpdateTime = now
+                saveData()
+                onSuccess()
+            } catch (e: Exception) {
+                onError("error")
+            }
+        }
+    }
+
+    fun searchPlayers(query: String) {
+        if (query.isBlank()) return
+        isSearching = true
+        searchResults.clear()
+        
+        viewModelScope.launch {
+            try {
+                val firestore = Firebase.firestore
+                val snapshot = firestore.collection("users")
+                    .where("username", equalTo = query)
+                    .get()
+                
+                snapshot.documents.forEach { doc ->
+                    val data = doc.data<Map<String, Any>>()
+                    searchResults.add(PublicProfile(
+                        id = doc.id,
+                        username = data["username"] as? String ?: "Unknown",
+                        profileImageIndex = (data["profileImageIndex"] as? Long)?.toInt() ?: 0,
+                        achievements = (data["achievements"] as? List<String>) ?: emptyList()
+                    ))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isSearching = false
+            }
+        }
     }
 
     fun selectItem(item: GameItem) {
@@ -451,7 +522,6 @@ class GameViewModel(
             currentItem = item 
             checkAchievements()
             saveData()
-            syncWithCloud()
         }
     }
 
@@ -467,7 +537,6 @@ class GameViewModel(
             modifier.isEnabled = true
             checkAchievements()
             saveData()
-            syncWithCloud()
         }
     }
 
@@ -537,6 +606,7 @@ class GameViewModel(
                 prefs[usernameKey] = username
                 prefs[profileImageKey] = profileImageIndex
                 prefs[achievementsKey] = unlockedAchievements.toSet()
+                prefs[lastProfileUpdateKey] = lastProfileUpdateTime
                 
                 globalUpgrades.forEach { upgrade ->
                     prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] = upgrade.unlockedLevel

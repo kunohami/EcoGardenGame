@@ -18,6 +18,16 @@
     <string name="language_title">Language</string>
     <string name="login_title">Cloud Account</string>
 
+    <!-- Profile Tabs & Search -->
+    <string name="tab_my_profile">My Profile</string>
+    <string name="tab_search_players">Other Players</string>
+    <string name="search_placeholder">Search by username...</string>
+    <string name="update_profile_button">Update Public Profile</string>
+    <string name="cooldown_wait">Wait %1$d min to update</string>
+    <string name="profile_updated">Profile updated successfully!</string>
+    <string name="no_players_found">No players found with that name.</string>
+    <string name="search_button">Search</string>
+
     <!-- About Screen -->
     <string name="app_version">EcoGarden Game v0.8</string>
     <string name="developed_with">Developed with Compose Multiplatform by Rafa R. G.</string>
@@ -118,7 +128,7 @@
     <string name="sign_out">Sign Out</string>
     <string name="login_desc">Sign in to save your achievements and profile to the cloud.</string>
     <string name="logged_in_as">Logged in as: %1$s</string>
-    <string name="sync_notice">Achievements and profile are automatically synced.</string>
+    <string name="sync_notice">Profile data can be updated manually every 30 minutes.</string>
 
     <!-- Library Content: Tomato -->
     <string name="lib_tomato_t1">The Andean Origin</string>
