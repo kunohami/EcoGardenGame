@@ -36,6 +36,15 @@
     <string name="no_cloud_save">No saved game found in the cloud.</string>
     <string name="cloud_sync_desc">Manage your public profile and backup your progress.</string>
 
+    <string name="upload_save_confirm_title">Upload Save</string>
+    <string name="upload_save_confirm_msg">This will overwrite your previous cloud save with your current progress. Continue?</string>
+
+    <string name="download_save_confirm_title">Restore Save</string>
+    <string name="download_save_confirm_msg">This will replace your current local progress with the data from the cloud. This cannot be undone. Continue?</string>
+
+    <string name="sign_out_warning_title">Sign Out</string>
+    <string name="sign_out_warning_message">Are you sure you want to sign out? Your local progress will be reset. If you haven\'t uploaded your save to the cloud, you will lose your current progress on this device.</string>
+
     <!-- About Screen -->
     <string name="app_version">EcoGarden Game v0.8</string>
     <string name="developed_with">Developed with Compose Multiplatform by Rafa R. G.</string>
