@@ -98,21 +98,11 @@ fun App(
     val mainScreens = remember { Screen.entries.filter { it.showInBottomBar } }
     val pagerState = rememberPagerState(pageCount = { mainScreens.size })
 
-    // Sync Pager with currentScreen when navigation happens (from bottom bar or logic)
+    // Sync Pager with currentScreen when navigation happens
     LaunchedEffect(currentScreen) {
         val index = mainScreens.indexOf(currentScreen)
         if (index != -1 && pagerState.currentPage != index) {
             pagerState.animateScrollToPage(index)
-        }
-    }
-
-    // Sync currentScreen with Pager when the user swipes manually
-    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress) {
-            val screenAtPage = mainScreens[pagerState.currentPage]
-            if (currentScreen != screenAtPage && currentScreen.showInBottomBar) {
-                currentScreen = screenAtPage
-            }
         }
     }
     
@@ -176,11 +166,11 @@ fun App(
                             .padding(innerPadding)
                     ) {
                         if (currentScreen.showInBottomBar) {
-                            // --- MAIN SCREENS WITH CUBE TRANSITION ---
+                            // --- MAIN SCREENS WITH CUBE TRANSITION (NO GESTURES) ---
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = true // Permite swipe entre pantallas
+                                userScrollEnabled = false // DESACTIVADO EL DESLIZAMIENTO MANUAL
                             ) { page ->
                                 val screen = mainScreens[page]
                                 Box(
@@ -190,20 +180,15 @@ fun App(
                                             // CUBE TRANSFORMATION LOGIC
                                             val pageOffset = ( (pagerState.currentPage - page ) + pagerState.currentPageOffsetFraction )
                                             
-                                            // Rotation based on offset
                                             rotationY = pageOffset * 90f
                                             
-                                            // Transform origin at the edges to create the cube corner
                                             transformOrigin = if (pageOffset > 0f) {
-                                                TransformOrigin(0f, 0.5f) // Left edge
+                                                TransformOrigin(0f, 0.5f) 
                                             } else {
-                                                TransformOrigin(1f, 0.5f) // Right edge
+                                                TransformOrigin(1f, 0.5f)
                                             }
                                             
-                                            // Depth perspective
                                             cameraDistance = 12f * density
-                                            
-                                            // Slight fade to enhance depth
                                             alpha = 1f - abs(pageOffset).coerceIn(0f, 1f) * 0.3f
                                         }
                                 ) {
@@ -228,8 +213,7 @@ fun App(
                                 }
                             }
                         } else {
-                            // --- SUB-SCREENS (Instant or Fade) ---
-                            // Estas no rotan porque son pantallas de "ajustes" o detalles
+                            // --- SUB-SCREENS ---
                             when (currentScreen) {
                                 Screen.STATS -> StatsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.SETTINGS -> SettingsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })

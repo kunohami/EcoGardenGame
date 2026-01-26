@@ -2,7 +2,11 @@ package com.rafarg.ecogardengame.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -42,7 +46,20 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // --- COMPACT TOP BAR (Status Bar Style) ---
+        // --- DETECT CLICKS OUTSIDE TO CLOSE MENU ---
+        if (menuVisible) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2.5f)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { menuVisible = false }
+            )
+        }
+
+        // --- COMPACT TOP BAR ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,7 +72,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Money Counter (Now on the left)
+                // Money Counter
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.coin_strip),
@@ -70,7 +87,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     )
                 }
 
-                // Specific Fruit Counter (Now on the right)
+                // Specific Fruit Counter
                 val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(viewModel.currentItem.particleEmoji, fontSize = 18.sp)
@@ -87,31 +104,97 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             Row(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Info Bunny Tooltip Button
-                SpriteAnimation(
-                    painter = painterResource(Res.drawable.infobunny_strip),
-                    frameCount = 3,
+                // Info Bunny
+                Box(
                     modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape) // Circular ripple
-                        .clickable { showTutorial = true }
-                )
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .clickable { showTutorial = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    SpriteAnimation(
+                        painter = painterResource(Res.drawable.infobunny_strip),
+                        frameCount = 3,
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
 
-                // Menu Icon (Vegetable Selector)
-                SpriteAnimation(
-                    painter = painterResource(Res.drawable.fruitmenu_strip),
-                    frameCount = 3,
+                // Fruit Selection Menu Toggle
+                Box(
                     modifier = Modifier
-                        .size(width = 70.dp, height = 50.dp)
-                        .clip(CircleShape) // Circular ripple (will look oval given the width)
-                        .clickable { menuVisible = !menuVisible }
-                )
+                        .size(width = 84.dp, height = 64.dp)
+                        .clip(CircleShape)
+                        .clickable { menuVisible = !menuVisible },
+                    contentAlignment = Alignment.Center
+                ) {
+                    SpriteAnimation(
+                        painter = painterResource(Res.drawable.fruitmenu_strip),
+                        frameCount = 3,
+                        modifier = Modifier.size(width = 70.dp, height = 50.dp)
+                    )
+                }
             }
         }
 
-        // --- MAIN GAME AREA (Expanded to the bottom) ---
+        // --- FRUIT SELECTION MENU (Appears below the button) ---
+        if (menuVisible) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 80.dp, end = 16.dp) // Adjusted to appear right below the top bar button
+                    .width(160.dp)
+                    .zIndex(3f),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.wrapContentHeight()
+                ) {
+                    items(viewModel.itemsList) { item ->
+                        val isSelected = item.id == viewModel.currentItem.id
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    if (isSelected) MaterialTheme.colorScheme.primaryContainer 
+                                    else Color.Transparent
+                                )
+                                .clickable {
+                                    if (item.unlocked) {
+                                        viewModel.selectItem(item)
+                                        menuVisible = false
+                                    } else {
+                                        itemToPurchase = item
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val colorFilter = if (item.unlocked) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+                            
+                            Box(modifier = Modifier.graphicsLayer { 
+                                alpha = if (item.unlocked) 1f else 0.4f 
+                            }) {
+                                SpriteAnimation(
+                                    painter = painterResource(item.resource),
+                                    frameCount = 3,
+                                    modifier = Modifier.size(48.dp),
+                                    colorFilter = colorFilter
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- MAIN GAME AREA ---
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -128,7 +211,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             )
         }
 
-        // --- BOTTOM RIGHT COUNTER (CPS Meter) ---
+        // --- CPS Meter ---
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -149,56 +232,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- FLOATING MENU ---
-        if (menuVisible) {
-            Column(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 60.dp, end = 16.dp)
-                    .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
-                    .padding(8.dp)
-                    .zIndex(3f)
-            ) {
-                viewModel.itemsList.forEach { item ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .clickable {
-                                if (item.unlocked) {
-                                    viewModel.selectItem(item)
-                                    menuVisible = false
-                                } else {
-                                    // Show purchase dialog for locked items
-                                    itemToPurchase = item
-                                }
-                            }
-                    ) {
-                        val colorFilter = if (item.unlocked) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
-                        
-                        Box(modifier = Modifier.graphicsLayer { 
-                            alpha = if (item.unlocked) 1f else 0.5f 
-                        }) {
-                            SpriteAnimation(
-                                painter = painterResource(item.resource),
-                                frameCount = 3,
-                                modifier = Modifier.size(32.dp),
-                                colorFilter = colorFilter
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(item.nameRes),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (item.unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        )
-                    }
-                }
-            }
-        }
-
-        // --- TUTORIAL SPEECH BUBBLE / DIALOG ---
+        // --- TUTORIAL DIALOG ---
         if (showTutorial) {
             AlertDialog(
                 onDismissRequest = { showTutorial = false },
