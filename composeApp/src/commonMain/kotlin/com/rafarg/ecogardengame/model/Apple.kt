@@ -35,10 +35,7 @@ class Apple : BaseVegetable() {
     override val nameRes = Res.string.item_apple
     override val resource = Res.drawable.apple_strip
     override val price: Int = 500
-    override val unlockCost: ItemCost = ItemCost(
-        money = 5000,
-        vegetableCosts = mapOf("tomato" to 500, "squash" to 50)
-    )
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_APPLE
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🍎"
     override val tutorialRes = Res.string.tutorial_apple
@@ -48,7 +45,7 @@ class Apple : BaseVegetable() {
             id = "apple_overclock",
             nameRes = Res.string.mod_apple_high_freq_name,
             descriptionRes = Res.string.mod_apple_high_freq_desc,
-            unlockCost = ItemCost(money = 3000, vegetableCosts = mapOf("apple" to 200, "bell_pepper" to 40)),
+            unlockCost = GamePrices.MOD_APPLE_HIGH_FREQ,
             targetItemId = "apple"
         )
     )

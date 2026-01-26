@@ -31,10 +31,7 @@ class BellPepper : BaseVegetable() {
     override val nameRes = Res.string.item_bell_pepper
     override val resource = Res.drawable.bellpepper_strip
     override val price: Int = 100
-    override val unlockCost: ItemCost = ItemCost(
-        money = 250,
-        vegetableCosts = mapOf("tomato" to 50, "broccoli" to 10)
-    )
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_BELL_PEPPER
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🫑"
     override val tutorialRes = Res.string.tutorial_bell_pepper
@@ -49,7 +46,7 @@ class BellPepper : BaseVegetable() {
             id = "bell_pepper_turbo",
             nameRes = Res.string.mod_bell_pepper_turbo_name,
             descriptionRes = Res.string.mod_bell_pepper_turbo_desc,
-            unlockCost = ItemCost(money = 2000, vegetableCosts = mapOf("bell_pepper" to 100, "broccoli" to 50)),
+            unlockCost = GamePrices.MOD_BELL_PEPPER_TURBO,
             targetItemId = "bell_pepper"
         )
     )

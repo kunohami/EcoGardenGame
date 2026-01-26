@@ -32,10 +32,7 @@ class Broccoli : BaseVegetable() {
     override val nameRes = Res.string.item_broccoli
     override val resource = Res.drawable.broccoli_strip
     override val price: Int = 50
-    override val unlockCost: ItemCost = ItemCost(
-        money = 100,
-        vegetableCosts = mapOf("tomato" to 20)
-    )
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_BROCCOLI
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥦"
     override val tutorialRes = Res.string.tutorial_broccoli
@@ -50,21 +47,21 @@ class Broccoli : BaseVegetable() {
             id = "broccoli_giant",
             nameRes = Res.string.mod_broccoli_giant_name,
             descriptionRes = Res.string.mod_broccoli_giant_desc,
-            unlockCost = ItemCost(money = 500, vegetableCosts = mapOf("broccoli" to 100)),
+            unlockCost = GamePrices.MOD_BROCCOLI_GIANT,
             targetItemId = "broccoli"
         ),
         GameplayModifier(
             id = "broccoli_speed",
             nameRes = Res.string.mod_broccoli_overclocked_name,
             descriptionRes = Res.string.mod_broccoli_overclocked_desc,
-            unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("broccoli" to 250, "bell_pepper" to 50)),
+            unlockCost = GamePrices.MOD_BROCCOLI_OVERCLOCKED,
             targetItemId = "broccoli"
         ),
         GameplayModifier(
             id = "broccoli_proximity",
             nameRes = Res.string.mod_broccoli_air_name,
             descriptionRes = Res.string.mod_broccoli_air_desc,
-            unlockCost = ItemCost(money = 2000, vegetableCosts = mapOf("broccoli" to 100, "garlic" to 10)),
+            unlockCost = GamePrices.MOD_BROCCOLI_AIR,
             targetItemId = "broccoli"
         )
     )

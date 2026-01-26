@@ -33,10 +33,7 @@ class PurpleOnion : BaseVegetable() {
     override val nameRes = Res.string.item_purple_onion
     override val resource = Res.drawable.purpleonion_strip
     override val price: Int = 200
-    override val unlockCost: ItemCost = ItemCost(
-        money = 500,
-        vegetableCosts = mapOf("tomato" to 100, "broccoli" to 25, "bell_pepper" to 10)
-    )
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_PURPLE_ONION
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧅"
     override val tutorialRes = Res.string.tutorial_purple_onion
@@ -52,21 +49,21 @@ class PurpleOnion : BaseVegetable() {
             id = "purple_onion_plus_1",
             nameRes = Res.string.mod_onion_plus1_name,
             descriptionRes = Res.string.mod_onion_plus1_desc,
-            unlockCost = ItemCost(money = 1000, vegetableCosts = mapOf("purple_onion" to 50)),
+            unlockCost = GamePrices.MOD_ONION_PLUS1,
             targetItemId = "purple_onion"
         ),
         GameplayModifier(
             id = "purple_onion_plus_2",
             nameRes = Res.string.mod_onion_plus2_name,
             descriptionRes = Res.string.mod_onion_plus2_desc,
-            unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("purple_onion" to 150, "bell_pepper" to 30)),
+            unlockCost = GamePrices.MOD_ONION_PLUS2,
             targetItemId = "purple_onion"
         ),
         GameplayModifier(
             id = "purple_onion_long_spin",
             nameRes = Res.string.mod_onion_sturdy_name,
             descriptionRes = Res.string.mod_onion_sturdy_desc,
-            unlockCost = ItemCost(money = 1500, vegetableCosts = mapOf("purple_onion" to 100, "broccoli" to 40)),
+            unlockCost = GamePrices.MOD_ONION_STURDY,
             targetItemId = "purple_onion"
         )
     )

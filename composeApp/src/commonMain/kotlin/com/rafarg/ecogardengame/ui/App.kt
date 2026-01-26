@@ -18,6 +18,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rafarg.ecogardengame.auth.AuthRepository
+import com.rafarg.ecogardengame.data.DataStoreGameRepository
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
@@ -75,7 +76,13 @@ fun App(
     authRepository: AuthRepository? = null,
     onGoogleSignIn: () -> Unit = {}
 ) {
-    val viewModel: GameViewModel = viewModel { GameViewModel(prefs, authRepository) }
+    val viewModel: GameViewModel = viewModel { 
+        val repository = if (prefs != null) DataStoreGameRepository(prefs) else object : com.rafarg.ecogardengame.data.GameRepository {
+            override suspend fun loadGameData() = com.rafarg.ecogardengame.data.GameSaveData()
+            override suspend fun saveGameData(data: com.rafarg.ecogardengame.data.GameSaveData) {}
+        }
+        GameViewModel(repository, authRepository) 
+    }
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
     
     EcoGardenTheme(

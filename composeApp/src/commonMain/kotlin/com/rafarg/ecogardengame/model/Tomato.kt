@@ -30,10 +30,15 @@ class Tomato : BaseVegetable() {
     override val nameRes = Res.string.item_tomato
     override val resource = Res.drawable.tomato_strip
     override val price: Int = 0
-    override val unlockCost: ItemCost = ItemCost(money = 0)
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_TOMATO
     override var unlocked: Boolean = true
     override val particleEmoji: String = "🍅"
     override val tutorialRes = Res.string.tutorial_tomato
+
+    override val baseRewards: List<Reward> get() = listOf(
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_TOMATO, countValue = 0)
+    )
 
     // Track critical hits for achievement
     var criticalHits by mutableStateOf(0)
@@ -43,7 +48,7 @@ class Tomato : BaseVegetable() {
             id = "tomato_precision_vibration",
             nameRes = Res.string.mod_tomato_haptic_name,
             descriptionRes = Res.string.mod_tomato_haptic_desc,
-            unlockCost = ItemCost(money = 300, vegetableCosts = mapOf("tomato" to 150)),
+            unlockCost = GamePrices.MOD_TOMATO_HAPTIC,
             targetItemId = "tomato"
         )
     )
@@ -142,8 +147,8 @@ class Tomato : BaseVegetable() {
                         val rewards = if (isPrecisionClick) {
                             criticalHits++
                             listOf(
-                                Reward(emoji = "🪙", moneyValue = 30, countValue = 0),
-                                Reward(emoji = particleEmoji, countValue = 20, resource = resource)
+                                Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_TOMATO_CRIT_MONEY, countValue = 0),
+                                Reward(emoji = particleEmoji, countValue = GamePrices.REWARD_TOMATO_CRIT_COUNT, resource = resource)
                             )
                         } else {
                             baseRewards

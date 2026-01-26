@@ -4,22 +4,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafarg.ecogardengame.auth.AuthRepository
 import com.rafarg.ecogardengame.auth.UserProfile
+import com.rafarg.ecogardengame.data.GameRepository
+import com.rafarg.ecogardengame.data.GameSaveData
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
-import dev.gitlive.firebase.firestore.where
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -35,7 +33,7 @@ data class PublicProfile(
 
 @OptIn(ExperimentalTime::class)
 class GameViewModel(
-    private val dataStore: DataStore<Preferences>?,
+    private val gameRepository: GameRepository,
     private val authRepository: AuthRepository? = null
 ) : ViewModel(), GameItemProvider {
 
@@ -101,14 +99,14 @@ class GameViewModel(
             id = "double_click_10",
             nameRes = Res.string.upg_precise_harvest_name,
             descriptionRes = Res.string.upg_precise_harvest_desc,
-            baseCost = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 100)),
+            baseCost = GamePrices.UPGRADE_PRECISE_HARVEST,
             maxLevel = 5
         ),
         GlobalUpgrade(
             id = "lucky_harvest",
             nameRes = Res.string.upg_lucky_harvest_name,
             descriptionRes = Res.string.upg_lucky_harvest_desc,
-            baseCost = ItemCost(money = 5000, vegetableCosts = mapOf("apple" to 50, "garlic" to 50)),
+            baseCost = GamePrices.UPGRADE_LUCKY_HARVEST,
             maxLevel = 5
         )
     )
@@ -150,22 +148,6 @@ class GameViewModel(
         private set
 
     val itemsList: List<GameItem> get() = items
-
-    // --- DATASTORE KEYS ---
-    private val totalClicksKey = intPreferencesKey("total_clicks")
-    private val moneyKey = intPreferencesKey("money")
-    private val totalMoneyEarnedKey = intPreferencesKey("total_money_earned")
-    private val vibrationEnabledKey = booleanPreferencesKey("vibration_enabled")
-    private val vibrationIntensityKey = floatPreferencesKey("vibration_intensity")
-    private val darkThemeKey = booleanPreferencesKey("dark_theme")
-    private val autumnThemeKey = booleanPreferencesKey("autumn_theme")
-    private val shaderBackgroundEnabledKey = booleanPreferencesKey("shader_background_enabled")
-    private val languageKey = stringPreferencesKey("language")
-    private val languageSetKey = booleanPreferencesKey("language_set")
-    private val usernameKey = stringPreferencesKey("username")
-    private val profileImageKey = intPreferencesKey("profile_image_index")
-    private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
-    private val lastProfileUpdateKey = longPreferencesKey("last_profile_update")
 
     init {
         loadData()
@@ -220,65 +202,51 @@ class GameViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            dataStore?.data?.first()?.let { prefs ->
-                totalClicks = prefs[totalClicksKey] ?: 0
-                money = prefs[moneyKey] ?: 0
-                totalMoneyEarned = prefs[totalMoneyEarnedKey] ?: 0
-                vibrationEnabled = prefs[vibrationEnabledKey] ?: false
-                vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f
-                isDarkTheme = prefs[darkThemeKey] ?: false
-                isAutumnTheme = prefs[autumnThemeKey] ?: false
-                shaderBackgroundEnabled = prefs[shaderBackgroundEnabledKey] ?: false
-                language = prefs[languageKey] ?: "auto"
-                languageSet = prefs[languageSetKey] ?: false
-                username = prefs[usernameKey] ?: "Farmer"
-                profileImageIndex = prefs[profileImageKey] ?: 0
-                lastProfileUpdateTime = prefs[lastProfileUpdateKey] ?: 0L
-                
-                prefs[achievementsKey]?.let {
-                    unlockedAchievements.clear()
-                    unlockedAchievements.addAll(it)
-                }
+            val saveData = gameRepository.loadGameData()
+            
+            totalClicks = saveData.totalClicks
+            money = saveData.money
+            totalMoneyEarned = saveData.totalMoneyEarned
+            vibrationEnabled = saveData.vibrationEnabled
+            vibrationIntensity = saveData.vibrationIntensity
+            isDarkTheme = saveData.isDarkTheme
+            isAutumnTheme = saveData.isAutumnTheme
+            shaderBackgroundEnabled = saveData.shaderBackgroundEnabled
+            language = saveData.language
+            languageSet = saveData.languageSet
+            username = saveData.username
+            profileImageIndex = saveData.profileImageIndex
+            lastProfileUpdateTime = saveData.lastProfileUpdateTime
+            
+            unlockedAchievements.clear()
+            unlockedAchievements.addAll(saveData.unlockedAchievements)
 
-                globalUpgrades.forEach { upgrade ->
-                    upgrade.unlockedLevel = prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] ?: 0
-                }
-
-                libraryCategories.forEach { category ->
-                    category.entries.forEach { entry ->
-                        entry.isUnlocked = prefs[booleanPreferencesKey("library_unlocked_${entry.id}")] ?: false
-                    }
-                }
-
-                val newFruitCounts = mutableMapOf<String, Int>()
-                val newTotalHarvested = mutableMapOf<String, Int>()
-                
-                val newList = staticItemsList.map { item ->
-                    val countKey = intPreferencesKey("fruit_count_${item.id}")
-                    val totalHarvestedKey = intPreferencesKey("total_harvested_${item.id}")
-                    val unlockedKey = booleanPreferencesKey("unlocked_${item.id}")
-                    
-                    newFruitCounts[item.id] = prefs[countKey] ?: 0
-                    newTotalHarvested[item.id] = prefs[totalHarvestedKey] ?: 0
-                    
-                    item.unlocked = if (item.id == "tomato") true else prefs[unlockedKey] ?: false
-                    
-                    item.modifiers.forEach { mod ->
-                        mod.isUnlocked = prefs[booleanPreferencesKey("mod_unlocked_${mod.id}")] ?: false
-                        mod.isEnabled = prefs[booleanPreferencesKey("mod_enabled_${mod.id}")] ?: false
-                    }
-                    
-                    item
-                }
-                
-                fruitCounts = newFruitCounts
-                totalFruitHarvested = newTotalHarvested
-                items = newList
-                currentItem = items.find { it.id == currentItem.id } ?: items.first()
-
-                checkAchievements(isInitialLoad = true)
-                isDataLoaded = true
+            globalUpgrades.forEach { upgrade ->
+                upgrade.unlockedLevel = saveData.globalUpgradeLevels[upgrade.id] ?: 0
             }
+
+            libraryCategories.forEach { category ->
+                category.entries.forEach { entry ->
+                    entry.isUnlocked = saveData.libraryUnlockedEntries[entry.id] ?: false
+                }
+            }
+
+            fruitCounts = saveData.fruitCounts
+            totalFruitHarvested = saveData.totalFruitHarvested
+            
+            items = staticItemsList.map { item ->
+                item.unlocked = if (item.id == "tomato") true else saveData.unlockedItems[item.id] ?: false
+                item.modifiers.forEach { mod ->
+                    mod.isUnlocked = saveData.modifierUnlocked[mod.id] ?: false
+                    mod.isEnabled = saveData.modifierEnabled[mod.id] ?: false
+                }
+                item
+            }
+            
+            currentItem = items.find { it.id == currentItem.id } ?: items.first()
+
+            checkAchievements(isInitialLoad = true)
+            isDataLoaded = true
         }
     }
 
@@ -473,12 +441,13 @@ class GameViewModel(
         viewModelScope.launch {
             try {
                 val firestore = Firebase.firestore
-                val snapshot = firestore.collection("users")
-                    .where("username", equalTo = query)
+                val result = firestore.collection("users")
+                    .where { "username" equalTo query }
                     .get()
                 
-                snapshot.documents.forEach { doc ->
+                result.documents.forEach { doc ->
                     val data = doc.data<Map<String, Any>>()
+                    @Suppress("UNCHECKED_CAST")
                     searchResults.add(PublicProfile(
                         id = doc.id,
                         username = data["username"] as? String ?: "Unknown",
@@ -487,7 +456,7 @@ class GameViewModel(
                     ))
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                // handle error
             } finally {
                 isSearching = false
             }
@@ -592,47 +561,42 @@ class GameViewModel(
 
     private fun saveData() {
         viewModelScope.launch {
-            dataStore?.edit { prefs ->
-                prefs[totalClicksKey] = totalClicks
-                prefs[moneyKey] = money
-                prefs[totalMoneyEarnedKey] = totalMoneyEarned
-                prefs[vibrationEnabledKey] = vibrationEnabled
-                prefs[vibrationIntensityKey] = vibrationIntensity
-                prefs[darkThemeKey] = isDarkTheme
-                prefs[autumnThemeKey] = isAutumnTheme
-                prefs[shaderBackgroundEnabledKey] = shaderBackgroundEnabled
-                prefs[languageKey] = language
-                prefs[languageSetKey] = languageSet
-                prefs[usernameKey] = username
-                prefs[profileImageKey] = profileImageIndex
-                prefs[achievementsKey] = unlockedAchievements.toSet()
-                prefs[lastProfileUpdateKey] = lastProfileUpdateTime
-                
-                globalUpgrades.forEach { upgrade ->
-                    prefs[intPreferencesKey("global_upgrade_level_${upgrade.id}")] = upgrade.unlockedLevel
-                }
-
-                libraryCategories.forEach { category ->
-                    category.entries.forEach { entry ->
-                        prefs[booleanPreferencesKey("library_unlocked_${entry.id}")] = entry.isUnlocked
-                    }
-                }
-
-                items.forEach { item ->
-                    val countKey = intPreferencesKey("fruit_count_${item.id}")
-                    val totalHarvestedKey = intPreferencesKey("total_harvested_${item.id}")
-                    val unlockedKey = booleanPreferencesKey("unlocked_${item.id}")
-                    
-                    prefs[countKey] = fruitCounts[item.id] ?: 0
-                    prefs[totalHarvestedKey] = totalFruitHarvested[item.id] ?: 0
-                    prefs[unlockedKey] = item.unlocked
-                    
-                    item.modifiers.forEach { mod ->
-                        prefs[booleanPreferencesKey("mod_unlocked_${mod.id}")] = mod.isUnlocked
-                        prefs[booleanPreferencesKey("mod_enabled_${mod.id}")] = mod.isEnabled
-                    }
+            val modUnlocked = mutableMapOf<String, Boolean>()
+            val modEnabled = mutableMapOf<String, Boolean>()
+            val unlockedItemsMap = mutableMapOf<String, Boolean>()
+            
+            items.forEach { item ->
+                unlockedItemsMap[item.id] = item.unlocked
+                item.modifiers.forEach { mod ->
+                    modUnlocked[mod.id] = mod.isUnlocked
+                    modEnabled[mod.id] = mod.isEnabled
                 }
             }
+
+            val gameSaveData = GameSaveData(
+                totalClicks = totalClicks,
+                money = money,
+                totalMoneyEarned = totalMoneyEarned,
+                vibrationEnabled = vibrationEnabled,
+                vibrationIntensity = vibrationIntensity,
+                isDarkTheme = isDarkTheme,
+                isAutumnTheme = isAutumnTheme,
+                shaderBackgroundEnabled = shaderBackgroundEnabled,
+                language = language,
+                languageSet = languageSet,
+                username = username,
+                profileImageIndex = profileImageIndex,
+                unlockedAchievements = unlockedAchievements.toSet(),
+                lastProfileUpdateTime = lastProfileUpdateTime,
+                fruitCounts = fruitCounts,
+                totalFruitHarvested = totalFruitHarvested,
+                unlockedItems = unlockedItemsMap,
+                globalUpgradeLevels = globalUpgrades.associate { it.id to it.unlockedLevel },
+                libraryUnlockedEntries = libraryCategories.flatMap { it.entries }.associate { it.id to it.isUnlocked },
+                modifierUnlocked = modUnlocked,
+                modifierEnabled = modEnabled
+            )
+            gameRepository.saveGameData(gameSaveData)
         }
     }
 }

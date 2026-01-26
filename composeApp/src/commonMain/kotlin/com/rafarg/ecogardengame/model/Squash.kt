@@ -47,10 +47,7 @@ class Squash : BaseVegetable() {
     override val nameRes = Res.string.item_squash
     override val resource = Res.drawable.squash_strip
     override val price: Int = 250
-    override val unlockCost: ItemCost = ItemCost(
-        money = 1000,
-        vegetableCosts = mapOf("tomato" to 200, "broccoli" to 75, "bell_pepper" to 30, "purple_onion" to 15)
-    )
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_SQUASH
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🥒"
     override val tutorialRes = Res.string.tutorial_squash
@@ -73,7 +70,7 @@ class Squash : BaseVegetable() {
             id = "squash_speed_momentum",
             nameRes = Res.string.mod_squash_momentum_name,
             descriptionRes = Res.string.mod_squash_momentum_desc,
-            unlockCost = ItemCost(money = 5000, vegetableCosts = mapOf("squash" to 50)),
+            unlockCost = GamePrices.MOD_SQUASH_MOMENTUM,
             targetItemId = id
         )
     )

@@ -42,10 +42,7 @@ class Garlic : BaseVegetable() {
     override val nameRes = Res.string.item_garlic
     override val resource = Res.drawable.garlic_strip
     override val price: Int = 150
-    override val unlockCost: ItemCost = ItemCost(
-        money = 750,
-        vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15)
-    )
+    override val unlockCost: ItemCost = GamePrices.UNLOCK_GARLIC
     override var unlocked: Boolean = false
     override val particleEmoji: String = "🧄"
     override val tutorialRes = Res.string.tutorial_garlic
@@ -55,14 +52,14 @@ class Garlic : BaseVegetable() {
             id = "garlic_cluster",
             nameRes = Res.string.mod_garlic_cluster_name,
             descriptionRes = Res.string.mod_garlic_cluster_desc,
-            unlockCost = ItemCost(money = 2500, vegetableCosts = mapOf("garlic" to 150, "purple_onion" to 30)),
+            unlockCost = GamePrices.MOD_GARLIC_CLUSTER,
             targetItemId = "garlic"
         ),
         GameplayModifier(
             id = "garlic_shake",
             nameRes = Res.string.mod_garlic_shake_name,
             descriptionRes = Res.string.mod_garlic_shake_desc,
-            unlockCost = ItemCost(money = 3000, vegetableCosts = mapOf("garlic" to 300, "squash" to 20)),
+            unlockCost = GamePrices.MOD_GARLIC_SHAKE,
             targetItemId = "garlic"
         )
     )
