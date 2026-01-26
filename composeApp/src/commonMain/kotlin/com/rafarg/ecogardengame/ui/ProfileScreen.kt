@@ -28,28 +28,25 @@ import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import com.rafarg.ecogardengame.viewmodel.PublicProfile
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(viewModel: GameViewModel) {
     var selectedTab by remember { mutableStateOf(0) }
-    val scope = rememberCoroutineScope()
-    var snackbarHostState = remember { SnackbarHostState() }
 
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.Transparent, // Let the background show
+        containerColor = Color.Transparent,
         topBar = {
-            TabRow(
+            SecondaryTabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = if (wavy) Color.Black.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surface,
-                contentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary
+                contentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
+                divider = {}
             ) {
                 Tab(
                     selected = selectedTab == 0,
@@ -66,7 +63,7 @@ fun ProfileScreen(viewModel: GameViewModel) {
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when (selectedTab) {
-                0 -> MyProfileTab(viewModel, snackbarHostState, primaryText)
+                0 -> MyProfileTab(viewModel, primaryText)
                 1 -> SearchPlayersTab(viewModel, primaryText)
             }
         }
@@ -76,18 +73,13 @@ fun ProfileScreen(viewModel: GameViewModel) {
 @Composable
 fun MyProfileTab(
     viewModel: GameViewModel,
-    snackbarHostState: SnackbarHostState,
     textColor: Color
 ) {
     var showNameDialog by remember { mutableStateOf(false) }
     var tempName by remember { mutableStateOf(viewModel.username) }
     var showAvatarDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     val currentAvatarItem = viewModel.itemsList.getOrNull(viewModel.profileImageIndex)
-
-    val profileUpdatedMsg = stringResource(Res.string.profile_updated)
-    val cooldownMsg = stringResource(Res.string.cooldown_wait)
 
     Column(
         modifier = Modifier
@@ -133,39 +125,13 @@ fun MyProfileTab(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // --- UPDATE PUBLIC PROFILE BUTTON ---
-        if (viewModel.currentUser != null) {
-            Button(
-                onClick = {
-                    viewModel.updatePublicProfile(
-                        onSuccess = {
-                            scope.launch { snackbarHostState.showSnackbar(profileUpdatedMsg) }
-                        },
-                        onError = { error ->
-                            scope.launch {
-                                if (error.toIntOrNull() != null) {
-                                    snackbarHostState.showSnackbar(cooldownMsg.replace("%1\$d", error))
-                                } else {
-                                    snackbarHostState.showSnackbar("Error updating profile")
-                                }
-                            }
-                        }
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text(stringResource(Res.string.update_profile_button))
-            }
-        } else {
-            Text(
-                stringResource(Res.string.login_desc),
-                style = MaterialTheme.typography.labelSmall,
-                color = textColor.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center
-            )
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            stringResource(Res.string.sync_notice),
+            style = MaterialTheme.typography.labelSmall,
+            color = textColor.copy(alpha = 0.6f)
+        )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -194,7 +160,7 @@ fun MyProfileTab(
         }
     }
 
-    // --- DIALOGS (SAME AS BEFORE) ---
+    // --- DIALOGS ---
     if (showNameDialog) {
         AlertDialog(
             onDismissRequest = { showNameDialog = false },
@@ -265,6 +231,7 @@ fun MyProfileTab(
 
 @Composable
 fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
+    // ... (rest of the file remains the same)
     var searchQuery by remember { mutableStateOf("") }
     var selectedProfile by remember { mutableStateOf<PublicProfile?>(null) }
 
@@ -274,7 +241,6 @@ fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- SEARCH BAR ---
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -314,7 +280,6 @@ fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
         }
     }
 
-    // --- OTHER PLAYER PROFILE DIALOG ---
     selectedProfile?.let { profile ->
         AlertDialog(
             onDismissRequest = { selectedProfile = null },
@@ -333,7 +298,6 @@ fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
                     Text(stringResource(Res.string.achievements_title) + ": ${profile.achievements.size}", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Show small icons of unlocked achievements
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),

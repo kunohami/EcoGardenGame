@@ -3,7 +3,9 @@ package com.rafarg.ecogardengame.data
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class GameSaveData(
     val totalClicks: Int = 0,
     val money: Int = 0,

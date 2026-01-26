@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
     kotlin("native.cocoapods")
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 
 
@@ -55,6 +56,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.kotlinx.datetime)
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
             
             // Firebase GitLive
             implementation(libs.firebase.auth)

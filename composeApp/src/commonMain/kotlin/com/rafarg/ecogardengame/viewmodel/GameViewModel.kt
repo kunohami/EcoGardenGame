@@ -15,11 +15,14 @@ import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
+import dev.gitlive.firebase.firestore.where
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import kotlin.time.ExperimentalTime
 import kotlin.time.Clock
@@ -86,6 +89,9 @@ class GameViewModel(
     // --- BACKGROUND SETTINGS ---
     var shaderBackgroundEnabled by mutableStateOf(false)
         private set
+    
+    var isEmeraldWavyTheme by mutableStateOf(false)
+        private set
 
     // --- LANGUAGE SETTINGS ---
     var language by mutableStateOf("auto") // "auto", "en", "es"
@@ -138,6 +144,12 @@ class GameViewModel(
         private set
     
     var isSearching by mutableStateOf(false)
+        private set
+
+    // --- CLOUD SYNC ---
+    var lastCloudSyncTime by mutableStateOf(0L)
+        private set
+    var isCloudLoading by mutableStateOf(false)
         private set
 
     // --- STATE ---
@@ -203,51 +215,54 @@ class GameViewModel(
     private fun loadData() {
         viewModelScope.launch {
             val saveData = gameRepository.loadGameData()
-            
-            totalClicks = saveData.totalClicks
-            money = saveData.money
-            totalMoneyEarned = saveData.totalMoneyEarned
-            vibrationEnabled = saveData.vibrationEnabled
-            vibrationIntensity = saveData.vibrationIntensity
-            isDarkTheme = saveData.isDarkTheme
-            isAutumnTheme = saveData.isAutumnTheme
-            shaderBackgroundEnabled = saveData.shaderBackgroundEnabled
-            language = saveData.language
-            languageSet = saveData.languageSet
-            username = saveData.username
-            profileImageIndex = saveData.profileImageIndex
-            lastProfileUpdateTime = saveData.lastProfileUpdateTime
-            
-            unlockedAchievements.clear()
-            unlockedAchievements.addAll(saveData.unlockedAchievements)
-
-            globalUpgrades.forEach { upgrade ->
-                upgrade.unlockedLevel = saveData.globalUpgradeLevels[upgrade.id] ?: 0
-            }
-
-            libraryCategories.forEach { category ->
-                category.entries.forEach { entry ->
-                    entry.isUnlocked = saveData.libraryUnlockedEntries[entry.id] ?: false
-                }
-            }
-
-            fruitCounts = saveData.fruitCounts
-            totalFruitHarvested = saveData.totalFruitHarvested
-            
-            items = staticItemsList.map { item ->
-                item.unlocked = if (item.id == "tomato") true else saveData.unlockedItems[item.id] ?: false
-                item.modifiers.forEach { mod ->
-                    mod.isUnlocked = saveData.modifierUnlocked[mod.id] ?: false
-                    mod.isEnabled = saveData.modifierEnabled[mod.id] ?: false
-                }
-                item
-            }
-            
-            currentItem = items.find { it.id == currentItem.id } ?: items.first()
-
-            checkAchievements(isInitialLoad = true)
+            applySaveData(saveData)
             isDataLoaded = true
         }
+    }
+
+    private fun applySaveData(saveData: GameSaveData) {
+        totalClicks = saveData.totalClicks
+        money = saveData.money
+        totalMoneyEarned = saveData.totalMoneyEarned
+        vibrationEnabled = saveData.vibrationEnabled
+        vibrationIntensity = saveData.vibrationIntensity
+        isDarkTheme = saveData.isDarkTheme
+        isAutumnTheme = saveData.isAutumnTheme
+        shaderBackgroundEnabled = saveData.shaderBackgroundEnabled
+        isEmeraldWavyTheme = saveData.isEmeraldWavyTheme
+        language = saveData.language
+        languageSet = saveData.languageSet
+        username = saveData.username
+        profileImageIndex = saveData.profileImageIndex
+        lastProfileUpdateTime = saveData.lastProfileUpdateTime
+        
+        unlockedAchievements.clear()
+        unlockedAchievements.addAll(saveData.unlockedAchievements)
+
+        globalUpgrades.forEach { upgrade ->
+            upgrade.unlockedLevel = saveData.globalUpgradeLevels[upgrade.id] ?: 0
+        }
+
+        libraryCategories.forEach { category ->
+            category.entries.forEach { entry ->
+                entry.isUnlocked = saveData.libraryUnlockedEntries[entry.id] ?: false
+            }
+        }
+
+        fruitCounts = saveData.fruitCounts
+        totalFruitHarvested = saveData.totalFruitHarvested
+        
+        items = staticItemsList.map { item ->
+            item.unlocked = if (item.id == "tomato") true else saveData.unlockedItems[item.id] ?: false
+            item.modifiers.forEach { mod ->
+                mod.isUnlocked = saveData.modifierUnlocked[mod.id] ?: false
+                mod.isEnabled = saveData.modifierEnabled[mod.id] ?: false
+            }
+            item
+        }
+        
+        currentItem = items.find { it.id == currentItem.id } ?: items.first()
+        checkAchievements(isInitialLoad = true)
     }
 
     fun onVegetableClick(rewards: List<Reward>): List<Reward> {
@@ -390,6 +405,11 @@ class GameViewModel(
         shaderBackgroundEnabled = enabled
         saveData()
     }
+    
+    fun updateEmeraldWavyTheme(enabled: Boolean) {
+        isEmeraldWavyTheme = enabled
+        saveData()
+    }
 
     fun updateLanguage(lang: String) {
         language = lang
@@ -405,11 +425,11 @@ class GameViewModel(
     fun updatePublicProfile(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val user = currentUser ?: return
         val now = currentTimeMillis()
-        val cooldownMs = 30 * 60 * 1000L
+        val cooldownMs = 60 * 1000L // 1 minute cooldown
         
         if (now - lastProfileUpdateTime < cooldownMs) {
-            val minutesLeft = ((cooldownMs - (now - lastProfileUpdateTime)) / (60 * 1000)).toInt()
-            onError(minutesLeft.toString())
+            val secondsLeft = ((cooldownMs - (now - lastProfileUpdateTime)) / 1000).toInt()
+            onError(secondsLeft.toString())
             return
         }
 
@@ -433,27 +453,135 @@ class GameViewModel(
         }
     }
 
+    fun uploadSaveToCloud(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val user = currentUser ?: return
+        val now = currentTimeMillis()
+        val cooldownMs = 60 * 1000L // 1 minute cooldown
+        
+        if (now - lastCloudSyncTime < cooldownMs) {
+            val secondsLeft = ((cooldownMs - (now - lastCloudSyncTime)) / 1000).toInt()
+            onError(secondsLeft.toString())
+            return
+        }
+
+        isCloudLoading = true
+        viewModelScope.launch {
+            try {
+                val currentData = getSaveDataSnapshot()
+                val jsonString = Json.encodeToString(currentData)
+                
+                val firestore = Firebase.firestore
+                firestore.collection("users").document(user.id).set(
+                    mapOf("save_json" to jsonString),
+                    merge = true
+                )
+                lastCloudSyncTime = now
+                onSuccess()
+            } catch (e: Exception) {
+                onError("error")
+            } finally {
+                isCloudLoading = false
+            }
+        }
+    }
+
+    fun downloadSaveFromCloud(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val user = currentUser ?: return
+        isCloudLoading = true
+        
+        viewModelScope.launch {
+            try {
+                val firestore = Firebase.firestore
+                val doc = firestore.collection("users").document(user.id).get()
+                val jsonString = doc.get<String?>("save_json")
+                
+                if (jsonString != null) {
+                    val cloudData = Json.decodeFromString<GameSaveData>(jsonString)
+                    applySaveData(cloudData)
+                    saveData() // Save to local DataStore immediately
+                    onSuccess()
+                } else {
+                    onError("no_save")
+                }
+            } catch (e: Exception) {
+                onError("error")
+            } finally {
+                isCloudLoading = false
+            }
+        }
+    }
+
+    private fun getSaveDataSnapshot(): GameSaveData {
+        val modUnlocked = mutableMapOf<String, Boolean>()
+        val modEnabled = mutableMapOf<String, Boolean>()
+        val unlockedItemsMap = mutableMapOf<String, Boolean>()
+        
+        items.forEach { item ->
+            unlockedItemsMap[item.id] = item.unlocked
+            item.modifiers.forEach { mod ->
+                modUnlocked[mod.id] = mod.isUnlocked
+                modEnabled[mod.id] = mod.isEnabled
+            }
+        }
+
+        return GameSaveData(
+            totalClicks = totalClicks,
+            money = money,
+            totalMoneyEarned = totalMoneyEarned,
+            vibrationEnabled = vibrationEnabled,
+            vibrationIntensity = vibrationIntensity,
+            isDarkTheme = isDarkTheme,
+            isAutumnTheme = isAutumnTheme,
+            shaderBackgroundEnabled = shaderBackgroundEnabled,
+            isEmeraldWavyTheme = isEmeraldWavyTheme,
+            language = language,
+            languageSet = languageSet,
+            username = username,
+            profileImageIndex = profileImageIndex,
+            unlockedAchievements = unlockedAchievements.toSet(),
+            lastProfileUpdateTime = lastProfileUpdateTime,
+            fruitCounts = fruitCounts,
+            totalFruitHarvested = totalFruitHarvested,
+            unlockedItems = unlockedItemsMap,
+            globalUpgradeLevels = globalUpgrades.associate { it.id to it.unlockedLevel },
+            libraryUnlockedEntries = libraryCategories.flatMap { it.entries }.associate { it.id to it.isUnlocked },
+            modifierUnlocked = modUnlocked,
+            modifierEnabled = modEnabled
+        )
+    }
+
     fun searchPlayers(query: String) {
-        if (query.isBlank()) return
+        val cleanedQuery = query.trim()
+        if (cleanedQuery.isBlank()) return
+        
         isSearching = true
         searchResults.clear()
         
         viewModelScope.launch {
             try {
                 val firestore = Firebase.firestore
-                val result = firestore.collection("users")
-                    .where { "username" equalTo query }
-                    .get()
+                val queries = listOf(cleanedQuery, cleanedQuery.lowercase()).distinct()
                 
-                result.documents.forEach { doc ->
-                    val data = doc.data<Map<String, Any>>()
-                    @Suppress("UNCHECKED_CAST")
-                    searchResults.add(PublicProfile(
-                        id = doc.id,
-                        username = data["username"] as? String ?: "Unknown",
-                        profileImageIndex = (data["profileImageIndex"] as? Long)?.toInt() ?: 0,
-                        achievements = (data["achievements"] as? List<String>) ?: emptyList()
-                    ))
+                queries.forEach { term ->
+                    val result = firestore.collection("users")
+                        .where { "username" greaterThanOrEqualTo term }
+                        .where { "username" lessThanOrEqualTo term + "\uf8ff" }
+                        .get()
+                    
+                    result.documents.forEach { doc ->
+                        val data = doc.data<Map<String, Any?>>()
+                        val profileId = doc.id
+                        
+                        if (searchResults.none { it.id == profileId }) {
+                            @Suppress("UNCHECKED_CAST")
+                            searchResults.add(PublicProfile(
+                                id = profileId,
+                                username = data["username"] as? String ?: "Unknown",
+                                profileImageIndex = (data["profileImageIndex"] as? Number)?.toInt() ?: 0,
+                                achievements = (data["achievements"] as? List<String>) ?: emptyList()
+                            ))
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 // handle error
@@ -561,41 +689,7 @@ class GameViewModel(
 
     private fun saveData() {
         viewModelScope.launch {
-            val modUnlocked = mutableMapOf<String, Boolean>()
-            val modEnabled = mutableMapOf<String, Boolean>()
-            val unlockedItemsMap = mutableMapOf<String, Boolean>()
-            
-            items.forEach { item ->
-                unlockedItemsMap[item.id] = item.unlocked
-                item.modifiers.forEach { mod ->
-                    modUnlocked[mod.id] = mod.isUnlocked
-                    modEnabled[mod.id] = mod.isEnabled
-                }
-            }
-
-            val gameSaveData = GameSaveData(
-                totalClicks = totalClicks,
-                money = money,
-                totalMoneyEarned = totalMoneyEarned,
-                vibrationEnabled = vibrationEnabled,
-                vibrationIntensity = vibrationIntensity,
-                isDarkTheme = isDarkTheme,
-                isAutumnTheme = isAutumnTheme,
-                shaderBackgroundEnabled = shaderBackgroundEnabled,
-                language = language,
-                languageSet = languageSet,
-                username = username,
-                profileImageIndex = profileImageIndex,
-                unlockedAchievements = unlockedAchievements.toSet(),
-                lastProfileUpdateTime = lastProfileUpdateTime,
-                fruitCounts = fruitCounts,
-                totalFruitHarvested = totalFruitHarvested,
-                unlockedItems = unlockedItemsMap,
-                globalUpgradeLevels = globalUpgrades.associate { it.id to it.unlockedLevel },
-                libraryUnlockedEntries = libraryCategories.flatMap { it.entries }.associate { it.id to it.isUnlocked },
-                modifierUnlocked = modUnlocked,
-                modifierEnabled = modEnabled
-            )
+            val gameSaveData = getSaveDataSnapshot()
             gameRepository.saveGameData(gameSaveData)
         }
     }
