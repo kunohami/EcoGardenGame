@@ -3,6 +3,7 @@ package com.rafarg.ecogardengame.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -28,14 +29,40 @@ fun SpriteAnimation(
     }
 
     Canvas(modifier = modifier) {
-        val drawWidth = size.width * frameCount
-        val drawHeight = size.height
+        val intrinsicSize = painter.intrinsicSize
+        if (intrinsicSize.width <= 0 || intrinsicSize.height <= 0) return@Canvas
 
-        clipRect(left = 0f, top = 0f, right = size.width, bottom = size.height) {
-            translate(left = -frame * size.width, top = 0f) {
+        // Calculate single frame dimensions from the source
+        val srcFrameWidth = intrinsicSize.width / frameCount
+        val srcFrameHeight = intrinsicSize.height
+        val frameAspectRatio = srcFrameWidth / srcFrameHeight
+
+        // Determine drawing size maintaining aspect ratio (Fit center)
+        val canvasAspectRatio = size.width / size.height
+        val (drawFrameWidth, drawFrameHeight) = if (canvasAspectRatio > frameAspectRatio) {
+            // Height is the constraint
+            size.height * frameAspectRatio to size.height
+        } else {
+            // Width is the constraint
+            size.width to size.width / frameAspectRatio
+        }
+
+        val totalStripWidth = drawFrameWidth * frameCount
+        
+        // Center the frame in the canvas area
+        val offsetX = (size.width - drawFrameWidth) / 2
+        val offsetY = (size.height - drawFrameHeight) / 2
+
+        clipRect(
+            left = offsetX, 
+            top = offsetY, 
+            right = offsetX + drawFrameWidth, 
+            bottom = offsetY + drawFrameHeight
+        ) {
+            translate(left = offsetX - (frame * drawFrameWidth), top = offsetY) {
                 with(painter) {
                     draw(
-                        size = Size(drawWidth, drawHeight),
+                        size = Size(totalStripWidth, drawFrameHeight),
                         colorFilter = colorFilter
                     )
                 }
