@@ -428,8 +428,8 @@ class GameViewModel(
         val cooldownMs = 60 * 1000L // 1 minute cooldown
         
         if (now - lastProfileUpdateTime < cooldownMs) {
-            val secondsLeft = ((cooldownMs - (now - lastProfileUpdateTime)) / 1000).toInt()
-            onError(secondsLeft.toString())
+            val minutesLeft = ((cooldownMs - (now - lastProfileUpdateTime)) / 1000).toInt()
+            onError(minutesLeft.toString())
             return
         }
 
@@ -560,31 +560,44 @@ class GameViewModel(
         viewModelScope.launch {
             try {
                 val firestore = Firebase.firestore
-                val queries = listOf(cleanedQuery, cleanedQuery.lowercase()).distinct()
+                // Search both original and lowercase version for maximum flexibility
+                val searchTerms = listOf(cleanedQuery, cleanedQuery.lowercase()).distinct()
                 
-                queries.forEach { term ->
+                searchTerms.forEach { term ->
                     val result = firestore.collection("users")
                         .where { "username" greaterThanOrEqualTo term }
                         .where { "username" lessThanOrEqualTo term + "\uf8ff" }
                         .get()
                     
                     result.documents.forEach { doc ->
-                        val data = doc.data<Map<String, Any?>>()
                         val profileId = doc.id
                         
                         if (searchResults.none { it.id == profileId }) {
-                            @Suppress("UNCHECKED_CAST")
-                            searchResults.add(PublicProfile(
-                                id = profileId,
-                                username = data["username"] as? String ?: "Unknown",
-                                profileImageIndex = (data["profileImageIndex"] as? Number)?.toInt() ?: 0,
-                                achievements = (data["achievements"] as? List<String>) ?: emptyList()
-                            ))
+                            try {
+                                // Extracting fields individually is safer in KMP than doc.data<Map>()
+                                val uname = doc.get<String?>("username") ?: "Unknown"
+                                // Firestore numbers come as Long, convert safely to Int
+                                val pIndex = doc.get<Long?>("profileImageIndex")?.toInt() ?: 0
+                                val achs = try { 
+                                    doc.get<List<String>?>("achievements") ?: emptyList() 
+                                } catch (e: Exception) { 
+                                    emptyList() 
+                                }
+
+                                searchResults.add(PublicProfile(
+                                    id = profileId,
+                                    username = uname,
+                                    profileImageIndex = pIndex,
+                                    achievements = achs
+                                ))
+                            } catch (e: Exception) {
+                                println("Search: Failed to parse document $profileId: ${e.message}")
+                            }
                         }
                     }
                 }
             } catch (e: Exception) {
-                // handle error
+                println("Search: Query Failed: ${e.message}")
             } finally {
                 isSearching = false
             }
