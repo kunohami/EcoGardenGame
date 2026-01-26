@@ -23,6 +23,7 @@ internal actual val Res.allStringResources: Map<String, StringResource> by lazy 
   _collectCommonMainString1Resources(map)
   _collectCommonMainString2Resources(map)
   _collectCommonMainString3Resources(map)
+  _collectCommonMainString4Resources(map)
   return@lazy map
 }
 

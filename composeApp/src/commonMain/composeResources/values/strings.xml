@@ -45,6 +45,10 @@
     <string name="sign_out_warning_title">Sign Out</string>
     <string name="sign_out_warning_message">Are you sure you want to sign out? Your local progress will be reset. If you haven\'t uploaded your save to the cloud, you will lose your current progress on this device.</string>
 
+    <string name="error_generic">An error occurred</string>
+    <string name="error_update_profile">Error updating profile</string>
+    <string name="error_download_save">Error downloading save</string>
+
     <!-- About Screen -->
     <string name="app_version">EcoGarden Game v0.8</string>
     <string name="developed_with">Developed with Compose Multiplatform by Rafa R. G.</string>
@@ -61,6 +65,7 @@
     <string name="go_to_store">Go to Store</string>
     <string name="close">Close</string>
     <string name="back">Back</string>
+    <string name="you_have">You have</string>
 
     <!-- Shop Screen -->
     <string name="shop_title">Garden Shop</string>
@@ -145,5 +150,5 @@
     <string name="sign_out">Sign Out</string>
     <string name="login_desc">Sign in to save your achievements and profile to the cloud.</string>
     <string name="logged_in_as">Logged in as: %1$s</string>
-    <string name="sync_notice">Partida guardada localmente.</string>
+    <string name="sync_notice">Profile data can be updated manually every 60 seconds.</string>
 </resources>

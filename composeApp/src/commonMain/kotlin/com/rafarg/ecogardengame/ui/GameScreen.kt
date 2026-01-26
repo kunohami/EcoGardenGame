@@ -138,12 +138,12 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- FRUIT SELECTION MENU (Appears below the button) ---
+        // --- FRUIT SELECTION MENU ---
         if (menuVisible) {
             Card(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = 80.dp, end = 16.dp) // Adjusted to appear right below the top bar button
+                    .padding(top = 80.dp, end = 16.dp)
                     .width(160.dp)
                     .zIndex(3f),
                 shape = RoundedCornerShape(16.dp),
@@ -278,6 +278,8 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         val hasMoney = viewModel.money >= item.unlockCost.money
+                        val youHave = stringResource(Res.string.you_have)
+                        
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             SpriteAnimation(
                                 painter = painterResource(Res.drawable.coin_strip),
@@ -285,7 +287,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("${item.unlockCost.money} (You have: ${viewModel.money})",
+                            Text("${item.unlockCost.money} ($youHave: ${viewModel.money})",
                                 color = if (hasMoney) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
                         }
                         
@@ -293,7 +295,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                             val currentCount = viewModel.fruitCounts[vegId] ?: 0
                             val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
                             val hasVeg = currentCount >= amount
-                            Text("$vegEmoji $amount (You have: $currentCount)", 
+                            Text("$vegEmoji $amount ($youHave: $currentCount)",
                                 color = if (hasVeg) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
                         }
                     }
