@@ -40,6 +40,11 @@ class Apple : BaseVegetable() {
     override val particleEmoji: String = "🍎"
     override val tutorialRes = Res.string.tutorial_apple
 
+    override val baseRewards: List<Reward> get() = listOf(
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_APPLE, countValue = 0)
+    )
+
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "apple_overclock",
@@ -118,7 +123,7 @@ class Apple : BaseVegetable() {
                 val currentRewards = if (isOverclocked) {
                     listOf(
                         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-                        Reward(emoji = "🪙", moneyValue = 5, countValue = 0)
+                        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_APPLE_HIGH_FREQ_MONEY, countValue = 0)
                     )
                 } else {
                     baseRewards
