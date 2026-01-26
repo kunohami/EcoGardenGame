@@ -1,8 +1,11 @@
 package com.rafarg.ecogardengame.ui
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,8 +28,10 @@ import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.abs
 
 val items: List<GameItem> = listOf(
     Tomato(),
@@ -66,9 +73,9 @@ fun Screen.getTitle(): String {
 }
 
 /**
- * The main application entry point with bottom navigation.
+ * The main application entry point with bottom navigation and 3D Cube Transitions.
  */
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun App(
@@ -83,7 +90,31 @@ fun App(
         }
         GameViewModel(repository, authRepository) 
     }
+    
+    val scope = rememberCoroutineScope()
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
+    
+    // Screens shown in the bottom bar
+    val mainScreens = remember { Screen.entries.filter { it.showInBottomBar } }
+    val pagerState = rememberPagerState(pageCount = { mainScreens.size })
+
+    // Sync Pager with currentScreen when navigation happens (from bottom bar or logic)
+    LaunchedEffect(currentScreen) {
+        val index = mainScreens.indexOf(currentScreen)
+        if (index != -1 && pagerState.currentPage != index) {
+            pagerState.animateScrollToPage(index)
+        }
+    }
+
+    // Sync currentScreen with Pager when the user swipes manually
+    LaunchedEffect(pagerState.currentPage, pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress) {
+            val screenAtPage = mainScreens[pagerState.currentPage]
+            if (currentScreen != screenAtPage && currentScreen.showInBottomBar) {
+                currentScreen = screenAtPage
+            }
+        }
+    }
     
     EcoGardenTheme(
         useDarkTheme = viewModel.isDarkTheme,
@@ -92,25 +123,21 @@ fun App(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (!viewModel.isDataLoaded) {
-                // Splash / Loading while DataStore initializes
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             } else {
-                // --- MAIN GAME UI ---
-                
-                // --- WAVY BACKGROUND LAYER ---
                 WavyBackground(enabled = viewModel.shaderBackgroundEnabled)
 
                 Scaffold(
                     containerColor = if (viewModel.shaderBackgroundEnabled) Color.Transparent else MaterialTheme.colorScheme.background,
                     bottomBar = {
                         NavigationBar(
-                            modifier = Modifier.height(120.dp), // Increased height for better centering
+                            modifier = Modifier.height(120.dp),
                             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
                             tonalElevation = 8.dp
                         ) {
-                            Screen.entries.filter { it.showInBottomBar }.forEach { screen ->
+                            mainScreens.forEach { screen ->
                                 NavigationBarItem(
                                     selected = currentScreen == screen,
                                     onClick = { currentScreen = screen },
@@ -148,55 +175,81 @@ fun App(
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        when (currentScreen) {
-                            Screen.GAME -> GameScreen(
-                                viewModel = viewModel,
-                                onNavigateToStore = { currentScreen = Screen.STORE }
-                            )
-                            Screen.STORE -> StoreScreen(viewModel)
-                            Screen.LIBRARY -> LibraryScreen(viewModel)
-                            Screen.PROFILE -> ProfileScreen(viewModel)
-                            Screen.MISC -> MiscScreen(
-                                viewModel = viewModel,
-                                onNavigateToSettings = { currentScreen = Screen.SETTINGS },
-                                onNavigateToThemes = { currentScreen = Screen.THEMES },
-                                onNavigateToStats = { currentScreen = Screen.STATS },
-                                onNavigateToAbout = { currentScreen = Screen.ABOUT },
-                                onNavigateToLogin = { currentScreen = Screen.LOGIN }
-                            )
-                            Screen.STATS -> StatsScreen(
-                                viewModel = viewModel,
-                                onBack = { currentScreen = Screen.MISC }
-                            )
-                            Screen.SETTINGS -> SettingsScreen(
-                                viewModel = viewModel,
-                                onBack = { currentScreen = Screen.MISC }
-                            )
-                            Screen.THEMES -> ThemesScreen(
-                                viewModel = viewModel,
-                                onBack = { currentScreen = Screen.MISC }
-                            )
-                            Screen.ABOUT -> AboutScreen(
-                                viewModel = viewModel,
-                                onBack = { currentScreen = Screen.MISC }
-                            )
-                            Screen.LOGIN -> LoginScreen(
-                                viewModel = viewModel,
-                                onBack = { currentScreen = Screen.MISC },
-                                onGoogleSignIn = onGoogleSignIn
-                            )
+                        if (currentScreen.showInBottomBar) {
+                            // --- MAIN SCREENS WITH CUBE TRANSITION ---
+                            HorizontalPager(
+                                state = pagerState,
+                                modifier = Modifier.fillMaxSize(),
+                                userScrollEnabled = true // Permite swipe entre pantallas
+                            ) { page ->
+                                val screen = mainScreens[page]
+                                Box(
+                                    Modifier
+                                        .fillMaxSize()
+                                        .graphicsLayer {
+                                            // CUBE TRANSFORMATION LOGIC
+                                            val pageOffset = ( (pagerState.currentPage - page ) + pagerState.currentPageOffsetFraction )
+                                            
+                                            // Rotation based on offset
+                                            rotationY = pageOffset * 90f
+                                            
+                                            // Transform origin at the edges to create the cube corner
+                                            transformOrigin = if (pageOffset > 0f) {
+                                                TransformOrigin(0f, 0.5f) // Left edge
+                                            } else {
+                                                TransformOrigin(1f, 0.5f) // Right edge
+                                            }
+                                            
+                                            // Depth perspective
+                                            cameraDistance = 12f * density
+                                            
+                                            // Slight fade to enhance depth
+                                            alpha = 1f - abs(pageOffset).coerceIn(0f, 1f) * 0.3f
+                                        }
+                                ) {
+                                    when (screen) {
+                                        Screen.GAME -> GameScreen(
+                                            viewModel = viewModel,
+                                            onNavigateToStore = { currentScreen = Screen.STORE }
+                                        )
+                                        Screen.STORE -> StoreScreen(viewModel)
+                                        Screen.LIBRARY -> LibraryScreen(viewModel)
+                                        Screen.PROFILE -> ProfileScreen(viewModel)
+                                        Screen.MISC -> MiscScreen(
+                                            viewModel = viewModel,
+                                            onNavigateToSettings = { currentScreen = Screen.SETTINGS },
+                                            onNavigateToThemes = { currentScreen = Screen.THEMES },
+                                            onNavigateToStats = { currentScreen = Screen.STATS },
+                                            onNavigateToAbout = { currentScreen = Screen.ABOUT },
+                                            onNavigateToLogin = { currentScreen = Screen.LOGIN }
+                                        )
+                                        else -> Unit
+                                    }
+                                }
+                            }
+                        } else {
+                            // --- SUB-SCREENS (Instant or Fade) ---
+                            // Estas no rotan porque son pantallas de "ajustes" o detalles
+                            when (currentScreen) {
+                                Screen.STATS -> StatsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
+                                Screen.SETTINGS -> SettingsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
+                                Screen.THEMES -> ThemesScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
+                                Screen.ABOUT -> AboutScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
+                                Screen.LOGIN -> LoginScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC }, onGoogleSignIn = onGoogleSignIn)
+                                else -> Unit
+                            }
                         }
                     }
                 }
 
-                // --- GLOBAL ACHIEVEMENT TOAST ---
+                // Achievement Toast...
                 AnimatedVisibility(
                     visible = viewModel.achievementToast != null,
                     enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
                     exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 100.dp) // Below the status bar / top UI
+                        .padding(top = 100.dp)
                         .zIndex(10f)
                 ) {
                     viewModel.achievementToast?.let { achievement ->
@@ -217,16 +270,8 @@ fun App(
                                 val congrats = stringResource(Res.string.congratulations)
                                 val unlockedText = stringResource(Res.string.unlocked_label, stringResource(achievement.nameRes))
                                 Column {
-                                    Text(
-                                        congrats,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        unlockedText,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Text(congrats, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                                    Text(unlockedText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
