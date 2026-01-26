@@ -57,12 +57,12 @@ class Squash : BaseVegetable() {
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_SQUASH, countValue = 0)
     )
 
     private val bonusRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_SQUASH, countValue = 0)
     )
 
     override val modifiers: List<GameplayModifier> = listOf(

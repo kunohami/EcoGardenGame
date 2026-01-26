@@ -38,7 +38,7 @@ class BellPepper : BaseVegetable() {
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 3, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_BELL_PEPPER, countValue = 0)
     )
 
     override val modifiers: List<GameplayModifier> = listOf(
@@ -170,7 +170,10 @@ class BellPepper : BaseVegetable() {
                             val currentY = posY
                             
                             val rewards = if (isTurbo) {
-                                baseRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
+                                baseRewards.map { it.copy(
+                                    moneyValue = it.moneyValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO, 
+                                    countValue = it.countValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO
+                                ) }
                             } else {
                                 baseRewards
                             }

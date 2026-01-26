@@ -41,7 +41,7 @@ class PurpleOnion : BaseVegetable() {
     // Base reward when NOT spinning: 1 money, 1 onion
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 1, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_PURPLE_ONION, countValue = 0)
     )
 
     override val modifiers: List<GameplayModifier> = listOf(
@@ -232,7 +232,7 @@ class PurpleOnion : BaseVegetable() {
                             var rewards = if (isRotating) {
                                 listOf(
                                     Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-                                    Reward(emoji = "🪙", moneyValue = (5 - coinReduction).coerceAtLeast(1), countValue = 0)
+                                    Reward(emoji = "🪙", moneyValue = (GamePrices.REWARD_ONION_SPIN_MONEY_BASE - coinReduction).coerceAtLeast(1), countValue = 0)
                                 )
                             } else {
                                 baseRewards

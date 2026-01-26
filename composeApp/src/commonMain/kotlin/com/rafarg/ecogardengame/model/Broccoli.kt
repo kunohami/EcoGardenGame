@@ -39,7 +39,7 @@ class Broccoli : BaseVegetable() {
 
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = 2, countValue = 0)
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_BROCCOLI, countValue = 0)
     )
 
     override val modifiers: List<GameplayModifier> = listOf(
@@ -93,8 +93,8 @@ class Broccoli : BaseVegetable() {
         val itemSize = if (isGiant) 200.dp else 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
-        val speedMultiplier = if (isFast) 2f else 1f
-        val rewardMultiplier = if (isFast) 2 else 1
+        val speedMultiplier = if (isFast) GamePrices.MULTIPLIER_BROCCOLI_FAST.toFloat() else 1f
+        val rewardMultiplier = if (isFast) GamePrices.MULTIPLIER_BROCCOLI_FAST else 1
 
         var clickCounter by remember { mutableStateOf(0) }
 

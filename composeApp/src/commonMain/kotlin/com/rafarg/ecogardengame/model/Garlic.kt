@@ -47,6 +47,11 @@ class Garlic : BaseVegetable() {
     override val particleEmoji: String = "🧄"
     override val tutorialRes = Res.string.tutorial_garlic
 
+    override val baseRewards: List<Reward> get() = listOf(
+        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_GARLIC, countValue = 0)
+    )
+
     override val modifiers: List<GameplayModifier> = listOf(
         GameplayModifier(
             id = "garlic_cluster",
@@ -112,10 +117,10 @@ class Garlic : BaseVegetable() {
                 
                 // Final reward logic
                 if (pieces.none { it.isVisible }) {
-                    val multiplier = if (isClusterActive) 2.5f else 1.0f
+                    val multiplier = if (isClusterActive) GamePrices.MULTIPLIER_GARLIC_CLUSTER else 1.0f
                     val bonusRewards = listOf(
-                        Reward(emoji = "🪙", moneyValue = (20 * multiplier).toInt(), countValue = 0),
-                        Reward(emoji = particleEmoji, countValue = (10 * multiplier).toInt(), resource = resource)
+                        Reward(emoji = "🪙", moneyValue = (GamePrices.REWARD_GARLIC_EXPLOSION_MONEY * multiplier).toInt(), countValue = 0),
+                        Reward(emoji = particleEmoji, countValue = (GamePrices.REWARD_GARLIC_EXPLOSION_COUNT * multiplier).toInt(), resource = resource)
                     )
                     
                     val finalRewards = onVegetableClick(bonusRewards)
