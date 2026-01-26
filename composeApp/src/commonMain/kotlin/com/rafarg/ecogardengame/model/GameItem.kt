@@ -161,7 +161,7 @@ abstract class BaseVegetable : GameItem {
             FlyingParticle(
                 id = Random.nextLong(), 
                 emoji = reward.emoji,
-                resource = if (isMoney) null else reward.resource,
+                resource = if (isMoney) Res.drawable.coin_strip else reward.resource,
                 text = "+$amount",
                 animatableX = Animatable(baseStartX),
                 animatableY = Animatable(baseStartY + lineOffset),

@@ -17,6 +17,8 @@ import com.rafarg.ecogardengame.model.GameplayModifier
 import com.rafarg.ecogardengame.model.GlobalUpgrade
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
+import ecogardengame.composeapp.generated.resources.coin_strip
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -40,9 +42,16 @@ fun StoreScreen(viewModel: GameViewModel) {
         
         Row(
             modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
+            SpriteAnimation(
+                painter = painterResource(Res.drawable.coin_strip),
+                frameCount = 3,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -145,9 +154,15 @@ fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
             if (!upgrade.isMaxLevel) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(stringResource(Res.string.upgrade_cost_label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     if (nextCost.money > 0) {
-                        Text("🪙 ${nextCost.money}", style = MaterialTheme.typography.labelSmall)
+                        SpriteAnimation(
+                            painter = painterResource(Res.drawable.coin_strip),
+                            frameCount = 3,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("${nextCost.money}", style = MaterialTheme.typography.labelSmall)
                     }
                     for (costEntry in nextCost.vegetableCosts) {
                         val vegEmoji = viewModel.itemsList.find { it.id == costEntry.key }?.particleEmoji ?: "?"
@@ -191,7 +206,15 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
                     Text(stringResource(Res.string.cost_label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
                     
                     if (item.unlockCost.money > 0) {
-                        Text("🪙 ${item.unlockCost.money}", style = MaterialTheme.typography.bodySmall)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            SpriteAnimation(
+                                painter = painterResource(Res.drawable.coin_strip),
+                                frameCount = 3,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("${item.unlockCost.money}", style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                     
                     for (costEntry in item.unlockCost.vegetableCosts) {
@@ -254,9 +277,15 @@ fun ModifierCard(gpMod: GameplayModifier, viewModel: GameViewModel) {
             
             if (!gpMod.isUnlocked) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     if (gpMod.unlockCost.money > 0) {
-                        Text("🪙 ${gpMod.unlockCost.money}", style = MaterialTheme.typography.labelSmall)
+                        SpriteAnimation(
+                            painter = painterResource(Res.drawable.coin_strip),
+                            frameCount = 3,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("${gpMod.unlockCost.money}", style = MaterialTheme.typography.labelSmall)
                     }
                     for (costEntry in gpMod.unlockCost.vegetableCosts) {
                         val vegEmoji = viewModel.itemsList.find { it.id == costEntry.key }?.particleEmoji ?: "?"

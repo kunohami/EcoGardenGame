@@ -105,25 +105,39 @@ fun App(
                 Scaffold(
                     containerColor = if (viewModel.shaderBackgroundEnabled) Color.Transparent else MaterialTheme.colorScheme.background,
                     bottomBar = {
-                        NavigationBar {
+                        NavigationBar(
+                            modifier = Modifier.height(120.dp), // Increased height for better centering
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                            tonalElevation = 8.dp
+                        ) {
                             Screen.entries.filter { it.showInBottomBar }.forEach { screen ->
                                 NavigationBarItem(
-                                    icon = {
-                                        Text(
-                                            text = when(screen) {
-                                                Screen.GAME -> "🌱"
-                                                Screen.STORE -> "💰"
-                                                Screen.LIBRARY -> "📖"
-                                                Screen.PROFILE -> "👤"
-                                                Screen.MISC -> "⚙️"
-                                                else -> "❓"
-                                            },
-                                            fontSize = 24.sp
-                                        )
-                                    },
-                                    label = { Text(screen.getTitle()) },
                                     selected = currentScreen == screen,
-                                    onClick = { currentScreen = screen }
+                                    onClick = { currentScreen = screen },
+                                    icon = {
+                                        val iconRes = when(screen) {
+                                            Screen.GAME -> Res.drawable.gardenmainmenu_strip
+                                            Screen.STORE -> Res.drawable.shopmainmenu_strip
+                                            Screen.LIBRARY -> Res.drawable.librarymainmenu_strip
+                                            Screen.PROFILE -> Res.drawable.profilemainmenu_strip
+                                            Screen.MISC -> Res.drawable.miscmainmenu_strip
+                                            else -> null
+                                        }
+                                        if (iconRes != null) {
+                                            SpriteAnimation(
+                                                painter = painterResource(iconRes),
+                                                frameCount = 3,
+                                                modifier = Modifier.size(56.dp)
+                                            )
+                                        } else {
+                                            Text(text = "❓", fontSize = 24.sp)
+                                        }
+                                    },
+                                    label = null,
+                                    alwaysShowLabel = false,
+                                    colors = NavigationBarItemDefaults.colors(
+                                        indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                    )
                                 )
                             }
                         }

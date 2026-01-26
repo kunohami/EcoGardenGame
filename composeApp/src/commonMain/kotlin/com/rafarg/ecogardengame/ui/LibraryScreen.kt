@@ -18,6 +18,9 @@ import com.rafarg.ecogardengame.model.LibraryCategory
 import com.rafarg.ecogardengame.model.LibraryEntry
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
+import ecogardengame.composeapp.generated.resources.coin_strip
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -44,9 +47,16 @@ fun LibraryScreen(viewModel: GameViewModel) {
             
             Row(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("🪙 ${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.coin_strip),
+                    frameCount = 3,
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -150,7 +160,13 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (entry.cost.money > 0) {
-                            Text("🪙 ${entry.cost.money}", style = MaterialTheme.typography.labelSmall, color = lockColor)
+                            SpriteAnimation(
+                                painter = painterResource(Res.drawable.coin_strip),
+                                frameCount = 3,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("${entry.cost.money}", style = MaterialTheme.typography.labelSmall, color = lockColor)
                         }
                         entry.cost.vegetableCosts.forEach { cost ->
                             val emoji = viewModel.itemsList.find { it.id == cost.key }?.particleEmoji ?: ""

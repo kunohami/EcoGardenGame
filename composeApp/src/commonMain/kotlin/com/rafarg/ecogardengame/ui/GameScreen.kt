@@ -3,11 +3,13 @@ package com.rafarg.ecogardengame.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorFilter
@@ -19,8 +21,9 @@ import com.rafarg.ecogardengame.model.GameItem
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
-import ecogardengame.composeapp.generated.resources.apple_strip
+import ecogardengame.composeapp.generated.resources.fruitmenu_strip
 import ecogardengame.composeapp.generated.resources.infobunny_strip
+import ecogardengame.composeapp.generated.resources.coin_strip
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -54,7 +57,11 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             ) {
                 // Money Counter (Now on the left)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("🪙", fontSize = 18.sp)
+                    SpriteAnimation(
+                        painter = painterResource(Res.drawable.coin_strip),
+                        frameCount = 3,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${viewModel.money}",
@@ -87,16 +94,18 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     painter = painterResource(Res.drawable.infobunny_strip),
                     frameCount = 3,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(50.dp)
+                        .clip(CircleShape) // Circular ripple
                         .clickable { showTutorial = true }
                 )
 
                 // Menu Icon (Vegetable Selector)
                 SpriteAnimation(
-                    painter = painterResource(Res.drawable.apple_strip),
+                    painter = painterResource(Res.drawable.fruitmenu_strip),
                     frameCount = 3,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(width = 70.dp, height = 50.dp)
+                        .clip(CircleShape) // Circular ripple (will look oval given the width)
                         .clickable { menuVisible = !menuVisible }
                 )
             }
@@ -235,8 +244,14 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         val hasMoney = viewModel.money >= item.unlockCost.money
-                        Row {
-                            Text("🪙 ${item.unlockCost.money} (You have: ${viewModel.money})", 
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            SpriteAnimation(
+                                painter = painterResource(Res.drawable.coin_strip),
+                                frameCount = 3,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("${item.unlockCost.money} (You have: ${viewModel.money})",
                                 color = if (hasMoney) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
                         }
                         
