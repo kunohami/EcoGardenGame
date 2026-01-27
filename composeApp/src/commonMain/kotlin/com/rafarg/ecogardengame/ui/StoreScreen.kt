@@ -1,14 +1,20 @@
 package com.rafarg.ecogardengame.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,7 +90,8 @@ fun StoreScreen(viewModel: GameViewModel) {
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp), // Increased spacing for the puffy shape
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 if (selectedTab == 0) {
                     items(viewModel.itemsList) { item ->
@@ -111,7 +118,8 @@ fun StoreScreen(viewModel: GameViewModel) {
             
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(item.modifiers) { gpMod ->
                     ModifierCard(gpMod, viewModel)
@@ -124,13 +132,19 @@ fun StoreScreen(viewModel: GameViewModel) {
 @Composable
 fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
     val nextCost = upgrade.getNextLevelCost()
+    val wavy = viewModel.shaderBackgroundEnabled
+    
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(SpeechBubbleShape()), // Cloudy inflated shape
         colors = CardDefaults.cardColors(
-            containerColor = if (upgrade.isMaxLevel) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) 
+                            else if (upgrade.isMaxLevel) MaterialTheme.colorScheme.secondaryContainer 
+                            else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) { // Padding increased for puffy shape
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(stringResource(upgrade.nameRes), style = MaterialTheme.typography.titleMedium)
@@ -176,16 +190,18 @@ fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
 
 @Composable
 fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameItem) -> Unit) {
+    val wavy = viewModel.shaderBackgroundEnabled
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(SpeechBubbleShape()) // Cloudy inflated shape
             .clickable(enabled = item.unlocked) { onShowUpgrades(item) },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(24.dp), // Padding increased for puffy shape
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.size(60.dp)) {
@@ -246,13 +262,18 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
 
 @Composable
 fun ModifierCard(gpMod: GameplayModifier, viewModel: GameViewModel) {
+    val wavy = viewModel.shaderBackgroundEnabled
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(SpeechBubbleShape()), // Cloudy inflated shape
         colors = CardDefaults.cardColors(
-            containerColor = if (gpMod.isUnlocked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) 
+                            else if (gpMod.isUnlocked) MaterialTheme.colorScheme.secondaryContainer 
+                            else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) { // Padding increased for puffy shape
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(stringResource(gpMod.nameRes), style = MaterialTheme.typography.titleMedium)

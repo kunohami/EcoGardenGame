@@ -9,7 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,10 +63,11 @@ fun LibraryScreen(viewModel: GameViewModel) {
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(viewModel.libraryCategories) { category ->
-                    CategoryCard(category, secondaryText) {
+                    CategoryCard(category, secondaryText, wavy) {
                         selectedCategory = it
                     }
                 }
@@ -85,7 +86,8 @@ fun LibraryScreen(viewModel: GameViewModel) {
             
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(currentCategory.entries) { entry ->
                     EntryListItem(entry, viewModel, wavy) {
@@ -100,6 +102,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
     entryToShowInDialog?.let { entry ->
         AlertDialog(
             onDismissRequest = { entryToShowInDialog = null },
+            modifier = Modifier.clip(SpeechBubbleShape()), // Cloudy shape for the dialog too
             title = { Text(stringResource(entry.titleRes)) },
             text = { Text(stringResource(entry.contentRes)) },
             confirmButton = {
@@ -112,15 +115,18 @@ fun LibraryScreen(viewModel: GameViewModel) {
 }
 
 @Composable
-fun CategoryCard(category: LibraryCategory, labelColor: Color, onClick: (LibraryCategory) -> Unit) {
+fun CategoryCard(category: LibraryCategory, labelColor: Color, wavy: Boolean, onClick: (LibraryCategory) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(SpeechBubbleShape())
             .clickable { onClick(category) },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(
+            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(category.icon, fontSize = 32.sp)
@@ -140,13 +146,16 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(SpeechBubbleShape())
             .clickable(enabled = entry.isUnlocked) { onShowContent(entry) },
         colors = CardDefaults.cardColors(
-            containerColor = if (entry.isUnlocked) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f)
+                            else if (entry.isUnlocked) MaterialTheme.colorScheme.secondaryContainer 
+                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
