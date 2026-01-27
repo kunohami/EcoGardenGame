@@ -138,7 +138,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- FRUIT SELECTION MENU ---
+        // --- FRUIT SELECTION MENU (Speech Bubble) ---
         if (menuVisible) {
             Card(
                 modifier = Modifier
@@ -146,12 +146,12 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     .padding(top = 80.dp, end = 16.dp)
                     .width(160.dp)
                     .zIndex(3f),
-                shape = RoundedCornerShape(16.dp),
+                shape = SpeechBubbleShape(tipAtTop = true, tipPaddingEnd = 32.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(8.dp),
+                    contentPadding = PaddingValues(top = 16.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.wrapContentHeight()
@@ -232,10 +232,11 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- TUTORIAL DIALOG ---
+        // --- TUTORIAL DIALOG (Speech Bubble) ---
         if (showTutorial) {
             AlertDialog(
                 onDismissRequest = { showTutorial = false },
+                modifier = Modifier.clip(SpeechBubbleShape(tipAtTop = false)),
                 title = { 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(viewModel.currentItem.particleEmoji)
