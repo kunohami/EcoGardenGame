@@ -65,23 +65,23 @@ private val DarkColorScheme = darkColorScheme(
 
 // --- WAVY THEME (Special Shader Palette) ---
 private val WavyColorScheme = darkColorScheme(
-    primary = Color(0xFFEADDFF), // Light purple, almost white
-    onPrimary = Color(0xFF21005D),
-    primaryContainer = Color(0xFF4A00E0).copy(alpha = 0.5f),
-    onPrimaryContainer = Color(0xFFEADDFF),
-    
-    secondary = Color(0xFFD0BCFF),
-    onSecondary = Color(0xFF381E72),
-    secondaryContainer = Color(0xFF0D0221).copy(alpha = 0.5f),
-    onSecondaryContainer = Color(0xFFEADDFF),
-    
-    background = Color(0xFF0D0221), 
+    primary = Color(0xFFEADDFF), // Light Lilac - Very Light
+    onPrimary = Color(0xFF21005D), // Deep Violet - Very Dark
+    primaryContainer = Color(0xFF4A00E0).copy(alpha = 0.5f), // Electric Indigo (50% opacity) - Medium/Dark
+    onPrimaryContainer = Color(0xFFEADDFF), // Light Lilac - Very Light
+
+    secondary = Color(0xFFD0BCFF), // Lavender - Light
+    onSecondary = Color(0xFF381E72), // Dark Purple - Dark
+    secondaryContainer = Color(0xFF381E72).copy(alpha = 0.5f), // Dark Purple (50% opacity) - Dark
+    onSecondaryContainer = Color(0xFFEADDFF), // Light Lilac - Very Light
+
+    background = Color(0xFF0D0221), // Midnight Violet - Very Dark (Almost Black)
     onBackground = Color.White,
     
-    surface = Color(0xFF1B065E).copy(alpha = 0.8f),
+    surface = Color(0xFF1B065E).copy(alpha = 0.8f), // Deep Indigo (80% opacity) - Dark
     onSurface = Color.White,
     
-    surfaceVariant = Color(0xFF4A00E0).copy(alpha = 0.3f),
+    surfaceVariant = Color(0xFF4A00E0).copy(alpha = 0.3f), // Electric Indigo (30% opacity) - Medium/Dark
     onSurfaceVariant = Color.White
 )
 

@@ -139,8 +139,7 @@ fun GlobalUpgradeCard(upgrade: GlobalUpgrade, viewModel: GameViewModel) {
             .fillMaxWidth()
             .clip(SpeechBubbleShape()), // Cloudy inflated shape
         colors = CardDefaults.cardColors(
-            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) 
-                            else if (upgrade.isMaxLevel) MaterialTheme.colorScheme.secondaryContainer 
+            containerColor = if (upgrade.isMaxLevel) MaterialTheme.colorScheme.secondaryContainer
                             else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
@@ -197,7 +196,7 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             .clip(SpeechBubbleShape()) // Cloudy inflated shape
             .clickable(enabled = item.unlocked) { onShowUpgrades(item) },
         colors = CardDefaults.cardColors(
-            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -268,8 +267,7 @@ fun ModifierCard(gpMod: GameplayModifier, viewModel: GameViewModel) {
             .fillMaxWidth()
             .clip(SpeechBubbleShape()), // Cloudy inflated shape
         colors = CardDefaults.cardColors(
-            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) 
-                            else if (gpMod.isUnlocked) MaterialTheme.colorScheme.secondaryContainer 
+            containerColor = if (gpMod.isUnlocked) MaterialTheme.colorScheme.secondaryContainer
                             else MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
