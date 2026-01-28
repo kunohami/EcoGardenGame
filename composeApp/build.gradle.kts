@@ -43,6 +43,12 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.google.auth)
+
+            // SOLUCIÓN: Añadir el BOM de Firebase para que resuelva las versiones nativas
+            implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.2.0"))
+
+            // Dependencia útil para compatibilidad en Android
+            implementation(libs.androidx.appcompat)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -57,7 +63,7 @@ kotlin {
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.kotlinx.datetime)
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-            
+
             // Firebase GitLive
             implementation(libs.firebase.auth)
             implementation(libs.firebase.firestore)
