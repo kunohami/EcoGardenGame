@@ -122,7 +122,7 @@ fun CategoryCard(category: LibraryCategory, labelColor: Color, wavy: Boolean, on
             .clip(SpeechBubbleShape())
             .clickable { onClick(category) },
         colors = CardDefaults.cardColors(
-            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
@@ -149,8 +149,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
             .clip(SpeechBubbleShape())
             .clickable(enabled = entry.isUnlocked) { onShowContent(entry) },
         colors = CardDefaults.cardColors(
-            containerColor = if (wavy) Color.Black.copy(alpha = 0.4f)
-                            else if (entry.isUnlocked) MaterialTheme.colorScheme.secondaryContainer 
+            containerColor = if (entry.isUnlocked) MaterialTheme.colorScheme.secondaryContainer
                             else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
