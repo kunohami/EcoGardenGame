@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun LibraryScreen(viewModel: GameViewModel) {
+fun LibraryScreen(viewModel: GameViewModel, onNavigateToGallery: () -> Unit) {
     var selectedCategory by remember { mutableStateOf<LibraryCategory?>(null) }
     var entryToShowInDialog by remember { mutableStateOf<LibraryEntry?>(null) }
 
@@ -70,6 +70,16 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
+                
+                // Shortcut to Art Gallery with Clicky Cheeky animation
+                Spacer(modifier = Modifier.width(16.dp))
+                Box(modifier = Modifier.size(40.dp).clickable { onNavigateToGallery() }) {
+                    SpriteAnimation(
+                        painter = painterResource(Res.drawable.clickycheekykneel_strip),
+                        frameCount = 3,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -199,7 +209,11 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
             }
             
             if (entry.isUnlocked) {
-                Text("📖", fontSize = 24.sp)
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.greentick_strip),
+                    frameCount = 3,
+                    modifier = Modifier.size(40.dp)
+                )
             } else {
                 val canAfford = viewModel.canAfford(entry.cost)
                 Button(
