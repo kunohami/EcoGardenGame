@@ -28,7 +28,8 @@ data class GameSaveData(
     val globalUpgradeLevels: Map<String, Int> = emptyMap(),
     val libraryUnlockedEntries: Map<String, Boolean> = emptyMap(),
     val modifierUnlocked: Map<String, Boolean> = emptyMap(),
-    val modifierEnabled: Map<String, Boolean> = emptyMap()
+    val modifierEnabled: Map<String, Boolean> = emptyMap(),
+    val unlockedArtIds: Set<String> = emptySet()
 )
 
 interface GameRepository {
@@ -53,12 +54,13 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val profileImageKey = intPreferencesKey("profile_image_index")
     private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
     private val lastProfileUpdateKey = longPreferencesKey("last_profile_update")
+    private val unlockedArtKey = stringSetPreferencesKey("unlocked_art")
 
     private val fixedKeys = setOf(
         "total_clicks", "money", "total_money_earned", "vibration_enabled",
         "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
         "emerald_wavy_theme", "language", "language_set", "username",
-        "profile_image_index", "unlocked_achievements", "last_profile_update"
+        "profile_image_index", "unlocked_achievements", "last_profile_update", "unlocked_art"
     )
 
     override suspend fun loadGameData(): GameSaveData {
@@ -76,7 +78,6 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             val name = key.name
             if (name in fixedKeys) return@forEach
 
-            // Uso de safe cast (as?) para evitar ClassCastException
             when {
                 name.startsWith("fruit_count_") -> (value as? Int)?.let { fruitCounts[name.removePrefix("fruit_count_")] = it }
                 name.startsWith("total_harvested_") -> (value as? Int)?.let { totalFruitHarvested[name.removePrefix("total_harvested_")] = it }
@@ -84,7 +85,6 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
                 name.startsWith("mod_unlocked_") -> (value as? Boolean)?.let { modifierUnlocked[name.removePrefix("mod_unlocked_")] = it }
                 name.startsWith("mod_enabled_") -> (value as? Boolean)?.let { modifierEnabled[name.removePrefix("mod_enabled_")] = it }
                 name.startsWith("global_upgrade_level_") -> (value as? Int)?.let { globalUpgradeLevels[name.removePrefix("global_upgrade_level_")] = it }
-                // unlocked_achievements debería saltarse por fixedKeys, pero por seguridad excluimos el nombre exacto aquí también
                 name.startsWith("unlocked_") && name != "unlocked_achievements" -> (value as? Boolean)?.let { unlockedItems[name.removePrefix("unlocked_")] = it }
             }
         }
@@ -111,7 +111,8 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             globalUpgradeLevels = globalUpgradeLevels,
             libraryUnlockedEntries = libraryUnlockedEntries,
             modifierUnlocked = modifierUnlocked,
-            modifierEnabled = modifierEnabled
+            modifierEnabled = modifierEnabled,
+            unlockedArtIds = prefs[unlockedArtKey] ?: emptySet()
         )
     }
 
@@ -132,6 +133,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[profileImageKey] = data.profileImageIndex
             prefs[achievementsKey] = data.unlockedAchievements
             prefs[lastProfileUpdateKey] = data.lastProfileUpdateTime
+            prefs[unlockedArtKey] = data.unlockedArtIds
 
             data.fruitCounts.forEach { (id, count) -> prefs[intPreferencesKey("fruit_count_$id")] = count }
             data.totalFruitHarvested.forEach { (id, count) -> prefs[intPreferencesKey("total_harvested_$id")] = count }

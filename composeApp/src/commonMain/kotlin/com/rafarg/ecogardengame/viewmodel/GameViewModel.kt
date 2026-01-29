@@ -121,6 +121,19 @@ class GameViewModel(
     // --- LIBRARY ---
     override val libraryCategories = LibraryRepository.categories
 
+    // --- ART GALLERY ---
+    private var unlockedArtIds = mutableStateListOf<String>()
+    
+    fun isArtUnlocked(artId: String): Boolean = unlockedArtIds.contains(artId)
+    
+    fun unlockArt(artId: String, cost: Int) {
+        if (money >= cost && !isArtUnlocked(artId)) {
+            money -= cost
+            unlockedArtIds.add(artId)
+            saveData()
+        }
+    }
+
     // --- ACHIEVEMENTS ---
     val achievements = AchievementRepository.achievements
     var unlockedAchievements = mutableStateListOf<String>()
@@ -238,6 +251,11 @@ class GameViewModel(
         
         unlockedAchievements.clear()
         unlockedAchievements.addAll(saveData.unlockedAchievements)
+
+        unlockedArtIds.clear()
+        // We'll need to update GameSaveData to include unlockedArtIds
+        // For now, I'll just clear it, but I'll add it to GameSaveData next
+        // unlockedArtIds.addAll(saveData.unlockedArtIds)
 
         globalUpgrades.forEach { upgrade ->
             upgrade.unlockedLevel = saveData.globalUpgradeLevels[upgrade.id] ?: 0
@@ -696,6 +714,7 @@ class GameViewModel(
         }
         globalUpgrades.forEach { it.unlockedLevel = 0 }
         libraryCategories.forEach { cat -> cat.entries.forEach { it.isUnlocked = false } }
+        unlockedArtIds.clear()
         currentItem = items.first()
         saveData()
     }

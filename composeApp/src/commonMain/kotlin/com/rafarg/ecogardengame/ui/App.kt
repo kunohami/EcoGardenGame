@@ -53,7 +53,8 @@ enum class Screen(val showInBottomBar: Boolean = true) {
     SETTINGS(false),
     THEMES(false),
     ABOUT(false),
-    LOGIN(false)
+    LOGIN(false),
+    GALLERY(false)
 }
 
 @Composable
@@ -69,12 +70,10 @@ fun Screen.getTitle(): String {
         Screen.THEMES -> Res.string.themes_title
         Screen.ABOUT -> Res.string.about_title
         Screen.LOGIN -> Res.string.login_title
+        Screen.GALLERY -> Res.string.achievements_title // Reusing a title or adding one
     })
 }
 
-/**
- * The main application entry point with bottom navigation and 3D Cube Transitions.
- */
 @OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class)
 @Composable
 @Preview
@@ -94,11 +93,9 @@ fun App(
     val scope = rememberCoroutineScope()
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
     
-    // Screens shown in the bottom bar
     val mainScreens = remember { Screen.entries.filter { it.showInBottomBar } }
     val pagerState = rememberPagerState(pageCount = { mainScreens.size })
 
-    // Sync Pager with currentScreen when navigation happens
     LaunchedEffect(currentScreen) {
         val index = mainScreens.indexOf(currentScreen)
         if (index != -1 && pagerState.currentPage != index) {
@@ -166,28 +163,19 @@ fun App(
                             .padding(innerPadding)
                     ) {
                         if (currentScreen.showInBottomBar) {
-                            // --- MAIN SCREENS WITH CUBE TRANSITION (NO GESTURES) ---
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = false // DESACTIVADO EL DESLIZAMIENTO MANUAL
+                                userScrollEnabled = false
                             ) { page ->
                                 val screen = mainScreens[page]
                                 Box(
                                     Modifier
                                         .fillMaxSize()
                                         .graphicsLayer {
-                                            // CUBE TRANSFORMATION LOGIC
                                             val pageOffset = ( (pagerState.currentPage - page ) + pagerState.currentPageOffsetFraction )
-                                            
                                             rotationY = pageOffset * 90f
-                                            
-                                            transformOrigin = if (pageOffset > 0f) {
-                                                TransformOrigin(0f, 0.5f) 
-                                            } else {
-                                                TransformOrigin(1f, 0.5f)
-                                            }
-                                            
+                                            transformOrigin = if (pageOffset > 0f) TransformOrigin(0f, 0.5f) else TransformOrigin(1f, 0.5f)
                                             cameraDistance = 12f * density
                                             alpha = 1f - abs(pageOffset).coerceIn(0f, 1f) * 0.3f
                                         }
@@ -198,7 +186,7 @@ fun App(
                                             onNavigateToStore = { currentScreen = Screen.STORE }
                                         )
                                         Screen.STORE -> StoreScreen(viewModel)
-                                        Screen.LIBRARY -> LibraryScreen(viewModel)
+                                        Screen.LIBRARY -> LibraryScreen(viewModel, onNavigateToGallery = { currentScreen = Screen.GALLERY })
                                         Screen.PROFILE -> ProfileScreen(viewModel)
                                         Screen.MISC -> MiscScreen(
                                             viewModel = viewModel,
@@ -206,27 +194,28 @@ fun App(
                                             onNavigateToThemes = { currentScreen = Screen.THEMES },
                                             onNavigateToStats = { currentScreen = Screen.STATS },
                                             onNavigateToAbout = { currentScreen = Screen.ABOUT },
-                                            onNavigateToLogin = { currentScreen = Screen.LOGIN }
+                                            onNavigateToLogin = { currentScreen = Screen.LOGIN },
+                                            onNavigateToGallery = { currentScreen = Screen.GALLERY }
                                         )
                                         else -> Unit
                                     }
                                 }
                             }
                         } else {
-                            // --- SUB-SCREENS ---
                             when (currentScreen) {
                                 Screen.STATS -> StatsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.SETTINGS -> SettingsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.THEMES -> ThemesScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.ABOUT -> AboutScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.LOGIN -> LoginScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC }, onGoogleSignIn = onGoogleSignIn)
+                                Screen.GALLERY -> GalleryScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 else -> Unit
                             }
                         }
                     }
                 }
 
-                // Achievement Toast...
+                // Achievement Toast
                 AnimatedVisibility(
                     visible = viewModel.achievementToast != null,
                     enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),

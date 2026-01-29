@@ -257,7 +257,11 @@ fun UnlockCard(item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameIt
             }
             
             if (item.unlocked) {
-                Text("✅", fontSize = 32.sp)
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.greentick_strip),
+                    frameCount = 3,
+                    modifier = Modifier.size(60.dp)
+                )
             } else {
                 val canAfford = viewModel.canAfford(item.unlockCost)
                 Button(
