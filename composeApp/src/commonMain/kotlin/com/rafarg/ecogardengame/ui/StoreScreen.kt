@@ -43,7 +43,22 @@ fun StoreScreen(viewModel: GameViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(stringResource(Res.string.shop_title), style = MaterialTheme.typography.displaySmall, color = primaryText)
+        // Sprite Animation for the Storefront based on language
+        val currentLang = stringResource(Res.string.language_title)
+        // If language string is "Idioma" (Spanish), we use the Spanish strip
+        val storefrontResource = if (currentLang.contains("Idioma")) {
+            Res.drawable.storefrontspanish_strip
+        } else {
+            Res.drawable.storefrontenglish_strip
+        }
+
+        // Según la imagen adjunta, el strip tiene 3 frames
+        SpriteAnimation(
+            painter = painterResource(storefrontResource),
+            frameCount = 3,
+            modifier = Modifier.fillMaxWidth().height(200.dp)
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
         
         Row(
@@ -89,8 +104,8 @@ fun StoreScreen(viewModel: GameViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp), // Increased spacing for the puffy shape
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 if (selectedTab == 0) {
@@ -117,7 +132,7 @@ fun StoreScreen(viewModel: GameViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {

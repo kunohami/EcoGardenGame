@@ -42,7 +42,20 @@ fun LibraryScreen(viewModel: GameViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (currentCategory == null) {
-            Text(stringResource(Res.string.library_title), style = MaterialTheme.typography.displaySmall, color = primaryText)
+            // Sprite Animation for the Library front based on language
+            val currentLang = stringResource(Res.string.language_title)
+            val libraryFrontResource = if (currentLang.contains("Idioma")) {
+                Res.drawable.libraryfrontspanish_strip
+            } else {
+                Res.drawable.libraryfrontenglish_strip
+            }
+
+            SpriteAnimation(
+                painter = painterResource(libraryFrontResource),
+                frameCount = 3,
+                modifier = Modifier.fillMaxWidth().height(200.dp)
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
             
             Row(
@@ -59,10 +72,10 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 Text("${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
@@ -85,7 +98,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
