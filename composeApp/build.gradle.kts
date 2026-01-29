@@ -49,6 +49,8 @@ kotlin {
 
             // Dependencia útil para compatibilidad en Android
             implementation(libs.androidx.appcompat)
+            implementation("androidx.core:core-splashscreen:1.0.1")
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)

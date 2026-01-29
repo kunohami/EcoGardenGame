@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Eco Jardín</string>
+    <string name="app_name">Clicky\'s Garden</string>
 
     <!-- Navegación -->
     <string name="nav_garden">Jardín</string>

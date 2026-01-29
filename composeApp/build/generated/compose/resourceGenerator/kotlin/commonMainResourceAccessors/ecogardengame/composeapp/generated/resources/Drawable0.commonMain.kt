@@ -29,6 +29,48 @@ internal val Res.drawable.broccoli_strip: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.clickycheekykneel_strip: DrawableResource by lazy {
+      DrawableResource("drawable:clickycheekykneel_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickycheekykneel_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.clickyexplain_strip: DrawableResource by lazy {
+      DrawableResource("drawable:clickyexplain_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickyexplain_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.clickyopenarms_strip: DrawableResource by lazy {
+      DrawableResource("drawable:clickyopenarms_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickyopenarms_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.clickysad_strip: DrawableResource by lazy {
+      DrawableResource("drawable:clickysad_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickysad_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.clickysgarden: DrawableResource by lazy {
+      DrawableResource("drawable:clickysgarden", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickysgarden.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.clickysgardennologo: DrawableResource by lazy {
+      DrawableResource("drawable:clickysgardennologo", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickysgardennologo.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.clickysgardensmall: DrawableResource by lazy {
+      DrawableResource("drawable:clickysgardensmall", setOf(
+        ResourceItem(setOf(), "${MD}drawable/clickysgardensmall.png", -1, -1),
+      ))
+    }
+
 internal val Res.drawable.coin_strip: DrawableResource by lazy {
       DrawableResource("drawable:coin_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/coin_strip.png", -1, -1),
@@ -59,9 +101,27 @@ internal val Res.drawable.garlic_strip: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.greentick_strip: DrawableResource by lazy {
+      DrawableResource("drawable:greentick_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/greentick_strip.png", -1, -1),
+      ))
+    }
+
 internal val Res.drawable.infobunny_strip: DrawableResource by lazy {
       DrawableResource("drawable:infobunny_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/infobunny_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.libraryfrontenglish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:libraryfrontenglish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/libraryfrontenglish_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.libraryfrontspanish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:libraryfrontspanish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/libraryfrontspanish_strip.png", -1, -1),
       ))
     }
 
@@ -119,6 +179,18 @@ internal val Res.drawable.squash_strip: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.storefrontenglish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:storefrontenglish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/storefrontenglish_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.storefrontspanish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:storefrontspanish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/storefrontspanish_strip.png", -1, -1),
+      ))
+    }
+
 internal val Res.drawable.tomato_strip: DrawableResource by lazy {
       DrawableResource("drawable:tomato_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/tomato_strip.png", -1, -1),
@@ -130,12 +202,22 @@ internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, Drawab
   map.put("apple_strip", Res.drawable.apple_strip)
   map.put("bellpepper_strip", Res.drawable.bellpepper_strip)
   map.put("broccoli_strip", Res.drawable.broccoli_strip)
+  map.put("clickycheekykneel_strip", Res.drawable.clickycheekykneel_strip)
+  map.put("clickyexplain_strip", Res.drawable.clickyexplain_strip)
+  map.put("clickyopenarms_strip", Res.drawable.clickyopenarms_strip)
+  map.put("clickysad_strip", Res.drawable.clickysad_strip)
+  map.put("clickysgarden", Res.drawable.clickysgarden)
+  map.put("clickysgardennologo", Res.drawable.clickysgardennologo)
+  map.put("clickysgardensmall", Res.drawable.clickysgardensmall)
   map.put("coin_strip", Res.drawable.coin_strip)
   map.put("compose_multiplatform", Res.drawable.compose_multiplatform)
   map.put("fruitmenu_strip", Res.drawable.fruitmenu_strip)
   map.put("gardenmainmenu_strip", Res.drawable.gardenmainmenu_strip)
   map.put("garlic_strip", Res.drawable.garlic_strip)
+  map.put("greentick_strip", Res.drawable.greentick_strip)
   map.put("infobunny_strip", Res.drawable.infobunny_strip)
+  map.put("libraryfrontenglish_strip", Res.drawable.libraryfrontenglish_strip)
+  map.put("libraryfrontspanish_strip", Res.drawable.libraryfrontspanish_strip)
   map.put("librarymainmenu_strip", Res.drawable.librarymainmenu_strip)
   map.put("miscmainmenu_strip", Res.drawable.miscmainmenu_strip)
   map.put("profilemainmenu_strip", Res.drawable.profilemainmenu_strip)
@@ -145,5 +227,7 @@ internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, Drawab
   map.put("sicklearm_strip", Res.drawable.sicklearm_strip)
   map.put("sicklefarmer_strip", Res.drawable.sicklefarmer_strip)
   map.put("squash_strip", Res.drawable.squash_strip)
+  map.put("storefrontenglish_strip", Res.drawable.storefrontenglish_strip)
+  map.put("storefrontspanish_strip", Res.drawable.storefrontspanish_strip)
   map.put("tomato_strip", Res.drawable.tomato_strip)
 }
