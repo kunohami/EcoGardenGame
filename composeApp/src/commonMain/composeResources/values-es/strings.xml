@@ -475,7 +475,7 @@
     <!-- Visual Novel Tutorial -->
     <string name="tutorial_title">Cómo jugar</string>
     <string name="tutorial_step1">¡Hola! ¡Soy Clicky! Bienvenido a tu nuevo jardín.</string>
-    <string name="tutorial_step2">El objetivo es simple: ¡toca las frutas y verduras para cosecharlas y ganar dinero!</string>
+    <string name="tutorial_step2">El objetivo es simple: ¡toca las frutas y verduras para cosecharla y ganar dinero!</string>
     <string name="tutorial_step3">Con ese dinero, puedes desbloquear cultivos aún más deliciosos.</string>
     <string name="tutorial_step4">¡No olvides la Tienda! Las mejoras te ayudarán a ganar dinero mucho más rápido.</string>
     <string name="tutorial_step5">También puedes visitar la Biblioteca para comprar datos curiosos sobre lo que cultivas.</string>
@@ -484,4 +484,32 @@
     <string name="next">Siguiente</string>
     <string name="skip">Saltar</string>
     <string name="finish">Terminar</string>
+
+    <!-- Weather Upgrade -->
+    <string name="upg_weather_bonus_name">Pronóstico del Tiempo</string>
+    <string name="upg_weather_bonus_desc">Desbloquea potentes bonos de jardín basados en el tiempo real durante 5 horas tras actualizar la ubicación.</string>
+
+    <!-- Weather Dialog -->
+    <string name="weather_dialog_title">Clima del Jardín</string>
+    <string name="weather_bonus_time_left">Termina en: %s</string>
+    <string name="weather_update_location">Actualizar Ubicación</string>
+    <string name="weather_buy_upgrade">Comprar Mejora (5000 🪙)</string>
+
+    <string name="weather_bonus_cold_title">Resistencia al Frío (&lt; 12°C)</string>
+    <string name="weather_bonus_cold_desc">Ajo y Cebolla: +1 moneda y +1 fruta por clic.</string>
+    <string name="weather_bonus_mild_title">Equilibrio Templado (12°C - 22°C)</string>
+    <string name="weather_bonus_mild_desc">Brócoli y Manzana: +1 moneda y +1 fruta por clic.</string>
+    <string name="weather_bonus_hot_title">Maduración Rápida (&gt; 22°C)</string>
+    <string name="weather_bonus_hot_desc">Tomate, Pimiento y Calabaza: +1 moneda y +1 fruta por clic.</string>
+
+    <string name="weather_bonus_sunny_title">Fotosíntesis Activa (Despejado)</string>
+    <string name="weather_bonus_sunny_desc">Cada 5 clics: +2 monedas de bono en todos los vegetales.</string>
+    <string name="weather_bonus_rain_title">Riego Automático (Lluvia)</string>
+    <string name="weather_bonus_rain_desc">Cosecha automática cada 10 segundos.</string>
+    <string name="weather_bonus_clouds_title">Conservación de Energía (Nubes)</string>
+    <string name="weather_bonus_clouds_desc">10% de descuento en Biblioteca y Galería.</string>
+    <string name="weather_bonus_storm_title">Carga Eléctrica (Tormenta)</string>
+    <string name="weather_bonus_storm_desc">Ciclo crítico del Tomate reducido a 2 segundos.</string>
+    <string name="weather_bonus_snow_title">Hibernación (Nieve)</string>
+    <string name="weather_bonus_snow_desc">Multiplicador de recompensa del Ajo aumentado a x2.0.</string>
 </resources>

@@ -11,6 +11,8 @@ import com.rafarg.ecogardengame.auth.UserProfile
 import com.rafarg.ecogardengame.data.ArtRepository
 import com.rafarg.ecogardengame.data.GameRepository
 import com.rafarg.ecogardengame.data.GameSaveData
+import com.rafarg.ecogardengame.data.WeatherResponse
+import com.rafarg.ecogardengame.data.WeatherService
 import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.ui.items as staticItemsList
 import com.rafarg.ecogardengame.util.vibrate
@@ -19,6 +21,7 @@ import dev.gitlive.firebase.firestore.firestore
 import dev.gitlive.firebase.firestore.where
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -115,9 +118,32 @@ class GameViewModel(
             descriptionRes = Res.string.upg_lucky_harvest_desc,
             baseCost = GamePrices.UPGRADE_LUCKY_HARVEST,
             maxLevel = 5
+        ),
+        GlobalUpgrade(
+            id = "weather_bonus",
+            nameRes = Res.string.upg_weather_bonus_name,
+            descriptionRes = Res.string.upg_weather_bonus_desc,
+            baseCost = ItemCost(money = 5000), // Adjust price as needed
+            maxLevel = 1
         )
     )
     private var globalClickCounter = 0
+
+    // --- WEATHER SYSTEM ---
+    private val weatherService = WeatherService()
+    var currentWeatherData by mutableStateOf<WeatherResponse?>(null)
+        private set
+    var lastWeatherUpdateTime by mutableStateOf(0L)
+        private set
+    val weatherBonusDuration = 5 * 60 * 60 * 1000L // 5 hours in ms
+    
+    val isWeatherBonusActive: Boolean get() {
+        val hasUpgrade = globalUpgrades.find { it.id == "weather_bonus" }?.unlockedLevel ?: 0 > 0
+        val isExpired = currentTimeMillis() - lastWeatherUpdateTime > weatherBonusDuration
+        return hasUpgrade && currentWeatherData != null && !isExpired
+    }
+
+    private var autoClickJob: Job? = null
 
     // --- LIBRARY ---
     override val libraryCategories = LibraryRepository.categories
@@ -129,8 +155,9 @@ class GameViewModel(
     override fun getArtCount(): Int = ArtRepository.artEntries.size
     
     fun unlockArt(artId: String, cost: Int) {
-        if (money >= cost && !isArtUnlocked(artId)) {
-            money -= cost
+        val finalCost = if (isWeatherBonusActive && isCloudy()) (cost * 0.9).toInt() else cost
+        if (money >= finalCost && !isArtUnlocked(artId)) {
+            money -= finalCost
             unlockedArtIds.add(artId)
             checkAchievements()
             saveData()
@@ -262,6 +289,13 @@ class GameViewModel(
         profileImageIndex = saveData.profileImageIndex
         lastProfileUpdateTime = saveData.lastProfileUpdateTime
         tutorialSeen = saveData.tutorialSeen
+        lastWeatherUpdateTime = saveData.lastWeatherUpdateTime
+        
+        saveData.weatherDataJson?.let {
+            try {
+                currentWeatherData = Json.decodeFromString<WeatherResponse>(it)
+            } catch (e: Exception) { e.printStackTrace() }
+        }
         
         unlockedAchievements.clear()
         unlockedAchievements.addAll(saveData.unlockedAchievements)
@@ -293,6 +327,9 @@ class GameViewModel(
         
         currentItem = items.find { it.id == currentItem.id } ?: items.first()
         checkAchievements(isInitialLoad = true)
+        
+        // Start auto-clicker if raining
+        startAutoClickerIfNeeded()
     }
 
     fun onVegetableClick(rewards: List<Reward>): List<Reward> {
@@ -306,6 +343,7 @@ class GameViewModel(
 
         var finalRewards = rewards
         
+        // --- GLOBAL UPGRADES ---
         val luckyLevel = globalUpgrades.find { it.id == "lucky_harvest" }?.unlockedLevel ?: 0
         if (luckyLevel > 0) {
             val chance = luckyLevel / 100f 
@@ -319,6 +357,31 @@ class GameViewModel(
             val isDouble = globalClickCounter % (11 - preciseLevel * 2) == 0
             
             if (isDouble) {
+                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
+            }
+        }
+
+        // --- WEATHER BONUSES ---
+        if (isWeatherBonusActive) {
+            val temp = currentWeatherData!!.current_weather.temperature
+            
+            // Temperature Bonus (+1 money and +1 fruit)
+            val currentId = currentId()
+            val isResistant = temp < 12 && (currentId == "garlic" || currentId == "purple_onion")
+            val isBalanced = temp in 12.0..22.0 && (currentId == "broccoli" || currentId == "apple")
+            val isFastRipening = temp > 22 && (currentId == "tomato" || currentId == "bell_pepper" || currentId == "squash")
+            
+            if (isResistant || isBalanced || isFastRipening) {
+                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue + 1, countValue = it.countValue + 1) }
+            }
+            
+            // Sunny Bonus: Photosynthesis (every 5 clicks, +2 money)
+            if (isSunny() && globalClickCounter % 5 == 0) {
+                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue + 2) }
+            }
+            
+            // Snow Bonus: Hibernation (Garlic x2 multiplier)
+            if (isSnowing() && currentId == "garlic") {
                 finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }
             }
         }
@@ -379,6 +442,36 @@ class GameViewModel(
         }
     }
 
+    fun updateWeather(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            val result = weatherService.fetchWeather(lat, lon)
+            if (result != null) {
+                currentWeatherData = result
+                lastWeatherUpdateTime = currentTimeMillis()
+                saveData()
+                startAutoClickerIfNeeded()
+            }
+        }
+    }
+
+    private fun startAutoClickerIfNeeded() {
+        autoClickJob?.cancel()
+        if (isWeatherBonusActive && isRaining()) {
+            autoClickJob = viewModelScope.launch {
+                while (isActive && isWeatherBonusActive && isRaining()) {
+                    delay(10000) // 10 seconds
+                    onVegetableClick(currentItem.baseRewards)
+                }
+            }
+        }
+    }
+
+    private fun isSunny(): Boolean = currentWeatherData?.current_weather?.weathercode == 0
+    private fun isRaining(): Boolean = currentWeatherData?.current_weather?.weathercode in listOf(51, 53, 55, 61, 63, 65, 80, 81, 82)
+    private fun isCloudy(): Boolean = currentWeatherData?.current_weather?.weathercode in listOf(1, 2, 3)
+    fun isThundering(): Boolean = currentWeatherData?.current_weather?.weathercode in listOf(95, 96, 99)
+    private fun isSnowing(): Boolean = currentWeatherData?.current_weather?.weathercode in listOf(71, 73, 75, 77, 85, 86)
+
     fun tryUnlockGlobalUpgrade(upgrade: GlobalUpgrade) {
         val nextCost = upgrade.getNextLevelCost()
         if (!upgrade.isMaxLevel && canAfford(nextCost)) {
@@ -395,8 +488,11 @@ class GameViewModel(
     }
 
     fun tryUnlockLibraryEntry(entry: LibraryEntry) {
-        if (!entry.isUnlocked && canAfford(entry.cost)) {
-            money -= entry.cost.money
+        val finalCost = if (isWeatherBonusActive && isCloudy()) (entry.cost.money * 0.9).toInt() else entry.cost.money
+        val adjustedCost = entry.cost.copy(money = finalCost)
+        
+        if (!entry.isUnlocked && canAfford(adjustedCost)) {
+            money -= adjustedCost.money
             val newCounts = fruitCounts.toMutableMap()
             entry.cost.vegetableCosts.forEach { (vegId, amount) ->
                 newCounts[vegId] = (newCounts[vegId] ?: 0) - amount
@@ -595,7 +691,9 @@ class GameViewModel(
             modifierUnlocked = modUnlocked,
             modifierEnabled = modEnabled,
             unlockedArtIds = unlockedArtIds.toSet(),
-            tutorialSeen = tutorialSeen
+            tutorialSeen = tutorialSeen,
+            lastWeatherUpdateTime = lastWeatherUpdateTime,
+            weatherDataJson = currentWeatherData?.let { Json.encodeToString(it) }
         )
     }
 

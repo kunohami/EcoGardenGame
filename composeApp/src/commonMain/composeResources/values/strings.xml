@@ -168,4 +168,32 @@
     <string name="next">Next</string>
     <string name="skip">Skip</string>
     <string name="finish">Finish</string>
+
+    <!-- Weather Upgrade -->
+    <string name="upg_weather_bonus_name">Weather Forecast</string>
+    <string name="upg_weather_bonus_desc">Unlock powerful garden bonuses based on real-world weather for 5 hours after updating location.</string>
+
+    <!-- Weather Dialog -->
+    <string name="weather_dialog_title">Garden Climate</string>
+    <string name="weather_bonus_time_left">Ends in: %s</string>
+    <string name="weather_update_location">Update Location</string>
+    <string name="weather_buy_upgrade">Buy Forecast Upgrade (5000 🪙)</string>
+
+    <string name="weather_bonus_cold_title">Cold Resistance (&lt; 12°C)</string>
+    <string name="weather_bonus_cold_desc">Garlic and Onion: +1 coin and +1 fruit per click.</string>
+    <string name="weather_bonus_mild_title">Temperate Balance (12°C - 22°C)</string>
+    <string name="weather_bonus_mild_desc">Broccoli and Apple: +1 coin and +1 fruit per click.</string>
+    <string name="weather_bonus_hot_title">Fast Ripening (&gt; 22°C)</string>
+    <string name="weather_bonus_hot_desc">Tomato, Pepper and Squash: +1 coin and +1 fruit per click.</string>
+
+    <string name="weather_bonus_sunny_title">Active Photosynthesis (Clear)</string>
+    <string name="weather_bonus_sunny_desc">Every 5 clicks: +2 coins bonus on all vegetables.</string>
+    <string name="weather_bonus_rain_title">Automatic Irrigation (Rain)</string>
+    <string name="weather_bonus_rain_desc">Auto-harvest every 10 seconds.</string>
+    <string name="weather_bonus_clouds_title">Energy Conservation (Clouds)</string>
+    <string name="weather_bonus_clouds_desc">10% discount on Library facts and Gallery art.</string>
+    <string name="weather_bonus_storm_title">Electric Charge (Thunderstorm)</string>
+    <string name="weather_bonus_storm_desc">Tomato critical cycle reduced to 2 seconds.</string>
+    <string name="weather_bonus_snow_title">Hibernation (Snow)</string>
+    <string name="weather_bonus_snow_desc">Garlic reward multiplier increased to x2.0.</string>
 </resources>
