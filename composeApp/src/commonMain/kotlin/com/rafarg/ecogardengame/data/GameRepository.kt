@@ -29,7 +29,8 @@ data class GameSaveData(
     val libraryUnlockedEntries: Map<String, Boolean> = emptyMap(),
     val modifierUnlocked: Map<String, Boolean> = emptyMap(),
     val modifierEnabled: Map<String, Boolean> = emptyMap(),
-    val unlockedArtIds: Set<String> = emptySet()
+    val unlockedArtIds: Set<String> = emptySet(),
+    val tutorialSeen: Boolean = false
 )
 
 interface GameRepository {
@@ -55,12 +56,14 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
     private val lastProfileUpdateKey = longPreferencesKey("last_profile_update")
     private val unlockedArtKey = stringSetPreferencesKey("unlocked_art")
+    private val tutorialSeenKey = booleanPreferencesKey("tutorial_seen")
 
     private val fixedKeys = setOf(
         "total_clicks", "money", "total_money_earned", "vibration_enabled",
         "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
         "emerald_wavy_theme", "language", "language_set", "username",
-        "profile_image_index", "unlocked_achievements", "last_profile_update", "unlocked_art"
+        "profile_image_index", "unlocked_achievements", "last_profile_update", "unlocked_art",
+        "tutorial_seen"
     )
 
     override suspend fun loadGameData(): GameSaveData {
@@ -112,7 +115,8 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             libraryUnlockedEntries = libraryUnlockedEntries,
             modifierUnlocked = modifierUnlocked,
             modifierEnabled = modifierEnabled,
-            unlockedArtIds = prefs[unlockedArtKey] ?: emptySet()
+            unlockedArtIds = prefs[unlockedArtKey] ?: emptySet(),
+            tutorialSeen = prefs[tutorialSeenKey] ?: false
         )
     }
 
@@ -134,6 +138,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[achievementsKey] = data.unlockedAchievements
             prefs[lastProfileUpdateKey] = data.lastProfileUpdateTime
             prefs[unlockedArtKey] = data.unlockedArtIds
+            prefs[tutorialSeenKey] = data.tutorialSeen
 
             data.fruitCounts.forEach { (id, count) -> prefs[intPreferencesKey("fruit_count_$id")] = count }
             data.totalFruitHarvested.forEach { (id, count) -> prefs[intPreferencesKey("total_harvested_$id")] = count }

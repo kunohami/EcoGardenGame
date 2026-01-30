@@ -45,6 +45,10 @@
     <string name="sign_out_warning_title">Cerrar Sesión</string>
     <string name="sign_out_warning_message">¿Estás seguro de que quieres cerrar sesión? Tu progreso local se reiniciará. Asegúrate de haber subido tu partida a la nube si deseas conservarla.</string>
 
+    <string name="error_generic">Ha ocurrido un error</string>
+    <string name="error_update_profile">Error al actualizar el perfil</string>
+    <string name="error_download_save">Error al descargar la partida</string>
+
     <!-- Acerca de -->
     <string name="app_version">EcoGarden Game v0.8</string>
     <string name="developed_with">Desarrollado con Compose Multiplatform por Rafa R. G.</string>
@@ -77,7 +81,7 @@
 
     <!-- Pantalla de Ajustes -->
     <string name="general_section">General</string>
-    <string name="vibration_label">Vibration</string>
+    <string name="vibration_label">Vibración</string>
     <string name="intensity_label">Intensidad: %1$dms</string>
     <string name="dark_theme_label">Tema oscuro</string>
     <string name="backgrounds_section">Fondos</string>
@@ -467,4 +471,17 @@
     <string name="login_desc">Inicia sesión para guardar tus logros y perfil en la nube.</string>
     <string name="logged_in_as">Sesión iniciada como: %1$s</string>
     <string name="sync_notice">Partida guardada localmente.</string>
+
+    <!-- Visual Novel Tutorial -->
+    <string name="tutorial_title">Cómo jugar</string>
+    <string name="tutorial_step1">¡Hola! ¡Soy Clicky! Bienvenido a tu nuevo jardín.</string>
+    <string name="tutorial_step2">El objetivo es simple: ¡toca las frutas y verduras para cosecharlas y ganar dinero!</string>
+    <string name="tutorial_step3">Con ese dinero, puedes desbloquear cultivos aún más deliciosos.</string>
+    <string name="tutorial_step4">¡No olvides la Tienda! Las mejoras te ayudarán a ganar dinero mucho más rápido.</string>
+    <string name="tutorial_step5">También puedes visitar la Biblioteca para comprar datos curiosos sobre lo que cultivas.</string>
+    <string name="tutorial_step6">¡Y mantente atento a los Logros! Hay mucho por descubrir.</string>
+    <string name="tutorial_step7">Eso es todo por ahora. ¡A cultivar!</string>
+    <string name="next">Siguiente</string>
+    <string name="skip">Saltar</string>
+    <string name="finish">Terminar</string>
 </resources>

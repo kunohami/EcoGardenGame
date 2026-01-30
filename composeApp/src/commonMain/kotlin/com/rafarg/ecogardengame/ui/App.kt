@@ -54,7 +54,8 @@ enum class Screen(val showInBottomBar: Boolean = true) {
     THEMES(false),
     ABOUT(false),
     LOGIN(false),
-    GALLERY(false)
+    GALLERY(false),
+    TUTORIAL(false)
 }
 
 @Composable
@@ -70,7 +71,8 @@ fun Screen.getTitle(): String {
         Screen.THEMES -> Res.string.themes_title
         Screen.ABOUT -> Res.string.about_title
         Screen.LOGIN -> Res.string.login_title
-        Screen.GALLERY -> Res.string.achievements_title // Reusing a title or adding one
+        Screen.GALLERY -> Res.string.achievements_title
+        Screen.TUTORIAL -> Res.string.tutorial_title
     })
 }
 
@@ -195,7 +197,8 @@ fun App(
                                             onNavigateToStats = { currentScreen = Screen.STATS },
                                             onNavigateToAbout = { currentScreen = Screen.ABOUT },
                                             onNavigateToLogin = { currentScreen = Screen.LOGIN },
-                                            onNavigateToGallery = { currentScreen = Screen.GALLERY }
+                                            onNavigateToGallery = { currentScreen = Screen.GALLERY },
+                                            onNavigateToTutorial = { viewModel.replayTutorial() }
                                         )
                                         else -> Unit
                                     }
@@ -213,6 +216,11 @@ fun App(
                             }
                         }
                     }
+                }
+
+                // Overlay Tutorial
+                if (viewModel.showTutorial) {
+                    TutorialScreen(viewModel)
                 }
 
                 // Achievement Toast

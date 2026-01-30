@@ -155,4 +155,17 @@
     <!-- Art Gallery Achievements -->
     <string name="ach_art_collector_name">Art Collector</string>
     <string name="ach_art_collector_desc">Unlock all art pieces in the gallery.</string>
+
+    <!-- Visual Novel Tutorial -->
+    <string name="tutorial_title">How to Play</string>
+    <string name="tutorial_step1">Hi! I\'m Clicky! Welcome to your new garden.</string>
+    <string name="tutorial_step2">The goal is simple: tap on fruits and vegetables to harvest them and earn money!</string>
+    <string name="tutorial_step3">With that money, you can unlock even more delicious crops.</string>
+    <string name="tutorial_step4">Don\'t forget the Shop! Upgrades will help you earn money much faster.</string>
+    <string name="tutorial_step5">You can also visit the Library to buy curious facts about what you grow.</string>
+    <string name="tutorial_step6">And keep an eye out for Achievements! There\'s a lot to discover.</string>
+    <string name="tutorial_step7">That\'s all for now. Let\'s get growing!</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="finish">Finish</string>
 </resources>
