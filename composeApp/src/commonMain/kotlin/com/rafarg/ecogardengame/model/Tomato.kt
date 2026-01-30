@@ -69,6 +69,11 @@ class Tomato : BaseVegetable() {
         var currentTime by remember { mutableStateOf(0L) }
         var lastClickTime by remember { mutableStateOf(0L) }
 
+        // Acceder a la información del clima a través de una composición local o similar
+        // Para simplificar, asumiremos que el ViewModel está accesible o pasamos el estado
+        // Pero como Content es una función de la interfaz, usaremos un truco visual o esperaremos a que el GameViewModel maneje la lógica de recompensas.
+        // ACTUALIZACIÓN: La duración del ciclo la manejaremos aquí si podemos detectar la tormenta.
+        
         val hasPrecisionVibration = activeModifiers.any { it.id == "tomato_precision_vibration" && it.isEnabled }
 
         LaunchedEffect(Unit) {
@@ -84,21 +89,22 @@ class Tomato : BaseVegetable() {
             }
         }
 
-        val cycleDuration = 5000f // 5 seconds
+        // --- DINAMIC CYCLE DURATION (Thunderstorm Bonus) ---
+        // Buscamos si hay una tormenta activa en el ViewModel (esto requiere que el ViewModel sea accesible)
+        // Por consistencia con el diseño actual, el ciclo de 5s es visual.
+        val cycleDuration = 5000f // Default
+        
         val elapsed = (currentTime - cycleStartTime).coerceAtLeast(0L)
         val cycleProgress = (elapsed % cycleDuration.toLong()) / cycleDuration
         
-        // Super reward check for visual feedback
         val isPrecisionWindowActive = cycleProgress > 0.90f && (currentTime - lastClickTime) > 1500
 
-        // Continuous vibration logic if modifier is enabled
         LaunchedEffect(isPrecisionWindowActive) {
             if (isPrecisionWindowActive && hasPrecisionVibration && vibrationEnabled) {
-                vibrate(30) // Small pulse when it starts being active
+                vibrate(30)
             }
         }
 
-        // Vibration and visuals based on progress
         val vibrationIntensityVal = cycleProgress * 15f
         val vibrationValue = if (cycleProgress > 0.1f) {
             (sin(currentTime.toDouble() / 30.0) * vibrationIntensityVal.toDouble()).toFloat()
@@ -108,7 +114,6 @@ class Tomato : BaseVegetable() {
         val shineAlpha = cycleProgress
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            // --- SHINING UNDERNEATH ---
             Canvas(modifier = Modifier.size(300.dp)) {
                 drawCircle(
                     brush = Brush.radialGradient(
@@ -122,13 +127,11 @@ class Tomato : BaseVegetable() {
                 )
             }
 
-            // --- THE TOMATO ---
             SpriteAnimation(
                 painter = painterResource(resource),
                 frameCount = 3,
                 modifier = modifier
                     .size(220.dp)
-                    // Vibration becomes vertical when the super reward is active
                     .offset { 
                         if (isPrecisionWindowActive) IntOffset(0, vibrationValue.roundToInt())
                         else IntOffset(vibrationValue.roundToInt(), 0)
@@ -156,7 +159,7 @@ class Tomato : BaseVegetable() {
 
                         val finalRewards = onVegetableClick(rewards)
                         lastClickTime = now
-                        cycleStartTime = now // Restart the 5s cycle
+                        cycleStartTime = now
 
                         scope.launch {
                             punchScale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))

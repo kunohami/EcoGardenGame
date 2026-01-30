@@ -4,6 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 
 @Serializable
 data class GameSaveData(
@@ -30,7 +32,9 @@ data class GameSaveData(
     val modifierUnlocked: Map<String, Boolean> = emptyMap(),
     val modifierEnabled: Map<String, Boolean> = emptyMap(),
     val unlockedArtIds: Set<String> = emptySet(),
-    val tutorialSeen: Boolean = false
+    val tutorialSeen: Boolean = false,
+    val lastWeatherUpdateTime: Long = 0L,
+    val weatherDataJson: String? = null
 )
 
 interface GameRepository {
@@ -57,13 +61,15 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val lastProfileUpdateKey = longPreferencesKey("last_profile_update")
     private val unlockedArtKey = stringSetPreferencesKey("unlocked_art")
     private val tutorialSeenKey = booleanPreferencesKey("tutorial_seen")
+    private val lastWeatherUpdateTimeKey = longPreferencesKey("last_weather_update_time")
+    private val weatherDataJsonKey = stringPreferencesKey("weather_data_json")
 
     private val fixedKeys = setOf(
         "total_clicks", "money", "total_money_earned", "vibration_enabled",
         "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
         "emerald_wavy_theme", "language", "language_set", "username",
         "profile_image_index", "unlocked_achievements", "last_profile_update", "unlocked_art",
-        "tutorial_seen"
+        "tutorial_seen", "last_weather_update_time", "weather_data_json"
     )
 
     override suspend fun loadGameData(): GameSaveData {
@@ -116,7 +122,9 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             modifierUnlocked = modifierUnlocked,
             modifierEnabled = modifierEnabled,
             unlockedArtIds = prefs[unlockedArtKey] ?: emptySet(),
-            tutorialSeen = prefs[tutorialSeenKey] ?: false
+            tutorialSeen = prefs[tutorialSeenKey] ?: false,
+            lastWeatherUpdateTime = prefs[lastWeatherUpdateTimeKey] ?: 0L,
+            weatherDataJson = prefs[weatherDataJsonKey]
         )
     }
 
@@ -139,6 +147,8 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[lastProfileUpdateKey] = data.lastProfileUpdateTime
             prefs[unlockedArtKey] = data.unlockedArtIds
             prefs[tutorialSeenKey] = data.tutorialSeen
+            prefs[lastWeatherUpdateTimeKey] = data.lastWeatherUpdateTime
+            data.weatherDataJson?.let { prefs[weatherDataJsonKey] = it }
 
             data.fruitCounts.forEach { (id, count) -> prefs[intPreferencesKey("fruit_count_$id")] = count }
             data.totalFruitHarvested.forEach { (id, count) -> prefs[intPreferencesKey("total_harvested_$id")] = count }
