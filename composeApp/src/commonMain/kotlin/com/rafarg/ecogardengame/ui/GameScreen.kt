@@ -63,8 +63,8 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(top = 8.dp) // Fixed small padding instead of statusBarsPadding
+                .padding(horizontal = 16.dp)
                 .zIndex(2f)
         ) {
             Row(
@@ -109,7 +109,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                 // Info Bunny
                 Box(
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(56.dp)
                         .clip(CircleShape)
                         .clickable { showTutorial = true },
                     contentAlignment = Alignment.Center
@@ -117,14 +117,14 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.infobunny_strip),
                         frameCount = 3,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(44.dp)
                     )
                 }
 
                 // Fruit Selection Menu Toggle
                 Box(
                     modifier = Modifier
-                        .size(width = 84.dp, height = 64.dp)
+                        .size(width = 74.dp, height = 56.dp)
                         .clip(CircleShape)
                         .clickable { menuVisible = !menuVisible },
                     contentAlignment = Alignment.Center
@@ -132,7 +132,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.fruitmenu_strip),
                         frameCount = 3,
-                        modifier = Modifier.size(width = 70.dp, height = 50.dp)
+                        modifier = Modifier.size(width = 60.dp, height = 44.dp)
                     )
                 }
             }
@@ -143,7 +143,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             Card(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = 80.dp, end = 16.dp)
+                    .padding(top = 64.dp, end = 16.dp)
                     .width(160.dp)
                     .zIndex(3f),
                 shape = SpeechBubbleShape(tipAtTop = true, tipPaddingEnd = 32.dp),
@@ -198,7 +198,7 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 60.dp, bottom = 0.dp) 
+                .padding(top = 24.dp, bottom = 0.dp) // Reduced padding to move everything up
                 .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ) {
