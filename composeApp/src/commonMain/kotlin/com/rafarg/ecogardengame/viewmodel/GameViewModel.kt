@@ -34,7 +34,7 @@ import kotlin.time.Clock
 data class PublicProfile(
     val id: String,
     val username: String,
-    val profileImageIndex: Int,
+    val profileImageId: String, // Changed to ID
     val achievements: List<String>
 )
 
@@ -176,9 +176,8 @@ class GameViewModel(
     // --- PROFILE ---
     var username by mutableStateOf("Farmer")
         private set
-    var profileImageIndex by mutableStateOf(0)
+    var profileImageId by mutableStateOf("tomato") // Default is tomato ID
         private set
-    val availableAvatars = listOf("👨‍🌾", "👩‍🌾", "🌻", "🌿", "🍎", "🥕", "🏡", "🌦️")
     
     var lastProfileUpdateTime by mutableStateOf(0L)
         private set
@@ -286,7 +285,7 @@ class GameViewModel(
         language = saveData.language
         languageSet = saveData.languageSet
         username = saveData.username
-        profileImageIndex = saveData.profileImageIndex
+        profileImageId = saveData.profileImageId ?: "tomato"
         lastProfileUpdateTime = saveData.lastProfileUpdateTime
         tutorialSeen = saveData.tutorialSeen
         lastWeatherUpdateTime = saveData.lastWeatherUpdateTime
@@ -523,8 +522,8 @@ class GameViewModel(
         saveData()
     }
 
-    fun updateProfileImage(index: Int) {
-        profileImageIndex = index
+    fun updateProfileImage(imageId: String) {
+        profileImageId = imageId
         saveData()
     }
 
@@ -596,7 +595,7 @@ class GameViewModel(
                 firestore.collection("users").document(user.id).set(
                     mapOf(
                         "username" to username,
-                        "profileImageIndex" to profileImageIndex,
+                        "profileImageId" to profileImageId,
                         "achievements" to unlockedAchievements.toList()
                     ),
                     merge = true
@@ -694,7 +693,7 @@ class GameViewModel(
             language = language,
             languageSet = languageSet,
             username = username,
-            profileImageIndex = profileImageIndex,
+            profileImageId = profileImageId,
             unlockedAchievements = unlockedAchievements.toSet(),
             lastProfileUpdateTime = lastProfileUpdateTime,
             fruitCounts = fruitCounts,
@@ -737,8 +736,7 @@ class GameViewModel(
                             try {
                                 // Extracting fields individually is safer in KMP than doc.data<Map>()
                                 val uname = doc.get<String?>("username") ?: "Unknown"
-                                // Firestore numbers come as Long, convert safely to Int
-                                val pIndex = doc.get<Long?>("profileImageIndex")?.toInt() ?: 0
+                                val pId = doc.get<String?>("profileImageId") ?: "tomato"
                                 val achs = try { 
                                     doc.get<List<String>?>("achievements") ?: emptyList() 
                                 } catch (e: Exception) { 
@@ -748,7 +746,7 @@ class GameViewModel(
                                 searchResults.add(PublicProfile(
                                     id = profileId,
                                     username = uname,
-                                    profileImageIndex = pIndex,
+                                    profileImageId = pId,
                                     achievements = achs
                                 ))
                             } catch (e: Exception) {
@@ -845,7 +843,7 @@ class GameViewModel(
         totalFruitHarvested = emptyMap()
         unlockedAchievements.clear()
         username = "Farmer"
-        profileImageIndex = 0
+        profileImageId = "tomato"
         items = staticItemsList.mapIndexed { index, item ->
             item.apply { 
                 unlocked = (index == 0)

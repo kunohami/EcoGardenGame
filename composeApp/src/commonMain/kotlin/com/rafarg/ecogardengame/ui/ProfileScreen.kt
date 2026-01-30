@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rafarg.ecogardengame.data.ArtRepository
 import com.rafarg.ecogardengame.model.Achievement
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import com.rafarg.ecogardengame.viewmodel.PublicProfile
@@ -79,7 +80,10 @@ fun MyProfileTab(
     var tempName by remember { mutableStateOf(viewModel.username) }
     var showAvatarDialog by remember { mutableStateOf(false) }
 
-    val currentAvatarItem = viewModel.itemsList.getOrNull(viewModel.profileImageIndex)
+    // Find the current avatar in items or gallery art
+    val currentAvatarResource = viewModel.itemsList.find { it.id == viewModel.profileImageId }?.resource 
+        ?: ArtRepository.artEntries.find { it.id == viewModel.profileImageId }?.resource
+        ?: Res.drawable.tomato_strip // Fallback
 
     Column(
         modifier = Modifier
@@ -97,15 +101,11 @@ fun MyProfileTab(
                 .clickable { showAvatarDialog = true },
             contentAlignment = Alignment.Center
         ) {
-            if (currentAvatarItem != null) {
-                SpriteAnimation(
-                    painter = painterResource(currentAvatarItem.resource),
-                    frameCount = 3,
-                    modifier = Modifier.size(70.dp).clip(CircleShape)
-                )
-            } else {
-                Text("👤", fontSize = 50.sp)
-            }
+            SpriteAnimation(
+                painter = painterResource(currentAvatarResource),
+                frameCount = 3,
+                modifier = Modifier.size(70.dp).clip(CircleShape)
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -188,6 +188,11 @@ fun MyProfileTab(
     }
 
     if (showAvatarDialog) {
+        // Merge vegetables and purchased art
+        val availableAvatars = (viewModel.itemsList.map { it.id to it.resource } + 
+                              ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }.map { it.id to it.resource })
+                              .distinctBy { it.first }
+
         AlertDialog(
             onDismissRequest = { showAvatarDialog = false },
             title = { Text(stringResource(Res.string.choose_avatar)) },
@@ -196,23 +201,22 @@ fun MyProfileTab(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier.height(300.dp)
                 ) {
-                    items(viewModel.itemsList.size) { index ->
-                        val item = viewModel.itemsList[index]
+                    items(availableAvatars) { (id, resource) ->
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
                                 .aspectRatio(1f)
                                 .clip(CircleShape)
-                                .background(if (viewModel.profileImageIndex == index) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else Color.Transparent)
-                                .border(if (viewModel.profileImageIndex == index) 2.dp else 0.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                .background(if (viewModel.profileImageId == id) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else Color.Transparent)
+                                .border(if (viewModel.profileImageId == id) 2.dp else 0.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable {
-                                    viewModel.updateProfileImage(index)
+                                    viewModel.updateProfileImage(id)
                                     showAvatarDialog = false
                                 },
                             contentAlignment = Alignment.Center
                         ) {
                             SpriteAnimation(
-                                painter = painterResource(item.resource),
+                                painter = painterResource(resource),
                                 frameCount = 3,
                                 modifier = Modifier.size(60.dp).clip(CircleShape)
                             )
@@ -231,7 +235,6 @@ fun MyProfileTab(
 
 @Composable
 fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
-    // ... (rest of the file remains the same)
     var searchQuery by remember { mutableStateOf("") }
     var selectedProfile by remember { mutableStateOf<PublicProfile?>(null) }
 
@@ -285,9 +288,10 @@ fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
             onDismissRequest = { selectedProfile = null },
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val avatar = viewModel.itemsList.getOrNull(profile.profileImageIndex)
-                    if (avatar != null) {
-                        SpriteAnimation(painter = painterResource(avatar.resource), frameCount = 3, modifier = Modifier.size(40.dp))
+                    val avatarRes = viewModel.itemsList.find { it.id == profile.profileImageId }?.resource 
+                        ?: ArtRepository.artEntries.find { it.id == profile.profileImageId }?.resource
+                    if (avatarRes != null) {
+                        SpriteAnimation(painter = painterResource(avatarRes), frameCount = 3, modifier = Modifier.size(40.dp))
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(profile.username)
@@ -333,9 +337,10 @@ fun PublicProfileCard(profile: PublicProfile, viewModel: GameViewModel, onClick:
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val avatar = viewModel.itemsList.getOrNull(profile.profileImageIndex)
-            if (avatar != null) {
-                SpriteAnimation(painter = painterResource(avatar.resource), frameCount = 3, modifier = Modifier.size(48.dp))
+            val avatarRes = viewModel.itemsList.find { it.id == profile.profileImageId }?.resource 
+                ?: ArtRepository.artEntries.find { it.id == profile.profileImageId }?.resource
+            if (avatarRes != null) {
+                SpriteAnimation(painter = painterResource(avatarRes), frameCount = 3, modifier = Modifier.size(48.dp))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {

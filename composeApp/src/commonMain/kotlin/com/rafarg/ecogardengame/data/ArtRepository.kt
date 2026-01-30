@@ -16,6 +16,12 @@ object ArtRepository {
         ArtEntry("clicky_cheeky", Res.drawable.clickycheekykneel_strip, Res.string.nav_profile, 3500),
         ArtEntry("clicky_explain", Res.drawable.clickyexplain_strip, Res.string.app_name, 3500),
         ArtEntry("clicky_open", Res.drawable.clickyopenarms_strip, Res.string.congratulations, 3500),
-        ArtEntry("sickle_farmer", Res.drawable.sicklefarmer_strip, Res.string.developed_with, 4000)
+        ArtEntry("sickle_farmer", Res.drawable.sicklefarmer_strip, Res.string.developed_with, 4000),
+        ArtEntry("garden_menu", Res.drawable.gardenmainmenu_strip, Res.string.nav_garden, 3000),
+        ArtEntry("shop_menu", Res.drawable.shopmainmenu_strip, Res.string.nav_shop, 3000),
+        ArtEntry("library_menu", Res.drawable.librarymainmenu_strip, Res.string.nav_library, 3000),
+        ArtEntry("profile_menu", Res.drawable.profilemainmenu_strip, Res.string.nav_profile, 3000),
+        ArtEntry("misc_menu", Res.drawable.miscmainmenu_strip, Res.string.nav_misc, 3000),
+        ArtEntry("fruit_menu", Res.drawable.fruitmenu_strip, Res.string.app_name, 3000)
     )
 }
