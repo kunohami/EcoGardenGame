@@ -341,7 +341,8 @@ class GameViewModel(
             vibrate(vibrationIntensity.toLong())
         }
 
-        var finalRewards = rewards
+        // We MUST map the rewards to avoid modifying the original baseRewards list/objects
+        var finalRewards = rewards.map { it.copy() }
         
         // --- GLOBAL UPGRADES ---
         val luckyLevel = globalUpgrades.find { it.id == "lucky_harvest" }?.unlockedLevel ?: 0
@@ -372,12 +373,24 @@ class GameViewModel(
             val isFastRipening = temp > 22 && (currentId == "tomato" || currentId == "bell_pepper" || currentId == "squash")
             
             if (isResistant || isBalanced || isFastRipening) {
-                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue + 1, countValue = it.countValue + 1) }
+                finalRewards = finalRewards.map { 
+                    it.copy(
+                        moneyValue = if (it.moneyValue > 0 || it.countValue == 0) it.moneyValue + 1 else it.moneyValue,
+                        countValue = if (it.countValue > 0) it.countValue + 1 else it.countValue
+                    )
+                }
             }
             
             // Sunny Bonus: Photosynthesis (every 5 clicks, +2 money)
             if (isSunny() && globalClickCounter % 5 == 0) {
-                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue + 2) }
+                // Apply to the first reward that has money, or add if none has money
+                var applied = false
+                finalRewards = finalRewards.map { 
+                    if (!applied && (it.moneyValue > 0 || it.countValue == 0)) {
+                        applied = true
+                        it.copy(moneyValue = it.moneyValue + 2)
+                    } else it
+                }
             }
             
             // Snow Bonus: Hibernation (Garlic x2 multiplier)
@@ -460,6 +473,7 @@ class GameViewModel(
             autoClickJob = viewModelScope.launch {
                 while (isActive && isWeatherBonusActive && isRaining()) {
                     delay(10000) // 10 seconds
+                    // Trigger a base click reward for the current item
                     onVegetableClick(currentItem.baseRewards)
                 }
             }
