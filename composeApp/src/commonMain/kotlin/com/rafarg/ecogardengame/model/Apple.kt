@@ -145,10 +145,12 @@ class Apple : BaseVegetable() {
             }
         }
 
+        val onBackgroundColor = MaterialTheme.colorScheme.onBackground
+
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Canvas(modifier = Modifier.size(circleRadius * 2)) {
                 drawCircle(
-                    color = Color.White.copy(alpha = 0.2f),
+                    color = onBackgroundColor.copy(alpha = 0.2f),
                     radius = size.minDimension / 2,
                     style = Stroke(width = 2.dp.toPx())
                 )
@@ -158,7 +160,7 @@ class Apple : BaseVegetable() {
                 modifier = Modifier
                     .size(4.dp, 40.dp)
                     .offset(y = (-circleRadius)) // Fixed pointer at the top edge of circle
-                    .background(if (isAligned) Color.Green else Color.White.copy(alpha = 0.5f))
+                    .background(if (isAligned) Color.Green else onBackgroundColor.copy(alpha = 0.5f))
             )
 
             val displayAngle = (targetAngle - deviceRotation + 360) % 360
