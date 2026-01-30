@@ -111,50 +111,56 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             Row(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                horizontalArrangement = Arrangement.spacedBy((0).dp) // Joined even more
             ) {
                 // Weather / Clicky Cheeky
                 Box(
                     modifier = Modifier
-                        .size(52.dp)
-                        .clip(CircleShape)
-                        .clickable { showWeatherDialog = true },
+                        .size(48.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { showWeatherDialog = true },
                     contentAlignment = Alignment.Center
                 ) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.clickycheekykneel_strip),
                         frameCount = 3,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
                 // Info Bunny
                 Box(
                     modifier = Modifier
-                        .size(52.dp)
-                        .clip(CircleShape)
-                        .clickable { showTutorial = true },
+                        .size(48.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { showTutorial = true },
                     contentAlignment = Alignment.Center
                 ) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.infobunny_strip),
                         frameCount = 3,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
                 // Menu Toggle
                 Box(
                     modifier = Modifier
-                        .size(width = 70.dp, height = 52.dp)
-                        .clip(CircleShape)
-                        .clickable { menuVisible = !menuVisible },
+                        .size(width = 64.dp, height = 48.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { menuVisible = !menuVisible },
                     contentAlignment = Alignment.Center
                 ) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.fruitmenu_strip),
                         frameCount = 3,
-                        modifier = Modifier.size(width = 56.dp, height = 40.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
