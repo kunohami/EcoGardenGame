@@ -29,6 +29,12 @@ internal val Res.drawable.broccoli_strip: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.buttons: DrawableResource by lazy {
+      DrawableResource("drawable:buttons", setOf(
+        ResourceItem(setOf(), "${MD}drawable/buttons", -1, -1),
+      ))
+    }
+
 internal val Res.drawable.clickycheekykneel_strip: DrawableResource by lazy {
       DrawableResource("drawable:clickycheekykneel_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/clickycheekykneel_strip.png", -1, -1),
@@ -83,9 +89,33 @@ internal val Res.drawable.compose_multiplatform: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.cropsenglish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:cropsenglish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/cropsenglish_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.cropsspanish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:cropsspanish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/cropsspanish_strip.png", -1, -1),
+      ))
+    }
+
 internal val Res.drawable.fruitmenu_strip: DrawableResource by lazy {
       DrawableResource("drawable:fruitmenu_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/fruitmenu_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.galleryenglish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:galleryenglish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/galleryenglish_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.galleryspanish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:galleryspanish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/galleryspanish_strip.png", -1, -1),
       ))
     }
 
@@ -110,6 +140,18 @@ internal val Res.drawable.greentick_strip: DrawableResource by lazy {
 internal val Res.drawable.infobunny_strip: DrawableResource by lazy {
       DrawableResource("drawable:infobunny_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/infobunny_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.knowledgeenglish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:knowledgeenglish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/knowledgeenglish_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.knowledgespanish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:knowledgespanish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/knowledgespanish_strip.png", -1, -1),
       ))
     }
 
@@ -197,11 +239,24 @@ internal val Res.drawable.tomato_strip: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.upgradesenglish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:upgradesenglish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/upgradesenglish_strip.png", -1, -1),
+      ))
+    }
+
+internal val Res.drawable.upgradesspanish_strip: DrawableResource by lazy {
+      DrawableResource("drawable:upgradesspanish_strip", setOf(
+        ResourceItem(setOf(), "${MD}drawable/upgradesspanish_strip.png", -1, -1),
+      ))
+    }
+
 @InternalResourceApi
 internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, DrawableResource>) {
   map.put("apple_strip", Res.drawable.apple_strip)
   map.put("bellpepper_strip", Res.drawable.bellpepper_strip)
   map.put("broccoli_strip", Res.drawable.broccoli_strip)
+  map.put("buttons", Res.drawable.buttons)
   map.put("clickycheekykneel_strip", Res.drawable.clickycheekykneel_strip)
   map.put("clickyexplain_strip", Res.drawable.clickyexplain_strip)
   map.put("clickyopenarms_strip", Res.drawable.clickyopenarms_strip)
@@ -211,11 +266,17 @@ internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, Drawab
   map.put("clickysgardensmall", Res.drawable.clickysgardensmall)
   map.put("coin_strip", Res.drawable.coin_strip)
   map.put("compose_multiplatform", Res.drawable.compose_multiplatform)
+  map.put("cropsenglish_strip", Res.drawable.cropsenglish_strip)
+  map.put("cropsspanish_strip", Res.drawable.cropsspanish_strip)
   map.put("fruitmenu_strip", Res.drawable.fruitmenu_strip)
+  map.put("galleryenglish_strip", Res.drawable.galleryenglish_strip)
+  map.put("galleryspanish_strip", Res.drawable.galleryspanish_strip)
   map.put("gardenmainmenu_strip", Res.drawable.gardenmainmenu_strip)
   map.put("garlic_strip", Res.drawable.garlic_strip)
   map.put("greentick_strip", Res.drawable.greentick_strip)
   map.put("infobunny_strip", Res.drawable.infobunny_strip)
+  map.put("knowledgeenglish_strip", Res.drawable.knowledgeenglish_strip)
+  map.put("knowledgespanish_strip", Res.drawable.knowledgespanish_strip)
   map.put("libraryfrontenglish_strip", Res.drawable.libraryfrontenglish_strip)
   map.put("libraryfrontspanish_strip", Res.drawable.libraryfrontspanish_strip)
   map.put("librarymainmenu_strip", Res.drawable.librarymainmenu_strip)
@@ -230,4 +291,6 @@ internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, Drawab
   map.put("storefrontenglish_strip", Res.drawable.storefrontenglish_strip)
   map.put("storefrontspanish_strip", Res.drawable.storefrontspanish_strip)
   map.put("tomato_strip", Res.drawable.tomato_strip)
+  map.put("upgradesenglish_strip", Res.drawable.upgradesenglish_strip)
+  map.put("upgradesspanish_strip", Res.drawable.upgradesspanish_strip)
 }

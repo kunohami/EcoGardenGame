@@ -226,11 +226,12 @@ fun App(
                         .zIndex(10f)
                 ) {
                     viewModel.achievementToast?.let { achievement ->
+                        val isLight = !viewModel.isDarkTheme && !viewModel.shaderBackgroundEnabled && !viewModel.isAutumnTheme
                         Surface(
                             modifier = Modifier
                                 .padding(horizontal = 32.dp)
                                 .clip(RoundedCornerShape(24.dp)),
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = if (isLight) Color(0xFF3E442B) else MaterialTheme.colorScheme.primaryContainer,
                             tonalElevation = 8.dp,
                             shadowElevation = 8.dp
                         ) {
@@ -243,8 +244,17 @@ fun App(
                                 val congrats = stringResource(Res.string.congratulations)
                                 val unlockedText = stringResource(Res.string.unlocked_label, stringResource(achievement.nameRes))
                                 Column {
-                                    Text(congrats, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                                    Text(unlockedText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        congrats, 
+                                        style = MaterialTheme.typography.labelSmall, 
+                                        color = if (isLight) Color(0xFFCCD5AE) else MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        unlockedText, 
+                                        style = MaterialTheme.typography.bodyMedium, 
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isLight) Color.White else MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
                                 }
                             }
                         }

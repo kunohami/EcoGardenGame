@@ -2,6 +2,7 @@ package com.rafarg.ecogardengame.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,6 +29,8 @@ import ecogardengame.composeapp.generated.resources.coin_strip
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreScreen(viewModel: GameViewModel) {
@@ -40,73 +43,113 @@ fun StoreScreen(viewModel: GameViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Sprite Animation for the Storefront based on language
         val currentLang = stringResource(Res.string.language_title)
+        val isSpanish = currentLang.contains("Idioma")
+        
         // If language string is "Idioma" (Spanish), we use the Spanish strip
-        val storefrontResource = if (currentLang.contains("Idioma")) {
+        val storefrontResource = if (isSpanish) {
             Res.drawable.storefrontspanish_strip
         } else {
             Res.drawable.storefrontenglish_strip
         }
 
-        // Según la imagen adjunta, el strip tiene 3 frames
-        SpriteAnimation(
-            painter = painterResource(storefrontResource),
-            frameCount = 3,
-            modifier = Modifier.fillMaxWidth().height(200.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
+            // Storefront image
             SpriteAnimation(
-                painter = painterResource(Res.drawable.coin_strip),
+                painter = painterResource(storefrontResource),
                 frameCount = 3,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.fillMaxWidth().height(180.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("${viewModel.money}", style = MaterialTheme.typography.titleLarge, color = primaryText)
+
+            // Money counter overlayed top-left
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.coin_strip),
+                    frameCount = 3,
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "${viewModel.money}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = primaryText,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         if (selectedItemForUpgrades == null) {
-            PrimaryTabRow(
-                selectedTabIndex = selectedTab, 
-                containerColor = Color.Transparent,
-                contentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Tab(
-                    selected = selectedTab == 0, 
-                    onClick = { selectedTab = 0 },
-                    selectedContentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
-                    unselectedContentColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
+                // Crops Tab Button
+                val cropsRes = if (isSpanish) Res.drawable.cropsspanish_strip else Res.drawable.cropsenglish_strip
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { selectedTab = 0 }
+                        .graphicsLayer {
+                            alpha = if (selectedTab == 0) 1f else 0.5f
+                            scaleX = if (selectedTab == 0) 1.02f else 1f
+                            scaleY = if (selectedTab == 0) 1.02f else 1f
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(stringResource(Res.string.tab_vegetables), modifier = Modifier.padding(16.dp))
+                    SpriteAnimation(
+                        painter = painterResource(cropsRes),
+                        frameCount = 3,
+                        modifier = Modifier.fillMaxWidth().height(50.dp)
+                    )
                 }
-                Tab(
-                    selected = selectedTab == 1, 
-                    onClick = { selectedTab = 1 },
-                    selectedContentColor = if (wavy) Color.White else MaterialTheme.colorScheme.primary,
-                    unselectedContentColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
+
+                // Upgrades Tab Button
+                val upgradesRes = if (isSpanish) Res.drawable.upgradesspanish_strip else Res.drawable.upgradesenglish_strip
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { selectedTab = 1 }
+                        .graphicsLayer {
+                            alpha = if (selectedTab == 1) 1f else 0.5f
+                            scaleX = if (selectedTab == 1) 1.02f else 1f
+                            scaleY = if (selectedTab == 1) 1.02f else 1f
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(stringResource(Res.string.tab_upgrades), modifier = Modifier.padding(16.dp))
+                    SpriteAnimation(
+                        painter = painterResource(upgradesRes),
+                        frameCount = 3,
+                        modifier = Modifier.fillMaxWidth().height(50.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 if (selectedTab == 0) {
                     items(viewModel.itemsList) { item ->
@@ -133,8 +176,8 @@ fun StoreScreen(viewModel: GameViewModel) {
             
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 items(item.modifiers) { gpMod ->
                     ModifierCard(gpMod, viewModel)
