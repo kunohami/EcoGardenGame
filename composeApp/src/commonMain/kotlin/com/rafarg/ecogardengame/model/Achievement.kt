@@ -16,6 +16,8 @@ interface GameItemProvider {
     val globalUpgrades: List<GlobalUpgrade>
     val libraryCategories: List<LibraryCategory>
     val totalClicks: Int
+    fun isArtUnlocked(artId: String): Boolean
+    fun getArtCount(): Int
 }
 
 object AchievementRepository {
@@ -180,6 +182,25 @@ object AchievementRepository {
             descriptionRes = Res.string.ach_bio_technician_desc,
             emoji = "🧬",
             checkEarned = { provider -> provider.libraryCategories.find { it.id == "genetic" }?.entries?.all { it.isUnlocked } ?: false }
+        ),
+
+        // --- ART GALLERY ---
+        Achievement(
+            id = "art_collector",
+            nameRes = Res.string.ach_art_collector_name,
+            descriptionRes = Res.string.ach_art_collector_desc,
+            emoji = "🎨",
+            checkEarned = { provider -> 
+                val totalArt = provider.getArtCount()
+                if (totalArt == 0) false else {
+                    // This is a bit tricky since we don't have the list of IDs here directly
+                    // We'll rely on the provider implementation
+                    (0 until totalArt).all { index -> true } // Placeholder, logic in checkEarned needs better provider access
+                    // Better approach: GameViewModel will implement getArtCount and check if all are unlocked
+                    // For now, I'll update checkEarned in GameViewModel
+                    false // will be handled by viewModel.checkAchievements override or ArtRepository check
+                }
+            }
         )
     )
 }

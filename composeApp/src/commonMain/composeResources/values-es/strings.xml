@@ -77,7 +77,7 @@
 
     <!-- Pantalla de Ajustes -->
     <string name="general_section">General</string>
-    <string name="vibration_label">Vibración</string>
+    <string name="vibration_label">Vibration</string>
     <string name="intensity_label">Intensidad: %1$dms</string>
     <string name="dark_theme_label">Tema oscuro</string>
     <string name="backgrounds_section">Fondos</string>
@@ -315,13 +315,13 @@
     <string name="lib_plagues_t9">Insectos beneficiosos</string>
     <string name="lib_plagues_c9">Las mariquitas y las crisopas son los mejores amigos del jardinero, ya que cazan y comen naturalmente a los pulgones dañinos.</string>
     <string name="lib_plagues_t10">Impacto climático</string>
-    <string name="lib_plagues_c10">Warmer winters allow more pests to survive until spring, leading to larger and more frequent plague outbreaks.</string>
+    <string name="lib_plagues_c10">Los inviernos más cálidos permiten que más plagas sobrevivan hasta la primavera, lo que provoca brotes de plagas más grandes y frecuentes.</string>
 
     <!-- Library Content: Farmers -->
     <string name="lib_farmers_t1">La columna vertebral de la sociedad</string>
     <string name="lib_farmers_c1">Los agricultores producen casi todo lo que comemos, sin embargo, representan menos del 2% de la población en muchas naciones desarrolladas.</string>
     <string name="lib_farmers_t2">Científicos del suelo</string>
-    <string name="lib_farmers_c2">Modern farmers must understand soil chemistry, moisture levels, and nutrient cycles to maintain healthy land.</string>
+    <string name="lib_farmers_c2">Los agricultores modernos deben comprender la química del suelo, los niveles de humedad y los ciclos de nutrientes para mantener tierras saludables.</string>
     <string name="lib_farmers_t3">Agricultura de precisión</string>
     <string name="lib_farmers_c3">Muchos agricultores ahora usan GPS e imágenes satelitales para plantar semillas y aplicar agua con una precisión de nivel centimétrico.</string>
     <string name="lib_farmers_t4">Granjas familiares</string>
@@ -331,123 +331,123 @@
     <string name="lib_farmers_t6">La edad promedio</string>
     <string name="lib_farmers_c6">La edad promedio de un agricultor en muchos países es de unos 58 años, lo que resalta la necesidad de jóvenes en la agricultura.</string>
     <string name="lib_farmers_t7">Socios de los apicultores</string>
-    <string name="lib_farmers_c7">Farmers often rent beehives during flowering seasons to ensure their crops are properly pollinated.</string>
+    <string name="lib_farmers_c7">Los agricultores suelen alquilar colmenas durante las temporadas de floración para garantizar que sus cultivos se polinicen correctamente.</string>
     <string name="lib_farmers_t8">Agricultura vertical</string>
     <string name="lib_farmers_c8">Una nueva generación de agricultores urbanos está cultivando cultivos en pilas verticales dentro de edificios para ahorrar espacio.</string>
     <string name="lib_farmers_t9">Apostadores del clima</string>
     <string name="lib_farmers_c9">La agricultura es una de las profesiones más arriesgadas del mundo porque depende completamente de patrones climáticos impredecibles.</string>
     <string name="lib_farmers_t10">Certificación orgánica</string>
-    <string name="lib_farmers_c10">Organic farmers must follow strict rules, including zero use of synthetic pesticides or fertilizers for several years.</string>
+    <string name="lib_farmers_c10">Los agricultores orgánicos deben seguir reglas estrictas, incluido el uso cero de pesticidas o fertilizantes sintéticos durante varios años.</string>
 
     <!-- Library Content: Pesticides -->
     <string name="lib_pesticides_t1">Productos químicos sintéticos</string>
-    <string name="lib_pesticides_c1">Synthetic pesticides were first widely used after World War II to increase food production globally.</string>
+    <string name="lib_pesticides_c1">Los pesticidas sintéticos se utilizaron ampliamente por primera vez después de la Segunda Guerra Mundial para aumentar la producción de alimentos a nivel mundial.</string>
     <string name="lib_pesticides_t2">Alternativas naturales</string>
     <string name="lib_pesticides_c2">El aceite de neem y el agua con jabón son pesticidas naturales eficaces que son menos dañinos para el medio ambiente.</string>
     <string name="lib_pesticides_t3">Impacto en las abejas</string>
-    <string name="lib_pesticides_c3">Certain pesticides, like neonicotinoids, have been linked to the decline of honeybee populations worldwide.</string>
+    <string name="lib_pesticides_c3">Ciertos pesticidas, como los neonicotinoides, se han relacionado con la disminución de las poblaciones de abejas melíferas en todo el mundo.</string>
     <string name="lib_pesticides_t4">Bioacumulación</string>
-    <string name="lib_pesticides_c4">Chemicals can build up in the food chain, becoming more concentrated in animals that eat treated plants.</string>
+    <string name="lib_pesticides_c4">Los productos químicos pueden acumularse en la cadena alimentaria, concentrándose más en los animales que comen plantas tratadas.</string>
     <string name="lib_pesticides_t5">Resistencia a los pesticidas</string>
     <string name="lib_pesticides_c5">El uso excesivo de productos químicos hace que las plagas desarrollen resistencia, lo que obliga a los agricultores a usar fórmulas aún más fuertes.</string>
     <string name="lib_pesticides_t6">Manejo Integrado de Plagas</string>
-    <string name="lib_pesticides_c6">IPM is a strategy that uses biological controls first and chemicals only as a last resort.</string>
+    <string name="lib_pesticides_c6">El MIP es una estrategia que utiliza controles biológicos primero y productos químicos solo como último recurso.</string>
     <string name="lib_pesticides_t7">Escorrentía de agua</string>
-    <string name="lib_pesticides_c7">Rain can wash pesticides into rivers and lakes, affecting aquatic life and contaminating drinking water.</string>
+    <string name="lib_pesticides_c7">La lluvia puede arrastrar los pesticidas a los ríos y lagos, afectando la vida acuática y contaminando el agua potable.</string>
     <string name="lib_pesticides_t8">Uso de herbicidas</string>
-    <string name="lib_pesticides_c8">Herbicides are a type of pesticide used specifically to kill weeds that compete with crops for nutrients.</string>
+    <string name="lib_pesticides_c8">Los herbicidas son un tipo de pesticida que se usa específicamente para matar las malezas que compiten con los cultivos por los nutrientes.</string>
     <string name="lib_pesticides_t9">Equipo de seguridad</string>
     <string name="lib_pesticides_c9">Los agricultores deben usar equipo de protección especializado al manipular productos químicos para prevenir la irritación de la piel y los pulmones.</string>
     <string name="lib_pesticides_t10">Límites regulatorios</string>
-    <string name="lib_pesticides_c10">Governments set strict limits on the amount of pesticide residue allowed on fruits and vegetables sold in stores.</string>
+    <string name="lib_pesticides_c10">Los gobiernos establecen límites estrictos sobre la cantidad de residuos de pesticidas permitidos en las frutas y verduras que se venden en las tiendas.</string>
 
     <!-- Library Content: Genetics -->
     <string name="lib_genetic_t1">¿Qué es un OGM?</string>
-    <string name="lib_genetic_c1">Genetically Modified Organisms have had their DNA altered in a lab to introduce desirable traits.</string>
+    <string name="lib_genetic_c1">Los organismos genéticamente modificados han tenido su ADN alterado en un laboratorio para introducir rasgos deseables.</string>
     <string name="lib_genetic_t2">Cruces selectivos</string>
     <string name="lib_genetic_c2">Los humanos han estado \'modificando genéticamente\' las plantas durante miles de años mediante la cría selectiva.</string>
     <string name="lib_genetic_t3">Arroz dorado</string>
-    <string name="lib_genetic_c3">Golden Rice is a GMO designed to produce vitamin A, with the goal of preventing blindness in developing countries.</string>
+    <string name="lib_genetic_c3">El arroz dorado es un OGM diseñado para producir vitamina A, con el objetivo de prevenir la ceguera en los países en desarrollo.</string>
     <string name="lib_genetic_t4">Resistencia a la sequía</string>
-    <string name="lib_genetic_c4">Scientists are developing crops that can survive with significantly less water to combat climate change.</string>
+    <string name="lib_genetic_c4">Los científicos están desarrollando cultivos que pueden sobrevivir con significativamente menos agua para combatir el cambio climático.</string>
     <string name="lib_genetic_t5">Cultivos BT</string>
-    <string name="lib_genetic_c5">BT corn produces its own natural toxin that kills specific harmful insects, reducing the need for sprayed pesticides.</string>
+    <string name="lib_genetic_c5">El maíz BT produce su propia toxina natural que mata insectos dañinos específicos, lo que reduce la necesidad de pesticidas rociados.</string>
     <string name="lib_genetic_t6">The Flavr Savr</string>
     <string name="lib_genetic_c6">El tomate Flavr Savr fue el primer alimento de ingeniería genética que se vendió en las tiendas (1994).</string>
     <string name="lib_genetic_t7">Mejora nutricional</string>
-    <string name="lib_genetic_c7">Genetic engineering can be used to make vegetables produce higher levels of vitamins and minerals.</string>
+    <string name="lib_genetic_c7">La ingeniería genética se puede utilizar para hacer que las verduras produzcan niveles más altos de vitaminas y minerales.</string>
     <string name="lib_genetic_t8">Debate ético</string>
-    <string name="lib_genetic_c8">GMOs are at the center of a debate regarding biodiversity, corporate control of seeds, and long-term health.</string>
+    <string name="lib_genetic_c8">Los OGM están en el centro de un debate sobre la biodiversidad, el control corporativo de las semillas y la salud a largo plazo.</string>
     <string name="lib_genetic_t9">Tecnología CRISPR</string>
-    <string name="lib_genetic_c9">CRISPR is a new tool that allows scientists to edit plant genomes much more precisely than older methods.</string>
+    <string name="lib_genetic_c9">CRISPR es una nueva herramienta que permite a los científicos editar genomas de plantas con mucha más precisión que los métodos anteriores.</string>
     <string name="lib_genetic_t10">El futuro de la comida</string>
-    <string name="lib_genetic_c10">As the global population grows, genetic modification may be key to ensuring there is enough food for everyone.</string>
+    <string name="lib_genetic_c10">A medida que crece la población mundial, la modificación genética puede ser clave para garantizar que haya suficiente comida para todos.</string>
 
     <!-- Mejoras Globales -->
     <string name="upg_precise_harvest_name">Cosecha Precisa</string>
-    <string name="upg_precise_harvest_desc">Increases frequency of double rewards. At Level 5, rewards alternate (50% chance).</string>
+    <string name="upg_precise_harvest_desc">Aumenta la frecuencia de recompensas dobles. Al nivel 5, las recompensas se alternan (50%).</string>
     <string name="upg_lucky_harvest_name">Cosecha Afortunada</string>
-    <string name="upg_lucky_harvest_desc">1% chance per level to get 1000% (10x) rewards on click.</string>
+    <string name="upg_lucky_harvest_desc">1% de probabilidad por nivel de obtener 1000% (10x) de recompensas al pulsar.</string>
 
     <!-- Modificadores -->
     <string name="mod_tomato_haptic_name">Sincronización Háptica</string>
-    <string name="mod_tomato_haptic_desc">Vibrates when the super reward is ready.</string>
+    <string name="mod_tomato_haptic_desc">Vibra cuando la súper recompensa está lista.</string>
     <string name="mod_broccoli_giant_name">Brócoli Gigante</string>
-    <string name="mod_broccoli_giant_desc">Double size, but requires 2 clicks for reward.</string>
+    <string name="mod_broccoli_giant_desc">Doble tamaño, pero requiere 2 pulsaciones por recompensa.</string>
     <string name="mod_broccoli_overclocked_name">Acelerado</string>
-    <string name="mod_broccoli_overclocked_desc">Double movement speed and double rewards.</string>
+    <string name="mod_broccoli_overclocked_desc">Doble velocidad de movimiento y recompensas.</string>
     <string name="mod_broccoli_air_name">Cosecha Aérea</string>
     <string name="mod_broccoli_air_desc">Recoge recompensas pasando la mano sobre el sensor de la pantalla.</string>
     <string name="mod_bell_pepper_turbo_name">Cosecha Turbo</string>
-    <string name="mod_bell_pepper_turbo_desc">Half movement cycle duration, but double rewards.</string>
+    <string name="mod_bell_pepper_turbo_desc">Mitad de duración del ciclo de movimiento, pero doble recompensa.</string>
     <string name="mod_garlic_cluster_name">Racimo de Ajos</string>
-    <string name="mod_garlic_cluster_desc">Double the small garlics after explosion, +150% final reward.</string>
+    <string name="mod_garlic_cluster_desc">Doble de ajos pequeños tras la explosión, +150% de recompensa final.</string>
     <string name="mod_garlic_shake_name">Agitar para Cosechar</string>
     <string name="mod_garlic_shake_desc">Recoge 5 ajos pequeños a la vez agitando tu teléfono.</string>
     <string name="mod_onion_plus1_name">+1 Cebolla</string>
-    <string name="mod_onion_plus1_desc">One extra onion appears, but bonus coins are reduced by 1.</string>
+    <string name="mod_onion_plus1_desc">Aparece una cebolla extra, pero las monedas de bonificación se reducen en 1.</string>
     <string name="mod_onion_plus2_name">+1 Cebolla II</string>
-    <string name="mod_onion_plus2_desc">A third onion appears, bonus coins reduced further.</string>
+    <string name="mod_onion_plus2_desc">Aparece una tercera cebolla, las monedas de bonificación se reducen más.</string>
     <string name="mod_onion_sturdy_name">Raíces Fuertes</string>
-    <string name="mod_onion_sturdy_desc">Onions rotate for longer, extending the bonus window.</string>
+    <string name="mod_onion_sturdy_desc">Las cebollas giran durante más tiempo, ampliando la ventana de bonificación.</string>
     <string name="mod_squash_momentum_name">Inercia de Velocidad</string>
-    <string name="mod_squash_momentum_desc">Every hit increases speed by 10% and adds +1 Coin and +1 Calabaza. Resets on miss.</string>
+    <string name="mod_squash_momentum_desc">Cada golpe aumenta la velocidad un 10% y añade +1 moneda y +1 calabaza. Se reinicia si fallas.</string>
     <string name="mod_apple_high_freq_name">Alta Frecuencia</string>
-    <string name="mod_apple_high_freq_desc">Double rotation speed, but earn 5 money per tick.</string>
+    <string name="mod_apple_high_freq_desc">Doble velocidad de rotación, pero ganas 5 monedas por tic.</string>
 
     <!-- Logros -->
     <string name="ach_master_gardener_name">Maestro Jardinero</string>
-    <string name="ach_master_gardener_desc">Unlock all fruits and vegetables in the garden.</string>
+    <string name="ach_master_gardener_desc">Desbloquea todos los frutos y vegetales del jardín.</string>
     <string name="ach_geneticist_name">Genetista</string>
-    <string name="ach_geneticist_desc">Unlock all specific modifiers for every plant.</string>
+    <string name="ach_geneticist_desc">Desbloquea todos los modificadores específicos de cada planta.</string>
     <string name="ach_shopaholic_name">Adicto a las compras</string>
-    <string name="ach_shopaholic_desc">Max out all global upgrades in the shop.</string>
+    <string name="ach_shopaholic_desc">Maximiza todas las mejoras globales de la tienda.</string>
     <string name="ach_sonic_squash_name">Calabaza Sónica</string>
-    <string name="ach_sonic_squash_desc">Reach a 10-hit streak with the Squash momentum modifier.</string>
+    <string name="ach_sonic_squash_desc">Consigue una racha de 10 golpes con el modificador de inercia de la calabaza.</string>
     <string name="ach_tomato_sniper_name">Francotirador de Tomates</string>
-    <string name="ach_tomato_sniper_desc">Perform 50 critical hits on the Tomato.</string>
+    <string name="ach_tomato_sniper_desc">Realiza 50 golpes críticos al tomate.</string>
     <string name="ach_hard_worker_name">Trabajador Incansable</string>
-    <string name="ach_hard_worker_desc">Reach 5,000 total clicks.</string>
+    <string name="ach_hard_worker_desc">Llega a 5.000 pulsaciones totales.</string>
     <string name="ach_dedicated_farmer_name">Granjero Dedicado</string>
-    <string name="ach_dedicated_farmer_desc">Reach 10,000 total clicks.</string>
+    <string name="ach_dedicated_farmer_desc">Llega a 10.000 pulsaciones totales.</string>
     <string name="ach_clicking_machine_name">Máquina de Pulsar</string>
-    <string name="ach_clicking_machine_desc">Reach 15,000 total clicks.</string>
+    <string name="ach_clicking_machine_desc">Llega a 15.000 pulsaciones totales.</string>
     <string name="ach_legendary_tapper_name">Pulsador Legendario</string>
-    <string name="ach_legendary_tapper_desc">Reach 20,000 total clicks.</string>
+    <string name="ach_legendary_tapper_desc">Llega a 20.000 pulsaciones totales.</string>
     <string name="ach_tomato_expert_name">Experto en Tomates</string>
-    <string name="ach_tomato_expert_desc">Read all facts about Tomatoes.</string>
+    <string name="ach_tomato_expert_desc">Lee todos los datos sobre los tomates.</string>
     <string name="ach_broccoli_expert_name">Experto en Brócoli</string>
-    <string name="ach_broccoli_expert_desc">Read all facts about Broccoli.</string>
+    <string name="ach_broccoli_expert_desc">Lee todos los datos sobre el brócoli.</string>
     <string name="ach_pepper_expert_name">Experto en Pimientos</string>
-    <string name="ach_pepper_expert_desc">Read all facts about Bell Peppers.</string>
+    <string name="ach_pepper_expert_desc">Lee todos los datos sobre los pimientos.</string>
     <string name="ach_garlic_expert_name">Experto en Ajos</string>
-    <string name="ach_garlic_expert_desc">Read all facts about Garlic.</string>
+    <string name="ach_garlic_expert_desc">Lee todos los datos sobre el ajo.</string>
     <string name="ach_onion_expert_name">Experto en Cebollas</string>
-    <string name="ach_onion_expert_desc">Read all facts about Purple Onions.</string>
+    <string name="ach_onion_expert_desc">Lee todos los datos sobre las cebollas moradas.</string>
     <string name="ach_squash_expert_name">Experto en Calabazas</string>
-    <string name="ach_squash_expert_desc">Read all facts about Squash.</string>
+    <string name="ach_squash_expert_desc">Lee todos los datos sobre la calabaza.</string>
     <string name="ach_apple_expert_name">Experto en Manzanas</string>
-    <string name="ach_apple_expert_desc">Read all facts about Apples.</string>
+    <string name="ach_apple_expert_desc">Lee todos los datos sobre las manzanas.</string>
     <string name="ach_pest_control_name">Control de Plagas</string>
     <string name="ach_pest_control_desc">Desbloquea toda la información sobre las plagas.</string>
     <string name="ach_social_studies_name">Estudios Sociales</string>
@@ -456,6 +456,10 @@
     <string name="ach_chemical_engineer_desc">Desbloquea toda la información sobre los pesticidas.</string>
     <string name="ach_bio_technician_name">Biotécnico</string>
     <string name="ach_bio_technician_desc">Desbloquea toda la información sobre la modificación genética.</string>
+
+    <!-- Art Gallery Achievements -->
+    <string name="ach_art_collector_name">Coleccionista de Arte</string>
+    <string name="ach_art_collector_desc">Desbloquea todas las piezas de arte de la galería.</string>
 
     <!-- Login Screen -->
     <string name="sign_in_google">Iniciar sesión con Google</string>
