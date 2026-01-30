@@ -43,11 +43,12 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.google.auth)
+            implementation(libs.play.services.location)
+            implementation(libs.ktor.client.okhttp)
 
-            // SOLUCIÓN: Añadir el BOM de Firebase para que resuelva las versiones nativas
+            // BOM de Firebase
             implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.2.0"))
 
-            // Dependencia útil para compatibilidad en Android
             implementation(libs.androidx.appcompat)
             implementation("androidx.core:core-splashscreen:1.0.1")
 
@@ -70,6 +71,11 @@ kotlin {
             implementation(libs.firebase.auth)
             implementation(libs.firebase.firestore)
 
+            // Ktor
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+
             // Extended icons if needed
             implementation(compose.materialIconsExtended)
         }
@@ -77,7 +83,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         iosMain.dependencies {
-
+            implementation(libs.ktor.client.darwin)
         }
     }
 

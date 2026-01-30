@@ -55,7 +55,8 @@ enum class Screen(val showInBottomBar: Boolean = true) {
     ABOUT(false),
     LOGIN(false),
     GALLERY(false),
-    TUTORIAL(false)
+    TUTORIAL(false),
+    WEATHER(false)
 }
 
 @Composable
@@ -73,6 +74,7 @@ fun Screen.getTitle(): String {
         Screen.LOGIN -> Res.string.login_title
         Screen.GALLERY -> Res.string.achievements_title
         Screen.TUTORIAL -> Res.string.tutorial_title
+        Screen.WEATHER -> Res.string.app_name // Using app_name or adding a new string
     })
 }
 
@@ -198,7 +200,8 @@ fun App(
                                             onNavigateToAbout = { currentScreen = Screen.ABOUT },
                                             onNavigateToLogin = { currentScreen = Screen.LOGIN },
                                             onNavigateToGallery = { currentScreen = Screen.GALLERY },
-                                            onNavigateToTutorial = { viewModel.replayTutorial() }
+                                            onNavigateToTutorial = { viewModel.replayTutorial() },
+                                            onNavigateToWeather = { currentScreen = Screen.WEATHER }
                                         )
                                         else -> Unit
                                     }
@@ -212,6 +215,7 @@ fun App(
                                 Screen.ABOUT -> AboutScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.LOGIN -> LoginScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC }, onGoogleSignIn = onGoogleSignIn)
                                 Screen.GALLERY -> GalleryScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
+                                Screen.WEATHER -> WeatherScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 else -> Unit
                             }
                         }
@@ -235,11 +239,12 @@ fun App(
                 ) {
                     viewModel.achievementToast?.let { achievement ->
                         val isLight = !viewModel.isDarkTheme && !viewModel.shaderBackgroundEnabled && !viewModel.isAutumnTheme
+                        val surfaceColor = if (isLight) Color(0xFF3E442B) else MaterialTheme.colorScheme.primaryContainer
                         Surface(
                             modifier = Modifier
                                 .padding(horizontal = 32.dp)
                                 .clip(RoundedCornerShape(24.dp)),
-                            color = if (isLight) Color(0xFF3E442B) else MaterialTheme.colorScheme.primaryContainer,
+                            color = surfaceColor,
                             tonalElevation = 8.dp,
                             shadowElevation = 8.dp
                         ) {
