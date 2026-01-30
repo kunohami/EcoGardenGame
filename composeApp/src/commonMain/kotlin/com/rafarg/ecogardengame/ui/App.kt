@@ -186,7 +186,7 @@ fun App(
                                             onNavigateToStore = { currentScreen = Screen.STORE }
                                         )
                                         Screen.STORE -> StoreScreen(viewModel)
-                                        Screen.LIBRARY -> LibraryScreen(viewModel, onNavigateToGallery = { currentScreen = Screen.GALLERY })
+                                        Screen.LIBRARY -> LibraryScreen(viewModel)
                                         Screen.PROFILE -> ProfileScreen(viewModel)
                                         Screen.MISC -> MiscScreen(
                                             viewModel = viewModel,
