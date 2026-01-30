@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
@@ -37,6 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     var showResetDialog by remember { mutableStateOf(false) }
     var showDebugDialog by remember { mutableStateOf(false) }
+    var passwordInput by remember { mutableStateOf("") }
     var toastMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -98,11 +102,36 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             // Debug/Testing Section
             Text(stringResource(Res.string.debug_options), style = MaterialTheme.typography.titleMedium, color = Color.Gray)
             
-            Button(
-                onClick = { showDebugDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-            ) {
-                Text(stringResource(Res.string.add_resources))
+            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedTextField(
+                        value = passwordInput,
+                        onValueChange = { passwordInput = it },
+                        label = { Text("Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    Button(
+                        onClick = {
+                            if (passwordInput == "vip3aa") {
+                                showDebugDialog = true
+                            } else {
+                                showToast("Incorrect password")
+                            }
+                        },
+                        enabled = passwordInput.isNotEmpty(),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        modifier = Modifier.padding(top = 8.dp) // Align slightly better with text field
+                    ) {
+                        Text("OK")
+                    }
+                }
             }
 
             Button(
@@ -130,6 +159,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     TextButton(onClick = {
                         viewModel.debugAddResources()
                         showDebugDialog = false
+                        passwordInput = "" // Clear password
                         showToast(resourcesAddedToast)
                     }) { Text(stringResource(Res.string.confirm)) }
                 },

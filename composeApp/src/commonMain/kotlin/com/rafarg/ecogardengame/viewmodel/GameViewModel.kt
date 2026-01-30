@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafarg.ecogardengame.auth.AuthRepository
 import com.rafarg.ecogardengame.auth.UserProfile
+import com.rafarg.ecogardengame.data.ArtRepository
 import com.rafarg.ecogardengame.data.GameRepository
 import com.rafarg.ecogardengame.data.GameSaveData
 import com.rafarg.ecogardengame.model.*
@@ -124,12 +125,14 @@ class GameViewModel(
     // --- ART GALLERY ---
     private var unlockedArtIds = mutableStateListOf<String>()
     
-    fun isArtUnlocked(artId: String): Boolean = unlockedArtIds.contains(artId)
+    override fun isArtUnlocked(artId: String): Boolean = unlockedArtIds.contains(artId)
+    override fun getArtCount(): Int = ArtRepository.artEntries.size
     
     fun unlockArt(artId: String, cost: Int) {
         if (money >= cost && !isArtUnlocked(artId)) {
             money -= cost
             unlockedArtIds.add(artId)
+            checkAchievements()
             saveData()
         }
     }
@@ -253,9 +256,7 @@ class GameViewModel(
         unlockedAchievements.addAll(saveData.unlockedAchievements)
 
         unlockedArtIds.clear()
-        // We'll need to update GameSaveData to include unlockedArtIds
-        // For now, I'll just clear it, but I'll add it to GameSaveData next
-        // unlockedArtIds.addAll(saveData.unlockedArtIds)
+        unlockedArtIds.addAll(saveData.unlockedArtIds)
 
         globalUpgrades.forEach { upgrade ->
             upgrade.unlockedLevel = saveData.globalUpgradeLevels[upgrade.id] ?: 0
@@ -340,11 +341,18 @@ class GameViewModel(
 
     private fun checkAchievements(isInitialLoad: Boolean = false) {
         achievements.forEach { achievement ->
-            if (!unlockedAchievements.contains(achievement.id) && achievement.checkEarned(this)) {
-                unlockedAchievements.add(achievement.id)
-                
-                if (!isInitialLoad) {
-                    showAchievementToast(achievement)
+            if (!unlockedAchievements.contains(achievement.id)) {
+                val isEarned = if (achievement.id == "art_collector") {
+                    ArtRepository.artEntries.isNotEmpty() && ArtRepository.artEntries.all { isArtUnlocked(it.id) }
+                } else {
+                    achievement.checkEarned(this)
+                }
+
+                if (isEarned) {
+                    unlockedAchievements.add(achievement.id)
+                    if (!isInitialLoad) {
+                        showAchievementToast(achievement)
+                    }
                 }
             }
         }
@@ -564,7 +572,8 @@ class GameViewModel(
             globalUpgradeLevels = globalUpgrades.associate { it.id to it.unlockedLevel },
             libraryUnlockedEntries = libraryCategories.flatMap { it.entries }.associate { it.id to it.isUnlocked },
             modifierUnlocked = modUnlocked,
-            modifierEnabled = modEnabled
+            modifierEnabled = modEnabled,
+            unlockedArtIds = unlockedArtIds.toSet()
         )
     }
 

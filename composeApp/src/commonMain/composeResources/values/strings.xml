@@ -151,4 +151,8 @@
     <string name="login_desc">Sign in to save your achievements and profile to the cloud.</string>
     <string name="logged_in_as">Logged in as: %1$s</string>
     <string name="sync_notice">Profile data can be updated manually every 60 seconds.</string>
+
+    <!-- Art Gallery Achievements -->
+    <string name="ach_art_collector_name">Art Collector</string>
+    <string name="ach_art_collector_desc">Unlock all art pieces in the gallery.</string>
 </resources>
