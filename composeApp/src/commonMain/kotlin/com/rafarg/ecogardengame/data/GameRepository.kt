@@ -21,7 +21,7 @@ data class GameSaveData(
     val language: String = "auto",
     val languageSet: Boolean = false,
     val username: String = "Farmer",
-    val profileImageIndex: Int = 0,
+    val profileImageId: String? = "tomato",
     val unlockedAchievements: Set<String> = emptySet(),
     val lastProfileUpdateTime: Long = 0L,
     val fruitCounts: Map<String, Int> = emptyMap(),
@@ -56,7 +56,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val languageKey = stringPreferencesKey("language")
     private val languageSetKey = booleanPreferencesKey("language_set")
     private val usernameKey = stringPreferencesKey("username")
-    private val profileImageKey = intPreferencesKey("profile_image_index")
+    private val profileImageIdKey = stringPreferencesKey("profile_image_id")
     private val achievementsKey = stringSetPreferencesKey("unlocked_achievements")
     private val lastProfileUpdateKey = longPreferencesKey("last_profile_update")
     private val unlockedArtKey = stringSetPreferencesKey("unlocked_art")
@@ -68,7 +68,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
         "total_clicks", "money", "total_money_earned", "vibration_enabled",
         "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
         "emerald_wavy_theme", "language", "language_set", "username",
-        "profile_image_index", "unlocked_achievements", "last_profile_update", "unlocked_art",
+        "profile_image_id", "unlocked_achievements", "last_profile_update", "unlocked_art",
         "tutorial_seen", "last_weather_update_time", "weather_data_json"
     )
 
@@ -111,7 +111,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             language = prefs[languageKey] ?: "auto",
             languageSet = prefs[languageSetKey] ?: false,
             username = prefs[usernameKey] ?: "Farmer",
-            profileImageIndex = prefs[profileImageKey] ?: 0,
+            profileImageId = prefs[profileImageIdKey] ?: "tomato",
             unlockedAchievements = prefs[achievementsKey] ?: emptySet(),
             lastProfileUpdateTime = prefs[lastProfileUpdateKey] ?: 0L,
             fruitCounts = fruitCounts,
@@ -142,7 +142,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[languageKey] = data.language
             prefs[languageSetKey] = data.languageSet
             prefs[usernameKey] = data.username
-            prefs[profileImageKey] = data.profileImageIndex
+            prefs[profileImageIdKey] = data.profileImageId ?: "tomato"
             prefs[achievementsKey] = data.unlockedAchievements
             prefs[lastProfileUpdateKey] = data.lastProfileUpdateTime
             prefs[unlockedArtKey] = data.unlockedArtIds
