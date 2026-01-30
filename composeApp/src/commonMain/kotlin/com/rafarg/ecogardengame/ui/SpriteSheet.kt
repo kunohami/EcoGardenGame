@@ -21,35 +21,35 @@ fun SpriteAnimation(
 ) {
     var frame by remember { mutableStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(frameDurationMillis)
-            frame = (frame + 1) % frameCount
+    // Restart animation loop if painter or frameCount changes
+    LaunchedEffect(painter, frameCount) {
+        frame = 0
+        if (frameCount > 1) {
+            while (true) {
+                delay(frameDurationMillis)
+                frame = (frame + 1) % frameCount
+            }
         }
     }
 
     Canvas(modifier = modifier) {
         val intrinsicSize = painter.intrinsicSize
+        // Don't draw if size is invalid (not loaded yet)
         if (intrinsicSize.width <= 0 || intrinsicSize.height <= 0) return@Canvas
 
-        // Calculate single frame dimensions from the source
         val srcFrameWidth = intrinsicSize.width / frameCount
         val srcFrameHeight = intrinsicSize.height
         val frameAspectRatio = srcFrameWidth / srcFrameHeight
 
-        // Determine drawing size maintaining aspect ratio (Fit center)
         val canvasAspectRatio = size.width / size.height
         val (drawFrameWidth, drawFrameHeight) = if (canvasAspectRatio > frameAspectRatio) {
-            // Height is the constraint
             size.height * frameAspectRatio to size.height
         } else {
-            // Width is the constraint
             size.width to size.width / frameAspectRatio
         }
 
         val totalStripWidth = drawFrameWidth * frameCount
         
-        // Center the frame in the canvas area
         val offsetX = (size.width - drawFrameWidth) / 2
         val offsetY = (size.height - drawFrameHeight) / 2
 

@@ -168,6 +168,12 @@ class GameViewModel(
     var isCloudLoading by mutableStateOf(false)
         private set
 
+    // --- TUTORIAL ---
+    var tutorialSeen by mutableStateOf(false)
+        private set
+    
+    var showTutorial by mutableStateOf(false)
+
     // --- STATE ---
     var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
         private set
@@ -233,6 +239,10 @@ class GameViewModel(
             val saveData = gameRepository.loadGameData()
             applySaveData(saveData)
             isDataLoaded = true
+            
+            if (!tutorialSeen) {
+                showTutorial = true
+            }
         }
     }
 
@@ -251,6 +261,7 @@ class GameViewModel(
         username = saveData.username
         profileImageIndex = saveData.profileImageIndex
         lastProfileUpdateTime = saveData.lastProfileUpdateTime
+        tutorialSeen = saveData.tutorialSeen
         
         unlockedAchievements.clear()
         unlockedAchievements.addAll(saveData.unlockedAchievements)
@@ -448,6 +459,16 @@ class GameViewModel(
         saveData()
     }
 
+    fun completeTutorial() {
+        tutorialSeen = true
+        showTutorial = false
+        saveData()
+    }
+
+    fun replayTutorial() {
+        showTutorial = true
+    }
+
     fun updatePublicProfile(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val user = currentUser ?: return
         val now = currentTimeMillis()
@@ -573,7 +594,8 @@ class GameViewModel(
             libraryUnlockedEntries = libraryCategories.flatMap { it.entries }.associate { it.id to it.isUnlocked },
             modifierUnlocked = modUnlocked,
             modifierEnabled = modEnabled,
-            unlockedArtIds = unlockedArtIds.toSet()
+            unlockedArtIds = unlockedArtIds.toSet(),
+            tutorialSeen = tutorialSeen
         )
     }
 
@@ -724,6 +746,7 @@ class GameViewModel(
         globalUpgrades.forEach { it.unlockedLevel = 0 }
         libraryCategories.forEach { cat -> cat.entries.forEach { it.isUnlocked = false } }
         unlockedArtIds.clear()
+        tutorialSeen = false
         currentItem = items.first()
         saveData()
     }

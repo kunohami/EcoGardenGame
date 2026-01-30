@@ -22,7 +22,8 @@ fun MiscScreen(
     onNavigateToStats: () -> Unit,
     onNavigateToAbout: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToGallery: () -> Unit
+    onNavigateToGallery: () -> Unit,
+    onNavigateToTutorial: () -> Unit
 ) {
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
@@ -54,6 +55,10 @@ fun MiscScreen(
 
             Button(onClick = onNavigateToGallery, modifier = Modifier.fillMaxWidth(0.6f)) {
                 Text("Art Gallery")
+            }
+
+            Button(onClick = onNavigateToTutorial, modifier = Modifier.fillMaxWidth(0.6f)) {
+                Text(stringResource(Res.string.tutorial_title))
             }
 
             Button(onClick = onNavigateToLogin, modifier = Modifier.fillMaxWidth(0.6f)) {
