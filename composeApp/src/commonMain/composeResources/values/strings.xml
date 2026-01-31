@@ -145,20 +145,336 @@
     <string name="tutorial_squash">This is Zelda Tennis! The squash bounces back and forth. Click anywhere to slash with your sickle arm when the squash is near the bottom-left corner to hit it back. Don't miss, or you'll lose your momentum!</string>
     <string name="tutorial_apple">The apple moves in a circle, and you need to rotate your device like a compass to point at it. When the indicator turns green and you see 'COLLECTING!', rewards will be harvested automatically! No clicking required.</string>
 
-    <!-- Login Screen -->
-    <string name="sign_in_google">Sign in with Google</string>
-    <string name="sign_out">Sign Out</string>
-    <string name="login_desc">Sign in to save your achievements and profile to the cloud.</string>
-    <string name="logged_in_as">Logged in as: %1$s</string>
-    <string name="sync_notice">Profile data can be updated manually every 60 seconds.</string>
+    <!-- Library Content: Tomato -->
+    <string name="lib_tomato_t1">Andean Origin</string>
+    <string name="lib_tomato_c1">The tomato originates from the South American Andes, specifically in areas now known as Peru, Ecuador, and Chile.</string>
+    <string name="lib_tomato_t2">Fruit or Vegetable?</string>
+    <string name="lib_tomato_c2">Botanically, a tomato is a fruit because it develops from the ovary of a flower and contains seeds.</string>
+    <string name="lib_tomato_t3">Golden Apples</string>
+    <string name="lib_tomato_c3">The first tomatoes to reach Europe were yellow, leading Italians to call them 'pomi d’oro' (golden apples).</string>
+    <string name="lib_tomato_t4">The Power of Lycopene</string>
+    <string name="lib_tomato_c4">Tomatoes are the main dietary source of lycopene, an antioxidant linked to many health benefits, including reduced risk of heart disease.</string>
+    <string name="lib_tomato_t5">Genetic Diversity</string>
+    <string name="lib_tomato_c5">There are more than 10,000 varieties of tomatoes grown worldwide, ranging from small cherry tomatoes to giant beefsteak types.</string>
+    <string name="lib_tomato_t6">Space Tomatoes</string>
+    <string name="lib_tomato_c6">Tomatoes have been successfully grown on the International Space Station to study plant growth in microgravity.</string>
+    <string name="lib_tomato_t7">Water Content</string>
+    <string name="lib_tomato_c7">A fresh tomato is approximately 95% water. The remaining 5% consists mainly of carbohydrates and fiber.</string>
+    <string name="lib_tomato_t8">Cooking Benefits</string>
+    <string name="lib_tomato_c8">Unlike many vegetables, cooking tomatoes increases the amount of lycopene your body can absorb.</string>
+    <string name="lib_tomato_t9">Heaviest Tomato</string>
+    <string name="lib_tomato_c9">The Guinness World Record for the heaviest tomato weighed 3.51 kg (7.7 lb) and was grown in the USA.</string>
+    <string name="lib_tomato_t10">La Tomatina</string>
+    <string name="lib_tomato_c10">Each year, the town of Buñol in Spain celebrates a festival where 150,000 tomatoes are used as projectiles in a giant food fight.</string>
+
+    <!-- Library Content: Broccoli -->
+    <string name="lib_broccoli_t1">Cabbage Cousin</string>
+    <string name="lib_broccoli_c1">Broccoli belongs to the Brassicaceae family, making it a close relative of cabbage, kale, and cauliflower.</string>
+    <string name="lib_broccoli_t2">Italian Name</string>
+    <string name="lib_broccoli_c2">The name 'broccoli' comes from the Italian word 'broccolo', which means the flowering crest of a cabbage.</string>
+    <string name="lib_broccoli_t3">Vitamin C Giant</string>
+    <string name="lib_broccoli_c3">One cup of broccoli contains as much vitamin C as an orange, helping to strengthen the immune system.</string>
+    <string name="lib_broccoli_t4">Natural Pest Control</string>
+    <string name="lib_broccoli_c4">Broccoli produces natural sulfur compounds that act as a defense mechanism against insects and diseases.</string>
+    <string name="lib_broccoli_t5">Roman Staple</string>
+    <string name="lib_broccoli_c5">Broccoli was a popular food in ancient Rome, where it was often served with various spices and oils.</string>
+    <string name="lib_broccoli_t6">Sulforaphane</string>
+    <string name="lib_broccoli_c6">It contains sulforaphane, a compound that may protect against certain types of cancer and improve heart health.</string>
+    <string name="lib_broccoli_t7">Steam for Health</string>
+    <string name="lib_broccoli_c7">Steaming broccoli is the best way to cook it if you want to preserve its cholesterol-lowering properties.</string>
+    <string name="lib_broccoli_t8">Flowering Plant</string>
+    <string name="lib_broccoli_c8">The head of broccoli is actually composed of many tiny flower buds that haven't bloomed yet.</string>
+    <string name="lib_broccoli_t9">California Production</string>
+    <string name="lib_broccoli_c9">Over 90% of the broccoli grown in the United States comes from California due to its favorable climate.</string>
+    <string name="lib_broccoli_t10">Frozen vs Fresh</string>
+    <string name="lib_broccoli_c10">Frozen broccoli can sometimes have more nutrients than fresh because it is frozen right after being harvested.</string>
+
+    <!-- Library Content: Bell Pepper -->
+    <string name="lib_bell_pepper_t1">Spice Levels</string>
+    <string name="lib_bell_pepper_c1">Bell peppers are the only member of the Capsicum family that doesn't produce capsaicin, making them sweet.</string>
+    <string name="lib_bell_pepper_t2">Color Stages</string>
+    <string name="lib_bell_pepper_c2">Most green bell peppers are just unripe red peppers. As they mature, they turn from green to yellow, orange, and then red.</string>
+    <string name="lib_bell_pepper_t3">Vitamin A Source</string>
+    <string name="lib_bell_pepper_c3">Red peppers have 11 times more beta-carotene and 1.5 times more vitamin C than green ones.</string>
+    <string name="lib_bell_pepper_t4">South American Roots</string>
+    <string name="lib_bell_pepper_c4">They were first cultivated in Central and South America over 9,000 years ago.</string>
+    <string name="lib_bell_pepper_t5">Hungarian Paprika</string>
+    <string name="lib_bell_pepper_c5">Paprika is made by grinding dried bell peppers and other chili varieties, becoming a staple of Hungarian cuisine.</string>
+    <string name="lib_bell_pepper_t6">From Flower to Fruit</string>
+    <string name="lib_bell_pepper_c6">Pepper plants typically produce white flowers that eventually turn into the peppers we eat.</string>
+    <string name="lib_bell_pepper_t7">Shelf Life</string>
+    <string name="lib_bell_pepper_c7">Because they contain more sugar, red peppers have a shorter shelf life than green peppers.</string>
+    <string name="lib_bell_pepper_t8">Culinary Versatility</string>
+    <string name="lib_bell_pepper_c8">They can be eaten raw, roasted, stuffed, or fried, and are a key ingredient in 'mirepoix' or 'sofrito'.</string>
+    <string name="lib_bell_pepper_t9">Purple Variety</string>
+    <string name="lib_bell_pepper_c9">Purple bell peppers exist! They are sweet like green ones but have a beautiful violet skin.</string>
+    <string name="lib_bell_pepper_t10">Weight and Density</string>
+    <string name="lib_bell_pepper_c10">A high-quality pepper should feel heavy for its size, indicating thick, hydrated walls.</string>
+
+    <!-- Library Content: Garlic -->
+    <string name="lib_garlic_t1">The Stinking Rose</string>
+    <string name="lib_garlic_c1">Garlic has been nicknamed 'The Stinking Rose' due to its strong aroma and beneficial properties.</string>
+    <string name="lib_garlic_t2">Ancient Medicine</string>
+    <string name="lib_garlic_c2">Ancient Egyptians used garlic to treat everything from heart disease to parasites and even poor circulation.</string>
+    <string name="lib_garlic_t3">Allicin Activation</string>
+    <string name="lib_garlic_c3">The compound allicin only forms when garlic is crushed or chopped, initiating a chemical reaction.</string>
+    <string name="lib_garlic_t4">WWI Antiseptic</string>
+    <string name="lib_garlic_c4">Garlic was used during World War I as an antiseptic to prevent gangrene in soldiers' wounds.</string>
+    <string name="lib_garlic_t5">Vampire Legend</string>
+    <string name="lib_garlic_c5">The folklore that garlic repels vampires likely comes from its use as traditional medicine against blood-related diseases.</string>
+    <string name="lib_garlic_t6">Garlic Breath</string>
+    <string name="lib_garlic_c6">Eating parsley or drinking milk can help neutralize the sulfur compounds that cause garlic breath.</string>
+    <string name="lib_garlic_t7">Bulb Structure</string>
+    <string name="lib_garlic_c7">A single garlic bulb contains about 10 to 20 individual cloves, each protected by a papery skin.</string>
+    <string name="lib_garlic_t8">Gilroy, California</string>
+    <string name="lib_garlic_c8">Gilroy is known as the 'Garlic Capital of the World' and hosts an annual garlic festival that includes garlic ice cream.</string>
+    <string name="lib_garlic_t9">Anti-inflammatory</string>
+    <string name="lib_garlic_c9">Studies show that garlic can help reduce inflammation and may lower blood pressure in some people.</string>
+    <string name="lib_garlic_t10">Longevity Secret</string>
+    <string name="lib_garlic_c10">Garlic has been a staple in the diets of some of the longest-living populations in the world, such as in the Mediterranean.</string>
+
+    <!-- Library Content: Purple Onion -->
+    <string name="lib_purple_onion_t1">Anthocyanins</string>
+    <string name="lib_purple_onion_c1">The purple color comes from anthocyanins, powerful antioxidants also found in blueberries and red grapes.</string>
+    <string name="lib_purple_onion_t2">Mild and Sweet</string>
+    <string name="lib_purple_onion_c2">Compared to white onions, red onions are often milder and sweeter, making them perfect for raw salads.</string>
+    <string name="lib_purple_onion_t3">Make You Cry</string>
+    <string name="lib_purple_onion_c3">Onions release a gas called syn-propanethial-S-oxide when cut, which reacts with your eyes to form sulfuric acid.</string>
+    <string name="lib_purple_onion_t4">Natural Dye</string>
+    <string name="lib_purple_onion_c4">Purple onion skins have been used for centuries as a natural dye for fabrics and Easter eggs.</string>
+    <string name="lib_purple_onion_t5">Layered History</string>
+    <string name="lib_purple_onion_c5">Onions were worshipped in ancient Egypt; their spherical shape and concentric rings represented eternal life.</string>
+    <string name="lib_purple_onion_t6">Quercetin</string>
+    <string name="lib_purple_onion_c6">Purple onions are one of the richest sources of quercetin, a flavonoid that helps fight inflammation.</string>
+    <string name="lib_purple_onion_t7">Heart Health</string>
+    <string name="lib_purple_onion_c7">Regular consumption of red onions can help lower cholesterol and decrease the risk of heart disease.</string>
+    <string name="lib_purple_onion_t8">Storage Tip</string>
+    <string name="lib_purple_onion_c8">Onions should be stored in a cool, dry place, but NOT next to potatoes, as they release moisture that rots the onions.</string>
+    <string name="lib_purple_onion_t9">Pickled Onions</string>
+    <string name="lib_purple_onion_c9">Red onions are the classic choice for pickling because the acid turns their color a vibrant neon pink.</string>
+    <string name="lib_purple_onion_t10">Ancient Food</string>
+    <string name="lib_purple_onion_c10">Archaeological evidence suggests that onions have been a staple food for humans since the Bronze Age (around 3000 BC).</string>
+
+    <!-- Library Content: Squash (Zucchini) -->
+    <string name="lib_squash_t1">Fast Growth</string>
+    <string name="lib_squash_c1">Zucchini (summer squash) grows incredibly fast, sometimes up to an inch per day under the right conditions!</string>
+    <string name="lib_squash_t2">Summer vs Winter</string>
+    <string name="lib_squash_c2">Unlike winter squash, zucchini has thin, edible skin and is harvested while immature for the best flavor.</string>
+    <string name="lib_squash_t3">Native Roots</string>
+    <string name="lib_squash_c3">The ancestors of zucchini were first domesticated in Central and South America over 7,000 years ago.</string>
+    <string name="lib_squash_t4">Edible Flowers</string>
+    <string name="lib_squash_c4">The large bright yellow flowers of the zucchini plant are edible and are often stuffed or fried in many cultures.</string>
+    <string name="lib_squash_t5">Low Calorie Density</string>
+    <string name="lib_squash_c5">Zucchini is 95% water and very low in calories, making it a favorite for weight-conscious diets.</string>
+    <string name="lib_squash_t6">European Development</string>
+    <string name="lib_squash_c6">The specific zucchini varieties we know today were developed in Italy in the late 19th century.</string>
+    <string name="lib_squash_t7">Nutrient Dense</string>
+    <string name="lib_squash_c7">Zucchini is rich in potassium, vitamin C, and vitamin A, which are essential for heart and eye health.</string>
+    <string name="lib_squash_t8">Versatile Cooking</string>
+    <string name="lib_squash_c8">Zucchini can be grilled, baked, sauteed, or even used in sweet breads and muffins.</string>
+    <string name="lib_squash_t9">Seed Power</string>
+    <string name="lib_squash_c9">While usually eaten whole, mature zucchini seeds are rich in healthy fats and protein.</string>
+    <string name="lib_squash_t10">Bee Dependent</string>
+    <string name="lib_squash_c10">Zucchini plants have separate male and female flowers and rely heavily on bees to transfer pollen between them.</string>
+
+    <!-- Library Content: Apple -->
+    <string name="lib_apple_t1">Rose Family</string>
+    <string name="lib_apple_c1">Apples are members of the Rosaceae family, making them distant cousins of the rose and strawberry.</string>
+    <string name="lib_apple_t2">Kazakhstan Roots</string>
+    <string name="lib_apple_c2">The modern apple's wild ancestor is Malus sieversii, which still grows in the mountains of Kazakhstan.</string>
+    <string name="lib_apple_t3">Floating Fruit</string>
+    <string name="lib_apple_c3">Apples are 25% air, which is why they float in water. This makes 'bobbing for apples' possible!</string>
+    <string name="lib_apple_t4">7,500 Varieties</string>
+    <string name="lib_apple_c4">It would take you over 20 years to try every apple variety in the world if you ate one per day.</string>
+    <string name="lib_apple_t5">Malic Acid</string>
+    <string name="lib_apple_c5">The tartness of an apple comes from malic acid. The word 'malic' comes from the Latin word for apple, 'malum'.</string>
+    <string name="lib_apple_t6">Seed Danger</string>
+    <string name="lib_apple_c6">Apple seeds contain a small amount of cyanide. However, you'd need to chew and eat hundreds to get sick.</string>
+    <string name="lib_apple_t7">Ethylene Gas</string>
+    <string name="lib_apple_c7">Apples release ethylene gas, which can help ripen other fruits like bananas or tomatoes if stored together.</string>
+    <string name="lib_apple_t8">Forbidden Fruit?</string>
+    <string name="lib_apple_c8">The Bible never specifies that the fruit in the Eden was an apple; it was likely a pomegranate or a fig.</string>
+    <string name="lib_apple_t9">Anti-cholesterol</string>
+    <string name="lib_apple_c9">An apple a day really might keep the doctor away! Pectin in apples helps lower 'bad' cholesterol levels.</string>
+    <string name="lib_apple_t10">Longevity</string>
+    <string name="lib_apple_c10">Apple trees can live for over 100 years, although their peak production years are usually between 10 and 50.</string>
+
+    <!-- Library Content: Plagues -->
+    <string name="lib_plagues_t1">Aphid Infestations</string>
+    <string name="lib_plagues_c1">Aphids are tiny insects that suck the sap from plants, weakening them and spreading viral diseases.</string>
+    <string name="lib_plagues_t2">Potato Famine</string>
+    <string name="lib_plagues_c2">Late blight (Phytophthora infestans) caused the Great Irish Famine, destroying potato crops in the 1840s.</string>
+    <string name="lib_plagues_t3">Locust Swarms</string>
+    <string name="lib_plagues_c3">Desert locusts can form swarms of billions of insects, capable of eating as much food as 35,000 people in one day.</string>
+    <string name="lib_plagues_t4">Spider Mites</string>
+    <string name="lib_plagues_c4">These tiny arachnids thrive in hot, dry conditions and can quickly cover a plant in fine, suffocating webs.</string>
+    <string name="lib_plagues_t5">Whitefly Threat</string>
+    <string name="lib_plagues_c5">Whiteflies secrete 'honeydew', which leads to the growth of black sooty mold on your crops' leaves.</string>
+    <string name="lib_plagues_t6">Tomato Hornworm</string>
+    <string name="lib_plagues_c6">A single tomato hornworm can defoliate an entire tomato plant in just a few days if left unchecked.</string>
+    <string name="lib_plagues_t7">Fungal Damping-off</string>
+    <string name="lib_plagues_c7">This fungal disease causes young seedlings to collapse and die at the soil line, often due to overwatering.</string>
+    <string name="lib_plagues_t8">Caterpillar Camouflage</string>
+    <string name="lib_plagues_c8">Many garden pests have evolved colors that blend perfectly with leaves, making them hard for predators to find.</string>
+    <string name="lib_plagues_t9">Beneficial Insects</string>
+    <string name="lib_plagues_c9">Ladybugs and lacewings are a gardener's best friends, as they naturally hunt and eat harmful aphids.</string>
+    <string name="lib_plagues_t10">Climate Impact</string>
+    <string name="lib_plagues_c10">Warmer winters allow more pests to survive until spring, leading to larger and more frequent pest outbreaks.</string>
+
+    <!-- Library Content: Farmers -->
+    <string name="lib_farmers_t1">Backbone of Society</string>
+    <string name="lib_farmers_c1">Farmers produce almost everything we eat, yet they make up less than 2% of the population in many developed nations.</string>
+    <string name="lib_farmers_t2">Soil Scientists</string>
+    <string name="lib_farmers_c2">Modern farmers must understand soil chemistry, moisture levels, and nutrient cycles to maintain healthy lands.</string>
+    <string name="lib_farmers_t3">Precision Agriculture</string>
+    <string name="lib_farmers_c3">Many farmers now use GPS and satellite imagery to plant seeds and apply water with centimeter-level accuracy.</string>
+    <string name="lib_farmers_t4">Family Farms</string>
+    <string name="lib_farmers_c4">Approximately 90% of the world's farms are operated by families, producing about 80% of the world's food.</string>
+    <string name="lib_farmers_t5">Sustainable Practices</string>
+    <string name="lib_farmers_c5">Crop rotation and cover cropping are ancient techniques farmers use to prevent soil depletion.</string>
+    <string name="lib_farmers_t6">The Average Age</string>
+    <string name="lib_farmers_c6">The average age of a farmer in many countries is around 58, highlighting the need for young people in agriculture.</string>
+    <string name="lib_farmers_t7">Beekeeper Partners</string>
+    <string name="lib_farmers_c7">Farmers often rent beehives during blooming seasons to ensure their crops are pollinated correctly.</string>
+    <string name="lib_farmers_t8">Vertical Farming</string>
+    <string name="lib_farmers_c8">A new generation of urban farmers is growing crops in vertical stacks inside buildings to save space.</string>
+    <string name="lib_farmers_t9">Weather Gamblers</string>
+    <string name="lib_farmers_c9">Farming is one of the riskiest professions in the world because it depends entirely on unpredictable weather patterns.</string>
+    <string name="lib_farmers_t10">Organic Certification</string>
+    <string name="lib_farmers_c10">Organic farmers must follow strict rules, including zero use of synthetic pesticides or fertilizers for several years.</string>
+
+    <!-- Library Content: Pesticides -->
+    <string name="lib_pesticides_t1">Synthetic Chemicals</string>
+    <string name="lib_pesticides_c1">Synthetic pesticides were first used widely after WWII to increase global food production.</string>
+    <string name="lib_pesticides_t2">Natural Alternatives</string>
+    <string name="lib_pesticides_c2">Neem oil and soapy water are effective natural pesticides that are less harmful to the environment.</string>
+    <string name="lib_pesticides_t3">Bee Impact</string>
+    <string name="lib_pesticides_c3">Certain pesticides, like neonicotinoids, have been linked to declining honeybee populations worldwide.</string>
+    <string name="lib_pesticides_t4">Bioaccumulation</string>
+    <string name="lib_pesticides_c4">Chemicals can build up in the food chain, becoming more concentrated in animals that eat treated plants.</string>
+    <string name="lib_pesticides_t5">Pesticide Resistance</string>
+    <string name="lib_pesticides_c5">Overuse of chemicals causes pests to develop resistance, forcing farmers to use even stronger formulas.</string>
+    <string name="lib_pesticides_t6">Integrated Pest Management</string>
+    <string name="lib_pesticides_c6">IPM is a strategy that uses biological controls first and chemicals only as a last resort.</string>
+    <string name="lib_pesticides_t7">Water Runoff</string>
+    <string name="lib_pesticides_c7">Rain can wash pesticides into rivers and lakes, affecting aquatic life and contaminating drinking water.</string>
+    <string name="lib_pesticides_t8">Herbicide Usage</string>
+    <string name="lib_pesticides_c8">Herbicides are a type of pesticide used specifically to kill weeds that compete with crops for nutrients.</string>
+    <string name="lib_pesticides_t9">Safety Gear</string>
+    <string name="lib_pesticides_c9">Farmers must wear specialized protective equipment when handling chemicals to prevent skin and lung irritation.</string>
+    <string name="lib_pesticides_t10">Regulatory Limits</string>
+    <string name="lib_pesticides_c10">Governments set strict limits on the amount of pesticide residue allowed on fruits and vegetables sold in stores.</string>
+
+    <!-- Library Content: Genetics -->
+    <string name="lib_genetic_t1">What is a GMO?</string>
+    <string name="lib_genetic_c1">Genetically Modified Organisms have had their DNA altered in a laboratory to introduce desirable traits.</string>
+    <string name="lib_genetic_t2">Selective Breeding</string>
+    <string name="lib_genetic_c2">Humans have been 'genetically modifying' plants for thousands of years through selective breeding.</string>
+    <string name="lib_genetic_t3">Golden Rice</string>
+    <string name="lib_genetic_c3">Golden Rice is a GMO designed to produce Vitamin A, aiming to prevent blindness in developing nations.</string>
+    <string name="lib_genetic_t4">Drought Resistance</string>
+    <string name="lib_genetic_c4">Scientists are developing crops that can survive with significantly less water to combat climate change.</string>
+    <string name="lib_genetic_t5">BT Crops</string>
+    <string name="lib_genetic_c5">BT corn produces its own natural toxin that kills specific harmful insects, reducing the need for sprayed pesticides.</string>
+    <string name="lib_genetic_t6">The Flavr Savr</string>
+    <string name="lib_genetic_c6">The Flavr Savr tomato was the first genetically engineered food ever sold in stores (1994).</string>
+    <string name="lib_genetic_t7">Nutritional Enhancement</string>
+    <string name="lib_genetic_c7">Genetic engineering can be used to make vegetables produce higher levels of vitamins and minerals.</string>
+    <string name="lib_genetic_t8">Ethical Debate</string>
+    <string name="lib_genetic_c8">GMOs are at the center of a debate regarding biodiversity, corporate control of seeds, and long-term health.</string>
+    <string name="lib_genetic_t9">CRISPR Technology</string>
+    <string name="lib_genetic_c9">CRISPR is a new tool that allows scientists to edit plant genomes with much more precision than previous methods.</string>
+    <string name="lib_genetic_t10">The Future of Food</string>
+    <string name="lib_genetic_c10">As the world population grows, genetic modification may be key to ensuring there is enough food for everyone.</string>
+
+    <!-- Global Upgrades -->
+    <string name="upg_precise_harvest_name">Precise Harvest</string>
+    <string name="upg_precise_harvest_desc">Increases the frequency of double rewards. At level 5, rewards toggle (50%).</string>
+    <string name="upg_lucky_harvest_name">Lucky Harvest</string>
+    <string name="upg_lucky_harvest_desc">1% chance per level to get 1000% (10x) rewards on click.</string>
+
+    <!-- Modifiers -->
+    <string name="mod_tomato_haptic_name">Haptic Timing</string>
+    <string name="mod_tomato_haptic_desc">Vibrates when the super reward is ready.</string>
+    <string name="mod_broccoli_giant_name">Giant Broccoli</string>
+    <string name="mod_broccoli_giant_desc">Double size, but requires 2 clicks per reward.</string>
+    <string name="mod_broccoli_overclocked_name">Overclocked</string>
+    <string name="mod_broccoli_overclocked_desc">Double movement speed and rewards.</string>
+    <string name="mod_broccoli_air_name">Air Harvest</string>
+    <string name="mod_broccoli_air_desc">Collect rewards by passing your hand over the screen sensor.</string>
+    <string name="mod_bell_pepper_turbo_name">Turbo Harvest</string>
+    <string name="mod_bell_pepper_turbo_desc">Half movement cycle duration, but double rewards.</string>
+    <string name="mod_garlic_cluster_name">Garlic Cluster</string>
+    <string name="mod_garlic_cluster_desc">Double small garlics after explosion, +150% final reward.</string>
+    <string name="mod_garlic_shake_name">Shake to Harvest</string>
+    <string name="mod_garlic_shake_desc">Collect 5 small garlics at once by shaking your phone.</string>
+    <string name="mod_onion_plus1_name">+1 Onion</string>
+    <string name="mod_onion_plus1_desc">An extra onion appears, but bonus coins are reduced by 1.</string>
+    <string name="mod_onion_plus2_name">+1 Onion II</string>
+    <string name="mod_onion_plus2_desc">A third onion appears, bonus coins are reduced further.</string>
+    <string name="mod_onion_sturdy_name">Sturdy Roots</string>
+    <string name="mod_onion_sturdy_desc">Onions spin for longer, widening the bonus window.</string>
+    <string name="mod_squash_momentum_name">Speed Momentum</string>
+    <string name="mod_squash_momentum_desc">Each hit increases speed by 10% and adds +1 coin and +1 zucchini. Resets if you miss.</string>
+    <string name="mod_apple_high_freq_name">High Frequency</string>
+    <string name="mod_apple_high_freq_desc">Double rotation speed, but you earn 5 coins per tick.</string>
+
+    <!-- Achievements -->
+    <string name="ach_master_gardener_name">Master Gardener</string>
+    <string name="ach_master_gardener_desc">Unlock all fruits and vegetables in the garden.</string>
+    <string name="ach_geneticist_name">Geneticist</string>
+    <string name="ach_geneticist_desc">Unlock all plant-specific modifiers.</string>
+    <string name="ach_shopaholic_name">Shopaholic</string>
+    <string name="ach_shopaholic_desc">Max out all global shop upgrades.</string>
+    <string name="ach_sonic_squash_name">Sonic Zucchini</string>
+    <string name="ach_sonic_squash_desc">Get a 10-hit streak with the zucchini momentum modifier.</string>
+    <string name="ach_tomato_sniper_name">Tomato Sniper</string>
+    <string name="ach_tomato_sniper_desc">Perform 50 critical hits on the tomato.</string>
+    <string name="ach_hard_worker_name">Hard Worker</string>
+    <string name="ach_hard_worker_desc">Reach 5,000 total clicks.</string>
+    <string name="ach_dedicated_farmer_name">Dedicated Farmer</string>
+    <string name="ach_dedicated_farmer_desc">Reach 10,000 total clicks.</string>
+    <string name="ach_clicking_machine_name">Clicking Machine</string>
+    <string name="ach_clicking_machine_desc">Reach 15,000 total clicks.</string>
+    <string name="ach_legendary_tapper_name">Legendary Tapper</string>
+    <string name="ach_legendary_tapper_desc">Reach 20,000 total clicks.</string>
+    <string name="ach_tomato_expert_name">Tomato Expert</string>
+    <string name="ach_tomato_expert_desc">Read all facts about tomatoes.</string>
+    <string name="ach_broccoli_expert_name">Broccoli Expert</string>
+    <string name="ach_broccoli_expert_desc">Read all facts about broccoli.</string>
+    <string name="ach_pepper_expert_name">Pepper Expert</string>
+    <string name="ach_pepper_expert_desc">Read all facts about bell peppers.</string>
+    <string name="ach_garlic_expert_name">Garlic Expert</string>
+    <string name="ach_garlic_expert_desc">Read all facts about garlic.</string>
+    <string name="ach_onion_expert_name">Onion Expert</string>
+    <string name="ach_onion_expert_desc">Read all facts about purple onions.</string>
+    <string name="ach_squash_expert_name">Zucchini Expert</string>
+    <string name="ach_squash_expert_desc">Read all facts about zucchini.</string>
+    <string name="ach_apple_expert_name">Apple Expert</string>
+    <string name="ach_apple_expert_desc">Read all facts about apples.</string>
+    <string name="ach_pest_control_name">Pest Control</string>
+    <string name="ach_pest_control_desc">Unlock all information about pests.</string>
+    <string name="ach_social_studies_name">Social Studies</string>
+    <string name="ach_social_studies_desc">Unlock all information about farmers.</string>
+    <string name="ach_chemical_engineer_name">Chemical Engineer</string>
+    <string name="ach_chemical_engineer_desc">Unlock all information about pesticides.</string>
+    <string name="ach_bio_technician_name">Bio Technician</string>
+    <string name="ach_bio_technician_desc">Unlock all information about genetic modification.</string>
 
     <!-- Art Gallery Achievements -->
     <string name="ach_art_collector_name">Art Collector</string>
     <string name="ach_art_collector_desc">Unlock all art pieces in the gallery.</string>
 
+    <!-- Login Screen -->
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="login_desc">Sign in to save your achievements and profile to the cloud.</string>
+    <string name="logged_in_as">Logged in as: %1$s</string>
+    <string name="sync_notice">Partida guardada localmente.</string>
+
     <!-- Visual Novel Tutorial -->
     <string name="tutorial_title">How to Play</string>
-    <string name="tutorial_step1">Hi! I'm Clicky! Welcome to your new garden.</string>
+    <string name="tutorial_step1">Hi! I'm Clicky! Welcome to my garden.</string>
     <string name="tutorial_step2">The goal is simple: tap on fruits and vegetables to harvest them and earn money!</string>
     <string name="tutorial_step3">With that money, you can unlock crops and modifiers to become filthy rich!</string>
     <string name="tutorial_step4">You can also visit the Library to buy curious facts about what you grow.</string>
@@ -184,7 +500,7 @@
     <string name="weather_bonus_mild_title">Temperate Balance (12°C - 22°C)</string>
     <string name="weather_bonus_mild_desc">Broccoli and Apple: +1 coin and +1 fruit per click.</string>
     <string name="weather_bonus_hot_title">Fast Ripening (&gt; 22°C)</string>
-    <string name="weather_bonus_hot_desc">Tomato, Pepper and Squash: +1 coin and +1 fruit per click.</string>
+    <string name="weather_bonus_hot_desc">Tomato, Pepper and Zucchini: +1 coin and +1 fruit per click.</string>
 
     <string name="weather_bonus_sunny_title">Active Photosynthesis (Clear)</string>
     <string name="weather_bonus_sunny_desc">Every 5 clicks: +2 coins bonus on all vegetables.</string>

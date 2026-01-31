@@ -12,7 +12,7 @@ object GamePrices {
     val UNLOCK_GARLIC = ItemCost(money = 750, vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15))
     val UNLOCK_PURPLE_ONION = ItemCost(money = 500, vegetableCosts = mapOf("tomato" to 100, "broccoli" to 25, "bell_pepper" to 10))
     val UNLOCK_SQUASH = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 200, "broccoli" to 75, "bell_pepper" to 30, "purple_onion" to 15))
-    val UNLOCK_APPLE = ItemCost(money = 5000, vegetableCosts = mapOf("tomato" to 500, "squash" to 50))
+    val UNLOCK_APPLE = ItemCost(money = 2000, vegetableCosts = mapOf("tomato" to 500, "squash" to 50))
 
     // --- GLOBAL UPGRADES ---
     val UPGRADE_PRECISE_HARVEST = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 100))
