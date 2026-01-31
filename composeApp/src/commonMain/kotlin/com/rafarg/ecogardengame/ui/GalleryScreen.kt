@@ -76,6 +76,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     art = art,
                     isUnlocked = isUnlocked,
                     index = index,
+                    textColor = primaryText, // Pass the dynamic text color
                     onClick = {
                         if (isUnlocked) {
                             selectedArtIndex = unlockedArt.indexOfFirst { it.id == art.id }
@@ -134,7 +135,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, onClick: () -> Unit) {
+fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Color, onClick: () -> Unit) {
     // Silhouette matrix: everything black except alpha
     val silhouetteMatrix = remember {
         ColorMatrix(floatArrayOf(
@@ -170,7 +171,7 @@ fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, onClick: () -> 
                 Text("🔒", modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp), fontSize = 12.sp)
             }
         }
-        Text(artName, fontSize = 10.sp, maxLines = 1)
+        Text(artName, fontSize = 10.sp, maxLines = 1, color = textColor)
     }
 }
 

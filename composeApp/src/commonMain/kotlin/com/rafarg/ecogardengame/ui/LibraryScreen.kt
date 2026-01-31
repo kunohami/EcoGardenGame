@@ -173,6 +173,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                             art = art,
                             isUnlocked = isUnlocked,
                             index = index,
+                            textColor = primaryText,
                             onClick = {
                                 if (isUnlocked) {
                                     selectedArtIndex = unlockedArt.indexOfFirst { it.id == art.id }
