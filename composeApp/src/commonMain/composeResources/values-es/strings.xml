@@ -127,7 +127,7 @@
     <string name="item_bell_pepper">Pimiento</string>
     <string name="item_garlic">Ajo</string>
     <string name="item_purple_onion">Cebolla Morada</string>
-    <string name="item_squash">Calabaza</string>
+    <string name="item_squash">Calabacín</string>
     <string name="item_apple">Manzana</string>
 
     <!-- Library Categories -->
@@ -142,7 +142,7 @@
     <string name="tutorial_bell_pepper">¡Los pimientos son erráticos! Se detienen un momento y luego salen disparados en una dirección aleatoria. ¡Espera a que se detengan o intenta atraparlos en movimiento!</string>
     <string name="tutorial_garlic">¡Toca el ajo 10 veces para que explote en pequeños dientes! Recoge todos los dientes para obtener un gran bono. ¡La mejora 'Agitar para Cosechar' te permite recoger varios dientes a la vez simplemente agitando tu dispositivo!</string>
     <string name="tutorial_purple_onion">¡La cebolla morada se teleporta! Cada vez que aparece, comienza una rotación rápida. ¡Si la atrapas mientras gira, obtendrás un bono de monedas significativo! Comprar más cebollas aumentará tus posibilidades, pero reducirá ligeramente el bono individual.</string>
-    <string name="tutorial_squash">¡Esto es el Tenis de Zelda! La calabaza rebota de un lado a otro. Haz clic en cualquier lugar para dar un tajo con tu brazo de hoz cuando la calabaza esté cerca de la esquina inferior izquierda para devolverla. ¡No falles, o perderás tu impulso!</string>
+    <string name="tutorial_squash">¡Esto es el Tenis de Zelda! El calabacín rebota de un lado a otro. Haz clic en cualquier lugar para dar un tajo con tu brazo de hoz cuando el calabacín esté cerca de la esquina inferior izquierda para devolverlo. ¡No falles, o perderás tu impulso!</string>
     <string name="tutorial_apple">La manzana se mueve en círculo y debes girar tu dispositivo como una brújula para apuntar hacia ella. Cuando el indicador se ponga verde y veas '¡COSECHANDO!', ¡las recompensas se recogerán automáticamente! No es necesario hacer clic.</string>
 
     <!-- Library Content: Tomato -->
@@ -255,33 +255,33 @@
     <string name="lib_purple_onion_t10">Alimento antiguo</string>
     <string name="lib_purple_onion_c10">La evidencia arqueológica sugiere que las cebollas han sido un alimento básico para los humanos desde la Edad del Bronce (alrededor del 3000 a. C.).</string>
 
-    <!-- Library Content: Squash -->
-    <string name="lib_squash_t1">Las Tres Hermanas</string>
-    <string name="lib_squash_c1">Los indígenas americanos cultivaban calabazas junto con maíz y frijoles, un sistema conocido como las Tres Hermanas.</string>
-    <string name="lib_squash_t2">Invierno vs Verano</string>
-    <string name="lib_squash_c2">Las calabazas de invierno tienen pieles duras y se almacenan, mientras que las de verano (como el calabacín) se comen frescas.</string>
-    <string name="lib_squash_t3">Nativo de las Américas</string>
-    <string name="lib_squash_c3">La calabaza es uno de los cultivos más antiguos conocidos en el hemisferio occidental, que data de hace 10.000 años.</string>
+    <!-- Library Content: Squash (Calabacín) -->
+    <string name="lib_squash_t1">Crecimiento rápido</string>
+    <string name="lib_squash_c1">El calabacín crece increíblemente rápido, ¡a veces hasta 2.5 cm al día en condiciones ideales!</string>
+    <string name="lib_squash_t2">Verano vs Invierno</string>
+    <string name="lib_squash_c2">A diferencia de las calabazas de invierno, el calabacín tiene piel fina comestible y se cosecha inmaduro para mejor sabor.</string>
+    <string name="lib_squash_t3">Raíces antiguas</string>
+    <string name="lib_squash_c3">Los ancestros del calabacín fueron domesticados en Centro y Sudamérica hace más de 7.000 años.</string>
     <string name="lib_squash_t4">Flores comestibles</string>
-    <string name="lib_squash_c4">Las grandes flores de color amarillo brillante de la planta de calabaza son comestibles y a menudo se rellenan o fríen en muchas culturas.</string>
-    <string name="lib_squash_t5">Fibra y nutrientes</string>
-    <string name="lib_squash_c5">La calabaza está llena de vitamina A, potasio y fibra, lo que la hace excelente para la digestión y la visión.</string>
-    <string name="lib_squash_t6">Biodiversidad</string>
-    <string name="lib_squash_c6">Hay cientos de especies de calabazas, desde la pequeña pattypan hasta la masiva calabaza Atlantic Giant.</string>
-    <string name="lib_squash_t7">Grandes consumidoras</string>
-    <string name="lib_squash_c7">Las plantas de calabaza son 'grandes consumidoras', lo que significa que requieren suelos muy ricos en nutrientes y mucha agua para prosperar.</string>
-    <string name="lib_squash_t8">La fruta más grande</string>
-    <string name="lib_squash_c8">La fruta más grande del mundo es una variedad de calabaza (el zapallo). El récord actual supera los 1.200 kg.</string>
-    <string name="lib_squash_t9">Contenedores naturales</string>
-    <string name="lib_squash_c9">Las calabazas secas eran utilizadas por los pueblos antiguos como recipientes de agua, cuencos e incluso instrumentos musicales.</string>
-    <string name="lib_squash_t10">Polinización</string>
-    <string name="lib_squash_c10">Las calabazas dependen mucho de las abejas para la polinización. Sin ellas, la planta produce frutos pequeños y marchitos o ninguno en absoluto.</string>
+    <string name="lib_squash_c4">Las grandes flores amarillas del calabacín son un manjar y se consumen rellenas o fritas en muchas culturas.</string>
+    <string name="lib_squash_t5">Baja densidad calórica</string>
+    <string name="lib_squash_c5">El calabacín tiene un 95% de agua y es muy bajo en calorías, siendo ideal para dietas de control de peso.</string>
+    <string name="lib_squash_t6">Desarrollo europeo</string>
+    <string name="lib_squash_c6">Aunque su origen es americano, las variedades de calabacín que conocemos hoy se desarrollaron en Italia a finales del siglo XIX.</string>
+    <string name="lib_squash_t7">Riqueza nutricional</string>
+    <string name="lib_squash_c7">Es rico en potasio, vitamina C y vitamina A, nutrientes esenciales para la salud del corazón y la vista.</string>
+    <string name="lib_squash_t8">Versatilidad culinaria</string>
+    <string name="lib_squash_c8">Se puede cocinar a la plancha, al horno, salteado o incluso usarlo en pasteles y bizcochos dulces.</string>
+    <string name="lib_squash_t9">Poder de las semillas</string>
+    <string name="lib_squash_c9">Aunque se suele comer entero, las semillas del calabacín maduro son ricas en grasas saludables y proteínas.</string>
+    <string name="lib_squash_t10">Dependencia de abejas</string>
+    <string name="lib_squash_c10">Las plantas de calabacín tienen flores macho y hembra separadas y dependen de las abejas para transferir el polen entre ellas.</string>
 
     <!-- Library Content: Apple -->
     <string name="lib_apple_t1">La familia de las rosas</string>
     <string name="lib_apple_c1">Las manzanas son miembros de la familia Rosaceae, lo que las convierte en primas lejanas de la rosa y la fresa.</string>
     <string name="lib_apple_t2">Raíces de Kazajistán</string>
-    <string name="lib_apple_c2">El ancestro salvaje de la manzana moderna es el Malus sieversii, que todavía crece en las mountains de Kazajistán.</string>
+    <string name="lib_apple_c2">El ancestro salvaje de la manzana moderna es el Malus sieversii, que todavía crece en las montañas de Kazajistán.</string>
     <string name="lib_apple_t3">Fruta flotante</string>
     <string name="lib_apple_c3">Las manzanas tienen un 25% de aire, razón por la cual flotan en el agua. ¡Por eso es posible jugar a 'pescar manzanas'!</string>
     <string name="lib_apple_t4">7.500 variedades</string>
@@ -315,7 +315,7 @@
     <string name="lib_plagues_t7">Marchitamiento fúngico</string>
     <string name="lib_plagues_c7">Esta enfermedad fúngica hace que las plántulas jóvenes colapsen y mueran en la línea del suelo, a menudo debido al exceso de riego.</string>
     <string name="lib_plagues_t8">Camuflaje de orugas</string>
-    <string name="lib_plagues_c8">Muchas plagas del jardín han evolucionado colores que se mezclan perfectamente con las hojas, haciéndolas difíciles de encontrar para los depradadores.</string>
+    <string name="lib_plagues_c8">Muchas plagas del jardín han evolucionado colores que se mezclan perfectamente con las hojas, haciéndolas difíciles de encontrar para los depredadores.</string>
     <string name="lib_plagues_t9">Insectos beneficiosos</string>
     <string name="lib_plagues_c9">Las mariquitas y las crisopas son los mejores amigos del jardinero, ya que cazan y comen naturalmente a los pulgones dañinos.</string>
     <string name="lib_plagues_t10">Impacto climático</string>
@@ -415,7 +415,7 @@
     <string name="mod_onion_sturdy_name">Raíces Fuertes</string>
     <string name="mod_onion_sturdy_desc">Las cebollas giran durante más tiempo, ampliando la ventana de bonificación.</string>
     <string name="mod_squash_momentum_name">Inercia de Velocidad</string>
-    <string name="mod_squash_momentum_desc">Cada golpe aumenta la velocidad un 10% y añade +1 moneda y +1 calabaza. Se reinicia si fallas.</string>
+    <string name="mod_squash_momentum_desc">Cada golpe aumenta la velocidad un 10% y añade +1 moneda y +1 calabacín. Se reinicia si fallas.</string>
     <string name="mod_apple_high_freq_name">Alta Frecuencia</string>
     <string name="mod_apple_high_freq_desc">Doble velocidad de rotación, pero ganas 5 monedas por tic.</string>
 
@@ -426,8 +426,8 @@
     <string name="ach_geneticist_desc">Desbloquea todos los modificadores específicos de cada planta.</string>
     <string name="ach_shopaholic_name">Adicto a las compras</string>
     <string name="ach_shopaholic_desc">Maximiza todas las mejoras globales de la tienda.</string>
-    <string name="ach_sonic_squash_name">Calabaza Sónica</string>
-    <string name="ach_sonic_squash_desc">Consigue una racha de 10 golpes con el modificador de inercia de la calabaza.</string>
+    <string name="ach_sonic_squash_name">Calabacín Sónico</string>
+    <string name="ach_sonic_squash_desc">Consigue una racha de 10 golpes con el modificador de inercia del calabacín.</string>
     <string name="ach_tomato_sniper_name">Francotirador de Tomates</string>
     <string name="ach_tomato_sniper_desc">Realiza 50 golpes críticos al tomate.</string>
     <string name="ach_hard_worker_name">Trabajador Incansable</string>
@@ -448,8 +448,8 @@
     <string name="ach_garlic_expert_desc">Lee todos los datos sobre el ajo.</string>
     <string name="ach_onion_expert_name">Experto en Cebollas</string>
     <string name="ach_onion_expert_desc">Lee todos los datos sobre las cebollas moradas.</string>
-    <string name="ach_squash_expert_name">Experto en Calabazas</string>
-    <string name="ach_squash_expert_desc">Lee todos los datos sobre la calabaza.</string>
+    <string name="ach_squash_expert_name">Experto en Calabacines</string>
+    <string name="ach_squash_expert_desc">Lee todos los datos sobre el calabacín.</string>
     <string name="ach_apple_expert_name">Experto en Manzanas</string>
     <string name="ach_apple_expert_desc">Lee todos los datos sobre las manzanas.</string>
     <string name="ach_pest_control_name">Control de Plagas</string>
@@ -464,13 +464,6 @@
     <!-- Art Gallery Achievements -->
     <string name="ach_art_collector_name">Coleccionista de Arte</string>
     <string name="ach_art_collector_desc">Desbloquea todas las piezas de arte de la galería.</string>
-
-    <!-- Login Screen -->
-    <string name="sign_in_google">Iniciar sesión con Google</string>
-    <string name="sign_out">Cerrar Sesión</string>
-    <string name="login_desc">Inicia sesión para guardar tus logros y perfil en la nube.</string>
-    <string name="logged_in_as">Sesión iniciada como: %1$s</string>
-    <string name="sync_notice">Partida guardada localmente.</string>
 
     <!-- Visual Novel Tutorial -->
     <string name="tutorial_title">Cómo jugar</string>
@@ -491,7 +484,7 @@
 
     <!-- Weather Dialog -->
     <string name="weather_dialog_title">Clima del Jardín</string>
-    <string name="weather_bonus_time_left">Termina en: %s</string>
+    <string name="weather_bonus_time_left">Termina en: </string>
     <string name="weather_update_location">Actualizar Ubicación</string>
     <string name="weather_buy_upgrade">Comprar Mejora (5000 🪙)</string>
 
@@ -500,7 +493,7 @@
     <string name="weather_bonus_mild_title">Equilibrio Templado (12°C - 22°C)</string>
     <string name="weather_bonus_mild_desc">Brócoli y Manzana: +1 moneda y +1 fruta por clic.</string>
     <string name="weather_bonus_hot_title">Maduración Rápida (&gt; 22°C)</string>
-    <string name="weather_bonus_hot_desc">Tomate, Pimiento y Calabaza: +1 moneda y +1 fruta por clic.</string>
+    <string name="weather_bonus_hot_desc">Tomate, Pimiento y Calabacín: +1 moneda y +1 fruta por clic.</string>
 
     <string name="weather_bonus_sunny_title">Fotosíntesis Activa (Despejado)</string>
     <string name="weather_bonus_sunny_desc">Cada 5 clics: +2 monedas de bono en todos los vegetales.</string>
@@ -510,6 +503,6 @@
     <string name="weather_bonus_clouds_desc">10% de descuento en Biblioteca y Galería.</string>
     <string name="weather_bonus_storm_title">Carga Eléctrica (Tormenta)</string>
     <string name="weather_bonus_storm_desc">Ciclo crítico del Tomate reducido a 2 segundos.</string>
-    <string name="weather_bonus_snow_title">Hibernación (Nieve)</string>
+    <string name="weather_bonus_snow_title">Hibernation (Snow)</string>
     <string name="weather_bonus_snow_desc">Multiplicador de recompensa del Ajo aumentado a x2.0.</string>
 </resources>
