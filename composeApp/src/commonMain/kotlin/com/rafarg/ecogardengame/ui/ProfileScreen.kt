@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -291,7 +292,7 @@ fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { selectedProfile = null }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = inputTextColor)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = inputTextColor)
                     }
                     Text(stringResource(Res.string.tab_search_players), style = MaterialTheme.typography.titleMedium, color = inputTextColor)
                 }

@@ -1,7 +1,7 @@
 package com.rafarg.ecogardengame.model
 
 /**
- * Centralized game prices, costs and rewards for easier balancing.
+ * Centralized game prices, costs and rewards.
  */
 object GamePrices {
     
@@ -22,15 +22,15 @@ object GamePrices {
     val MOD_TOMATO_HAPTIC = ItemCost(money = 300, vegetableCosts = mapOf("tomato" to 150))
     val MOD_BROCCOLI_GIANT = ItemCost(money = 500, vegetableCosts = mapOf("broccoli" to 100))
     val MOD_BROCCOLI_OVERCLOCKED = ItemCost(money = 1500, vegetableCosts = mapOf("broccoli" to 250, "bell_pepper" to 50))
-    val MOD_BROCCOLI_AIR = ItemCost(money = 2000, vegetableCosts = mapOf("broccoli" to 100, "garlic" to 10))
-    val MOD_BELL_PEPPER_TURBO = ItemCost(money = 2000, vegetableCosts = mapOf("bell_pepper" to 100, "broccoli" to 50))
-    val MOD_GARLIC_CLUSTER = ItemCost(money = 2500, vegetableCosts = mapOf("garlic" to 150, "purple_onion" to 30))
-    val MOD_GARLIC_SHAKE = ItemCost(money = 3000, vegetableCosts = mapOf("garlic" to 300, "squash" to 20))
-    val MOD_ONION_PLUS1 = ItemCost(money = 1000, vegetableCosts = mapOf("purple_onion" to 50))
-    val MOD_ONION_PLUS2 = ItemCost(money = 2500, vegetableCosts = mapOf("purple_onion" to 150, "bell_pepper" to 30))
+    val MOD_BROCCOLI_AIR = ItemCost(money = 69, vegetableCosts = mapOf("broccoli" to 69, "garlic" to 69))
+    val MOD_BELL_PEPPER_TURBO = ItemCost(money = 1000, vegetableCosts = mapOf("bell_pepper" to 100, "broccoli" to 50))
+    val MOD_GARLIC_CLUSTER = ItemCost(money = 1500, vegetableCosts = mapOf("garlic" to 150, "purple_onion" to 30))
+    val MOD_GARLIC_SHAKE = ItemCost(money = 700, vegetableCosts = mapOf("garlic" to 300, "squash" to 20))
+    val MOD_ONION_PLUS1 = ItemCost(money = 650, vegetableCosts = mapOf("purple_onion" to 50))
+    val MOD_ONION_PLUS2 = ItemCost(money = 1200, vegetableCosts = mapOf("purple_onion" to 150, "bell_pepper" to 30))
     val MOD_ONION_STURDY = ItemCost(money = 1500, vegetableCosts = mapOf("purple_onion" to 100, "broccoli" to 40))
-    val MOD_SQUASH_MOMENTUM = ItemCost(money = 5000, vegetableCosts = mapOf("squash" to 50))
-    val MOD_APPLE_HIGH_FREQ = ItemCost(money = 3000, vegetableCosts = mapOf("apple" to 200, "bell_pepper" to 40))
+    val MOD_SQUASH_MOMENTUM = ItemCost(money = 750, vegetableCosts = mapOf("squash" to 50))
+    val MOD_APPLE_HIGH_FREQ = ItemCost(money = 1000, vegetableCosts = mapOf("apple" to 200, "bell_pepper" to 40))
 
     // --- BASE CLICK REWARDS (Money) ---
     val REWARD_MONEY_TOMATO = 1

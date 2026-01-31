@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Clicky\'s Garden</string>
+    <string name="app_name">Clicky's Garden</string>
 
     <!-- Navigation -->
     <string name="nav_garden">Garden</string>
@@ -43,14 +43,14 @@
     <string name="download_save_confirm_msg">This will replace your current local progress with the data from the cloud. This cannot be undone. Continue?</string>
 
     <string name="sign_out_warning_title">Sign Out</string>
-    <string name="sign_out_warning_message">Are you sure you want to sign out? Your local progress will be reset. If you haven\'t uploaded your save to the cloud, you will lose your current progress on this device.</string>
+    <string name="sign_out_warning_message">Are you sure you want to sign out? Your local progress will be reset. If you haven't uploaded your save to the cloud, you will lose your current progress on this device.</string>
 
     <string name="error_generic">An error occurred</string>
     <string name="error_update_profile">Error updating profile</string>
     <string name="error_download_save">Error downloading save</string>
 
     <!-- About Screen -->
-    <string name="app_version">EcoGarden Game v0.8</string>
+    <string name="app_version">Clicky's Garden v1.0</string>
     <string name="developed_with">Developed with Compose Multiplatform by Rafa R. G.</string>
     <string name="human_made_art">Human-made art by kunohami</string>
 
@@ -138,12 +138,12 @@
 
     <!-- Tutorials -->
     <string name="tutorial_tomato">You can spam clicks for small rewards, or wait 5 seconds until the tomato vibrates and glows intensely to get a massive 20x bonus! The Haptic Timing upgrade will help you feel exactly when the bonus is ready.</string>
-    <string name="tutorial_broccoli">This broccoli moves! Tap it while it\'s zooming around to collect rewards. The \'Air Harvest\' upgrade lets you collect rewards just by waving your hand near the sensor!</string>
+    <string name="tutorial_broccoli">This broccoli moves! Tap it while it's zooming around to collect rewards. The 'Air Harvest' upgrade lets you collect rewards just by waving your hand near the sensor!</string>
     <string name="tutorial_bell_pepper">Bell peppers are erratic! They pause for a moment and then dash in a random direction. Wait for them to stop or try to catch them on the move!</string>
-    <string name="tutorial_garlic">Tap the garlic 10 times to make it explode into small cloves! Collect all the cloves to get a big bonus. The \'Shake to Harvest\' upgrade lets you collect multiple cloves at once just by shaking your device!</string>
-    <string name="tutorial_purple_onion">The purple onion teleports! Every time it appears, it starts a quick rotation. If you catch it while it\'s spinning, you get a significant coin bonus! Buying more onions will increase your chances, but reduce the individual bonus slightly.</string>
-    <string name="tutorial_squash">This is Zelda Tennis! The squash bounces back and forth. Click anywhere to slash with your sickle arm when the squash is near the bottom-left corner to hit it back. Don\'t miss, or you\'ll lose your momentum!</string>
-    <string name="tutorial_apple">The apple moves in a circle, and you need to rotate your device like a compass to point at it. When the indicator turns green and you see \'COLLECTING!\', rewards will be harvested automatically! No clicking required.</string>
+    <string name="tutorial_garlic">Tap the garlic 10 times to make it explode into small cloves! Collect all the cloves to get a big bonus. The 'Shake to Harvest' upgrade lets you collect multiple cloves at once just by shaking your device!</string>
+    <string name="tutorial_purple_onion">The purple onion teleports! Every time it appears, it starts a quick rotation. If you catch it while it's spinning, you get a significant coin bonus! Buying more onions will increase your chances, but reduce the individual bonus slightly.</string>
+    <string name="tutorial_squash">This is Zelda Tennis! The squash bounces back and forth. Click anywhere to slash with your sickle arm when the squash is near the bottom-left corner to hit it back. Don't miss, or you'll lose your momentum!</string>
+    <string name="tutorial_apple">The apple moves in a circle, and you need to rotate your device like a compass to point at it. When the indicator turns green and you see 'COLLECTING!', rewards will be harvested automatically! No clicking required.</string>
 
     <!-- Login Screen -->
     <string name="sign_in_google">Sign in with Google</string>
@@ -158,13 +158,13 @@
 
     <!-- Visual Novel Tutorial -->
     <string name="tutorial_title">How to Play</string>
-    <string name="tutorial_step1">Hi! I\'m Clicky! Welcome to your new garden.</string>
+    <string name="tutorial_step1">Hi! I'm Clicky! Welcome to your new garden.</string>
     <string name="tutorial_step2">The goal is simple: tap on fruits and vegetables to harvest them and earn money!</string>
-    <string name="tutorial_step3">With that money, you can unlock even more delicious crops.</string>
-    <string name="tutorial_step4">Don\'t forget the Shop! Upgrades will help you earn money much faster.</string>
-    <string name="tutorial_step5">You can also visit the Library to buy curious facts about what you grow.</string>
-    <string name="tutorial_step6">And keep an eye out for Achievements! There\'s a lot to discover.</string>
-    <string name="tutorial_step7">That\'s all for now. Let\'s get growing!</string>
+    <string name="tutorial_step3">With that money, you can unlock crops and modifiers to become filthy rich!</string>
+    <string name="tutorial_step4">You can also visit the Library to buy curious facts about what you grow.</string>
+    <string name="tutorial_step5">And keep an eye out for Achievements! There's a lot to discover.</string>
+    <string name="tutorial_step6">And if you connect your Google account you can share your profile and see your friends'.</string>
+    <string name="tutorial_step7">That's all for now. Let's get growing!</string>
     <string name="next">Next</string>
     <string name="skip">Skip</string>
     <string name="finish">Finish</string>
