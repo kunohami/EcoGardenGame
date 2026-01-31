@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Clicky\'s Garden</string>
+    <string name="app_name">Clicky's Garden</string>
 
     <!-- Navegación -->
     <string name="nav_garden">Jardín</string>
@@ -50,7 +50,7 @@
     <string name="error_download_save">Error al descargar la partida</string>
 
     <!-- Acerca de -->
-    <string name="app_version">EcoGarden Game v0.8</string>
+    <string name="app_version">Clicky's Garden v1.0</string>
     <string name="developed_with">Desarrollado con Compose Multiplatform por Rafa R. G.</string>
     <string name="human_made_art">Artista: kunohami</string>
 
@@ -138,12 +138,12 @@
 
     <!-- Tutorials -->
     <string name="tutorial_tomato">¡Puedes pulsar rápidamente para obtener pequeñas recompensas, o esperar 5 segundos hasta que el tomate vibre y brille intensamente para obtener un bono masivo de 20x! La mejora de Sincronización Háptica te ayudará a sentir exactamente cuándo está lista la bonificación.</string>
-    <string name="tutorial_broccoli">¡Este brócoli se mueve! Tócalo mientras se desplaza para recoger recompensas. ¡La mejora \'Cosecha Aérea\' te permite recoger recompensas simplemente pasando la mano cerca del sensor!</string>
+    <string name="tutorial_broccoli">¡Este brócoli se mueve! Tócalo mientras se desplaza para recoger recompensas. ¡La mejora 'Cosecha Aérea' te permite recoger recompensas simplemente pasando la mano cerca del sensor!</string>
     <string name="tutorial_bell_pepper">¡Los pimientos son erráticos! Se detienen un momento y luego salen disparados en una dirección aleatoria. ¡Espera a que se detengan o intenta atraparlos en movimiento!</string>
-    <string name="tutorial_garlic">¡Toca el ajo 10 veces para que explote en pequeños dientes! Recoge todos los dientes para obtener un gran bono. ¡La mejora \'Agitar para Cosechar\' te permite recoger varios dientes a la vez simplemente agitando tu dispositivo!</string>
+    <string name="tutorial_garlic">¡Toca el ajo 10 veces para que explote en pequeños dientes! Recoge todos los dientes para obtener un gran bono. ¡La mejora 'Agitar para Cosechar' te permite recoger varios dientes a la vez simplemente agitando tu dispositivo!</string>
     <string name="tutorial_purple_onion">¡La cebolla morada se teleporta! Cada vez que aparece, comienza una rotación rápida. ¡Si la atrapas mientras gira, obtendrás un bono de monedas significativo! Comprar más cebollas aumentará tus posibilidades, pero reducirá ligeramente el bono individual.</string>
     <string name="tutorial_squash">¡Esto es el Tenis de Zelda! La calabaza rebota de un lado a otro. Haz clic en cualquier lugar para dar un tajo con tu brazo de hoz cuando la calabaza esté cerca de la esquina inferior izquierda para devolverla. ¡No falles, o perderás tu impulso!</string>
-    <string name="tutorial_apple">La manzana se mueve en círculo y debes girar tu dispositivo como una brújula para apuntar hacia ella. Cuando el indicador se ponga verde y veas \'¡COSECHANDO!\', ¡las recompensas se recogerán automáticamente! No es necesario hacer clic.</string>
+    <string name="tutorial_apple">La manzana se mueve en círculo y debes girar tu dispositivo como una brújula para apuntar hacia ella. Cuando el indicador se ponga verde y veas '¡COSECHANDO!', ¡las recompensas se recogerán automáticamente! No es necesario hacer clic.</string>
 
     <!-- Library Content: Tomato -->
     <string name="lib_tomato_t1">El origen andino</string>
@@ -151,7 +151,7 @@
     <string name="lib_tomato_t2">¿Fruta o verdura?</string>
     <string name="lib_tomato_c2">Botánicamente, un tomate es una fruta porque se desarrolla a partir del ovario de una flor y contiene semillas.</string>
     <string name="lib_tomato_t3">Manzanas doradas</string>
-    <string name="lib_tomato_c3">Los primeros tomates que llegaron a Europa eran amarillos, lo que llevó a los italianos a llamarlos \'pomi d\'oro\' (manzanas doradas).</string>
+    <string name="lib_tomato_c3">Los primeros tomates que llegaron a Europa eran amarillos, lo que llevó a los italianos a llamarlos 'pomi d'oro' (manzanas doradas).</string>
     <string name="lib_tomato_t4">El poder del licopeno</string>
     <string name="lib_tomato_c4">Los tomates son la principal fuente dietética de licopeno, un antioxidante vinculado a muchos beneficios para la salud, incluyendo la reducción del riesgo de enfermedades cardíacas.</string>
     <string name="lib_tomato_t5">Diversidad genética</string>
@@ -171,7 +171,7 @@
     <string name="lib_broccoli_t1">Primo de la col</string>
     <string name="lib_broccoli_c1">El brócoli pertenece a la familia Brassicaceae, lo que lo convierte en un pariente cercano de la col, la col rizada y la coliflor.</string>
     <string name="lib_broccoli_t2">Nombre italiano</string>
-    <string name="lib_broccoli_c2">El nombre \'brócoli\' proviene de la palabra italiana \'broccolo\', que significa la cresta floral de una col.</string>
+    <string name="lib_broccoli_c2">El nombre 'brócoli' proviene de la palabra italiana 'broccolo', que significa la cresta floral de una col.</string>
     <string name="lib_broccoli_t3">Gigante de vitamina C</string>
     <string name="lib_broccoli_c3">Una taza de brócoli contiene tanta vitamina C como una naranja, ayudando a fortalecer el sistema inmunológico.</string>
     <string name="lib_broccoli_t4">Control natural de plagas</string>
@@ -205,7 +205,7 @@
     <string name="lib_bell_pepper_t7">Vida útil</string>
     <string name="lib_bell_pepper_c7">Debido a que contienen más azúcar, los pimientos rojos tienen una vida útil más corta que los pimientos verdes.</string>
     <string name="lib_bell_pepper_t8">Versatilidad culinaria</string>
-    <string name="lib_bell_pepper_c8">Se pueden comer crudos, asados, rellenos o fritos, y son un ingrediente clave en el \'mirepoix\' o \'sofrito\'.</string>
+    <string name="lib_bell_pepper_c8">Se pueden comer crudos, asados, rellenos o fritos, y son un ingrediente clave en el 'mirepoix' o 'sofrito'.</string>
     <string name="lib_bell_pepper_t9">La variedad morada</string>
     <string name="lib_bell_pepper_c9">¡Existen los pimientos morados! Son dulces como los verdes pero tienen una hermosa piel violeta.</string>
     <string name="lib_bell_pepper_t10">Peso y densidad</string>
@@ -213,7 +213,7 @@
 
     <!-- Library Content: Garlic -->
     <string name="lib_garlic_t1">La rosa apestosa</string>
-    <string name="lib_garlic_c1">El ajo ha sido apodado \'La Rosa Apestosa\' debido a su fuerte aroma y propiedades beneficiosas.</string>
+    <string name="lib_garlic_c1">El ajo ha sido apodado 'La Rosa Apestosa' debido a su fuerte aroma y propiedades beneficiosas.</string>
     <string name="lib_garlic_t2">Medicina antigua</string>
     <string name="lib_garlic_c2">Los antiguos egipcios usaban el ajo para tratar desde enfermedades cardíacas hasta parásitos e incluso mala circulación.</string>
     <string name="lib_garlic_t3">Activación de la alicina</string>
@@ -227,7 +227,7 @@
     <string name="lib_garlic_t7">Estructura del bulbo</string>
     <string name="lib_garlic_c7">Un solo bulbo de ajo contiene unos 10 a 20 dientes individuales, cada uno protegido por una piel de papel.</string>
     <string name="lib_garlic_t8">Gilroy, California</string>
-    <string name="lib_garlic_c8">Gilroy es conocida como la \'Capital Mundial del Ajo\' y organiza un festival anual del ajo que incluye helado de ajo.</string>
+    <string name="lib_garlic_c8">Gilroy es conocida como la 'Capital Mundial del Ajo' y organiza un festival anual del ajo que incluye helado de ajo.</string>
     <string name="lib_garlic_t9">Antiinflamatorio</string>
     <string name="lib_garlic_c9">Los estudios muestran que el ajo puede ayudar a reducir la inflamación y puede bajar la presión arterial en algunas personas.</string>
     <string name="lib_garlic_t10">Secreto de longevidad</string>
@@ -269,7 +269,7 @@
     <string name="lib_squash_t6">Biodiversidad</string>
     <string name="lib_squash_c6">Hay cientos de especies de calabazas, desde la pequeña pattypan hasta la masiva calabaza Atlantic Giant.</string>
     <string name="lib_squash_t7">Grandes consumidoras</string>
-    <string name="lib_squash_c7">Las plantas de calabaza son \'grandes consumidoras\', lo que significa que requieren suelos muy ricos en nutrientes y mucha agua para prosperar.</string>
+    <string name="lib_squash_c7">Las plantas de calabaza son 'grandes consumidoras', lo que significa que requieren suelos muy ricos en nutrientes y mucha agua para prosperar.</string>
     <string name="lib_squash_t8">La fruta más grande</string>
     <string name="lib_squash_c8">La fruta más grande del mundo es una variedad de calabaza (el zapallo). El récord actual supera los 1.200 kg.</string>
     <string name="lib_squash_t9">Contenedores naturales</string>
@@ -283,11 +283,11 @@
     <string name="lib_apple_t2">Raíces de Kazajistán</string>
     <string name="lib_apple_c2">El ancestro salvaje de la manzana moderna es el Malus sieversii, que todavía crece en las mountains de Kazajistán.</string>
     <string name="lib_apple_t3">Fruta flotante</string>
-    <string name="lib_apple_c3">Las manzanas tienen un 25% de aire, razón por la cual flotan en el agua. ¡Por eso es posible jugar a \'pescar manzanas\'!</string>
+    <string name="lib_apple_c3">Las manzanas tienen un 25% de aire, razón por la cual flotan en el agua. ¡Por eso es posible jugar a 'pescar manzanas'!</string>
     <string name="lib_apple_t4">7.500 variedades</string>
     <string name="lib_apple_c4">Te tomaría más de 20 años probar cada variedad de manzana en el mundo si comieras una por día.</string>
     <string name="lib_apple_t5">Ácido málico</string>
-    <string name="lib_apple_c5">La acidez de una manzana proviene del ácido málico. La palabra \'málico\' proviene de la palabra latina para manzana, \'malum\'.</string>
+    <string name="lib_apple_c5">La acidez de una manzana proviene del ácido málico. La palabra 'málico' proviene de la palabra latina para manzana, 'malum'.</string>
     <string name="lib_apple_t6">Peligro de las semillas</string>
     <string name="lib_apple_c6">Las semillas de manzana contienen una pequeña cantidad de cianuro. Sin embargo, necesitarías masticar y comer cientos para enfermarte.</string>
     <string name="lib_apple_t7">Gas etileno</string>
@@ -295,7 +295,7 @@
     <string name="lib_apple_t8">¿Fruta prohibida?</string>
     <string name="lib_apple_c8">La Biblia nunca especifica que el fruto del Edén fuera una manzana; probablemente fue una granada o un higo.</string>
     <string name="lib_apple_t9">Anticolesterol</string>
-    <string name="lib_apple_c9">¡Una manzana al día realmente podría mantener alejado al médico! La pectina en las manzanas ayuda a reducir los niveles de colesterol \'malo\'.</string>
+    <string name="lib_apple_c9">¡Una manzana al día realmente podría mantener alejado al médico! La pectina en las manzanas ayuda a reducir los niveles de colesterol 'malo'.</string>
     <string name="lib_apple_t10">Longevidad</string>
     <string name="lib_apple_c10">Los manzanos pueden vivir más de 100 años, aunque sus años pico de producción suelen estar entre los 10 y los 50.</string>
 
@@ -309,7 +309,7 @@
     <string name="lib_plagues_t4">Ácaros araña</string>
     <string name="lib_plagues_c4">Estos diminutos arácnidos prosperan en condiciones calurosas y secas y pueden cubrir rápidamente una planta con telas finas y sofocantes.</string>
     <string name="lib_plagues_t5">Amenaza de la mosca blanca</string>
-    <string name="lib_plagues_c5">Las moscas blancas secretan \'melaza\', lo que conduce al crecimiento de moho negro de hollín en las hojas de tus cultivos.</string>
+    <string name="lib_plagues_c5">Las moscas blancas secretan 'melaza', lo que conduce al crecimiento de moho negro de hollín en las hojas de tus cultivos.</string>
     <string name="lib_plagues_t6">Gusano del tomate</string>
     <string name="lib_plagues_c6">Un solo gusano del tomate puede defoliar una planta entera de tomate en solo unos pocos días si no se controla.</string>
     <string name="lib_plagues_t7">Marchitamiento fúngico</string>
@@ -369,7 +369,7 @@
     <string name="lib_genetic_t1">¿Qué es un OGM?</string>
     <string name="lib_genetic_c1">Los organismos genéticamente modificados han tenido su ADN alterado en un laboratorio para introducir rasgos deseables.</string>
     <string name="lib_genetic_t2">Cruces selectivos</string>
-    <string name="lib_genetic_c2">Los humanos han estado \'modificando genéticamente\' las plantas durante miles de años mediante la cría selectiva.</string>
+    <string name="lib_genetic_c2">Los humanos han estado 'modificando genéticamente' las plantas durante miles de años mediante la cría selectiva.</string>
     <string name="lib_genetic_t3">Arroz dorado</string>
     <string name="lib_genetic_c3">El arroz dorado es un OGM diseñado para producir vitamina A, con el objetivo de prevenir la ceguera en los países en desarrollo.</string>
     <string name="lib_genetic_t4">Resistencia a la sequía</string>
@@ -474,12 +474,12 @@
 
     <!-- Visual Novel Tutorial -->
     <string name="tutorial_title">Cómo jugar</string>
-    <string name="tutorial_step1">¡Hola! ¡Soy Clicky! Bienvenido a tu nuevo jardín.</string>
+    <string name="tutorial_step1">¡Hola! ¡Soy Clicky! Bienvenido a mi jardín.</string>
     <string name="tutorial_step2">El objetivo es simple: ¡toca las frutas y verduras para cosecharla y ganar dinero!</string>
-    <string name="tutorial_step3">Con ese dinero, puedes desbloquear cultivos aún más deliciosos.</string>
-    <string name="tutorial_step4">¡No olvides la Tienda! Las mejoras te ayudarán a ganar dinero mucho más rápido.</string>
-    <string name="tutorial_step5">También puedes visitar la Biblioteca para comprar datos curiosos sobre lo que cultivas.</string>
-    <string name="tutorial_step6">¡Y mantente atento a los Logros! Hay mucho por descubrir.</string>
+    <string name="tutorial_step3">Con ese dinero, puedes desbloquear cultivos y modificadores para forrarte!</string>
+    <string name="tutorial_step4">También puedes visitar la Biblioteca para comprar datos curiosos sobre lo que cultivas.</string>
+    <string name="tutorial_step5">¡Y mantente atento a los Logros! Hay mucho por descubrir.</string>
+    <string name="tutorial_step6">¡Si conectas tu cuenta de Google puedes compartir tu perfil y ver el de tus amigos!</string>
     <string name="tutorial_step7">Eso es todo por ahora. ¡A cultivar!</string>
     <string name="next">Siguiente</string>
     <string name="skip">Saltar</string>
