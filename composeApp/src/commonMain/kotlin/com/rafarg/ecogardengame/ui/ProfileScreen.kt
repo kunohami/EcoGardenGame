@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -71,25 +72,31 @@ fun ProfileScreen(viewModel: GameViewModel) {
 }
 
 @Composable
-fun MyProfileTab(
+fun ProfileView(
+    username: String,
+    profileImageId: String,
+    unlockedAchievementIds: List<String>,
+    allAchievements: List<Achievement>,
     viewModel: GameViewModel,
-    textColor: Color
+    textColor: Color,
+    isEditable: Boolean = false,
+    onEditUsername: () -> Unit = {},
+    onEditAvatar: () -> Unit = {},
+    headerContent: @Composable () -> Unit = {}
 ) {
-    var showNameDialog by remember { mutableStateOf(false) }
-    var tempName by remember { mutableStateOf(viewModel.username) }
-    var showAvatarDialog by remember { mutableStateOf(false) }
-
     // Find the current avatar in items or gallery art
-    val currentAvatarResource = viewModel.itemsList.find { it.id == viewModel.profileImageId }?.resource 
-        ?: ArtRepository.artEntries.find { it.id == viewModel.profileImageId }?.resource
+    val avatarResource = viewModel.itemsList.find { it.id == profileImageId }?.resource 
+        ?: ArtRepository.artEntries.find { it.id == profileImageId }?.resource
         ?: Res.drawable.tomato_strip // Fallback
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        headerContent()
+
         // --- PROFILE HEADER BOX ---
         Surface(
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
@@ -106,12 +113,13 @@ fun MyProfileTab(
                         .size(100.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { showAvatarDialog = true },
+                            indication = null,
+                            enabled = isEditable
+                        ) { onEditAvatar() },
                     contentAlignment = Alignment.Center
                 ) {
                     SpriteAnimation(
-                        painter = painterResource(currentAvatarResource),
+                        painter = painterResource(avatarResource),
                         frameCount = 3,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -119,19 +127,18 @@ fun MyProfileTab(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = viewModel.username,
+                        text = username,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = textColor
                     )
-                    IconButton(
-                        onClick = {
-                            tempName = viewModel.username
-                            showNameDialog = true
-                        },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Text("✏️", fontSize = 14.sp)
+                    if (isEditable) {
+                        IconButton(
+                            onClick = onEditUsername,
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Text("✏️", fontSize = 14.sp)
+                        }
                     }
                 }
             }
@@ -154,14 +161,39 @@ fun MyProfileTab(
             modifier = Modifier.weight(1f).fillMaxWidth(),
             contentPadding = PaddingValues(bottom = 0.dp)
         ) {
-            items(viewModel.achievements) { achievement ->
+            items(allAchievements) { achievement ->
                 AchievementBadge(
                     achievement = achievement,
-                    isUnlocked = viewModel.unlockedAchievements.contains(achievement.id)
+                    isUnlocked = unlockedAchievementIds.contains(achievement.id)
                 )
             }
         }
     }
+}
+
+@Composable
+fun MyProfileTab(
+    viewModel: GameViewModel,
+    textColor: Color
+) {
+    var showNameDialog by remember { mutableStateOf(false) }
+    var tempName by remember { mutableStateOf(viewModel.username) }
+    var showAvatarDialog by remember { mutableStateOf(false) }
+
+    ProfileView(
+        username = viewModel.username,
+        profileImageId = viewModel.profileImageId,
+        unlockedAchievementIds = viewModel.unlockedAchievements.toList(),
+        allAchievements = viewModel.achievements,
+        viewModel = viewModel,
+        textColor = textColor,
+        isEditable = true,
+        onEditUsername = {
+            tempName = viewModel.username
+            showNameDialog = true
+        },
+        onEditAvatar = { showAvatarDialog = true }
+    )
 
     // --- DIALOGS ---
     if (showNameDialog) {
@@ -191,7 +223,6 @@ fun MyProfileTab(
     }
 
     if (showAvatarDialog) {
-        // Merge vegetables and purchased art
         val availableAvatars = (viewModel.itemsList.map { it.id to it.resource } + 
                               ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }.map { it.id to it.resource })
                               .distinctBy { it.first }
@@ -245,94 +276,76 @@ fun SearchPlayersTab(viewModel: GameViewModel, textColor: Color) {
     val inputTextColor = if (wavy) Color.White else MaterialTheme.colorScheme.onSurface
     val hintTextColor = if (wavy) Color.White.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurfaceVariant
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text(stringResource(Res.string.search_placeholder)) },
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                IconButton(onClick = { viewModel.searchPlayers(searchQuery) }) {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = inputTextColor)
+    if (selectedProfile != null) {
+        ProfileView(
+            username = selectedProfile!!.username,
+            profileImageId = selectedProfile!!.profileImageId,
+            unlockedAchievementIds = selectedProfile!!.achievements,
+            allAchievements = viewModel.achievements,
+            viewModel = viewModel,
+            textColor = textColor,
+            isEditable = false,
+            headerContent = {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { selectedProfile = null }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = inputTextColor)
+                    }
+                    Text(stringResource(Res.string.tab_search_players), style = MaterialTheme.typography.titleMedium, color = inputTextColor)
                 }
-            },
-            singleLine = true,
-            textStyle = LocalTextStyle.current.copy(color = inputTextColor),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = inputTextColor.copy(alpha = 0.5f),
-                unfocusedLabelColor = hintTextColor,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                cursorColor = MaterialTheme.colorScheme.primary,
-                focusedTextColor = inputTextColor,
-                unfocusedTextColor = inputTextColor
-            )
+            }
         )
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text(stringResource(Res.string.search_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = { viewModel.searchPlayers(searchQuery) }) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = inputTextColor)
+                    }
+                },
+                singleLine = true,
+                textStyle = LocalTextStyle.current.copy(color = inputTextColor),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = inputTextColor.copy(alpha = 0.5f),
+                    unfocusedLabelColor = hintTextColor,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    focusedTextColor = inputTextColor,
+                    unfocusedTextColor = inputTextColor
+                )
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        if (viewModel.isSearching) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        } else if (viewModel.searchResults.isEmpty() && searchQuery.isNotEmpty()) {
-            Text(stringResource(Res.string.no_players_found), color = hintTextColor)
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(viewModel.searchResults) { profile ->
-                    PublicProfileCard(profile, viewModel) {
-                        selectedProfile = it
+            if (viewModel.isSearching) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            } else if (viewModel.searchResults.isEmpty() && searchQuery.isNotEmpty()) {
+                Text(stringResource(Res.string.no_players_found), color = hintTextColor)
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(viewModel.searchResults) { profile ->
+                        PublicProfileCard(profile, viewModel) {
+                            selectedProfile = it
+                        }
                     }
                 }
             }
         }
-    }
-
-    selectedProfile?.let { profile ->
-        AlertDialog(
-            onDismissRequest = { selectedProfile = null },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val avatarRes = viewModel.itemsList.find { it.id == profile.profileImageId }?.resource 
-                        ?: ArtRepository.artEntries.find { it.id == profile.profileImageId }?.resource
-                    if (avatarRes != null) {
-                        SpriteAnimation(painter = painterResource(avatarRes), frameCount = 3, modifier = Modifier.size(40.dp))
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(profile.username)
-                }
-            },
-            text = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.achievements_title) + ": ${profile.achievements.size}", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        profile.achievements.forEach { achId ->
-                            val ach = viewModel.achievements.find { it.id == achId }
-                            if (ach != null) {
-                                Text(ach.emoji, fontSize = 24.sp)
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { selectedProfile = null }) {
-                    Text(stringResource(Res.string.close))
-                }
-            }
-        )
     }
 }
 
