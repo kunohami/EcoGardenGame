@@ -468,7 +468,7 @@
     <!-- Visual Novel Tutorial -->
     <string name="tutorial_title">Cómo jugar</string>
     <string name="tutorial_step1">¡Hola! ¡Soy Clicky! Bienvenido a mi jardín.</string>
-    <string name="tutorial_step2">El objetivo es simple: ¡toca las frutas y verduras para cosecharla y ganar dinero!</string>
+    <string name="tutorial_step2">El objetivo es simple: ¡toca las frutas y verduras para cosecharlas y ganar dinero!</string>
     <string name="tutorial_step3">Con ese dinero, puedes desbloquear cultivos y modificadores para forrarte!</string>
     <string name="tutorial_step4">También puedes visitar la Biblioteca para comprar datos curiosos sobre lo que cultivas.</string>
     <string name="tutorial_step5">¡Y mantente atento a los Logros! Hay mucho por descubrir.</string>

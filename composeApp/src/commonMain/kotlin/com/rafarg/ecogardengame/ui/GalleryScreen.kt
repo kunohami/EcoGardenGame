@@ -10,12 +10,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -50,10 +48,10 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = primaryText)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back_label), tint = primaryText)
             }
             Text(
-                "Art Gallery",
+                stringResource(Res.string.achievements_title), // "Art Gallery" / "Logros"
                 style = MaterialTheme.typography.headlineMedium,
                 color = primaryText,
                 modifier = Modifier.padding(start = 8.dp)
@@ -77,7 +75,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     art = art,
                     isUnlocked = isUnlocked,
                     index = index,
-                    textColor = primaryText, // Pass the dynamic text color
+                    textColor = primaryText,
                     onClick = {
                         if (isUnlocked) {
                             selectedArtIndex = unlockedArt.indexOfFirst { it.id == art.id }
@@ -92,34 +90,28 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
     // Purchase Dialog
     artToBuy?.let { art ->
-        val currentLang = stringResource(Res.string.language_title)
-        val isSpanish = currentLang.contains("Idioma")
-        val artName = if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
-            stringResource(art.nameRes)
-        } else {
-            if (isSpanish) "Arte ${ArtRepository.artEntries.indexOf(art) + 1}" else "Art ${ArtRepository.artEntries.indexOf(art) + 1}"
-        }
+        val artName = getArtDisplayName(art, ArtRepository.artEntries.indexOf(art))
 
         AlertDialog(
             onDismissRequest = { artToBuy = null },
-            title = { Text(if (isSpanish) "Desbloquear Arte" else "Unlock Art") },
-            text = { Text(if (isSpanish) "¿Quieres desbloquear $artName por ${art.cost} monedas?" else "Do you want to unlock $artName for ${art.cost} coins?") },
+            title = { Text(stringResource(Res.string.unlock_art_title)) },
+            text = { Text(stringResource(Res.string.unlock_art_msg, artName, art.cost)) },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (viewModel.money >= art.cost) {
+                        if (viewModel.money >= viewModel.calculateDiscountedPrice(art.cost)) {
                             viewModel.unlockArt(art.id, art.cost)
                             artToBuy = null
                         }
                     },
-                    enabled = viewModel.money >= art.cost
+                    enabled = viewModel.money >= viewModel.calculateDiscountedPrice(art.cost)
                 ) {
-                    Text(if (isSpanish) "Desbloquear" else "Unlock")
+                    Text(stringResource(Res.string.unlock_label))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { artToBuy = null }) {
-                    Text(if (isSpanish) "Cancelar" else "Cancel")
+                    Text(stringResource(Res.string.cancel_label))
                 }
             }
         )
@@ -136,8 +128,16 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 }
 
 @Composable
+fun getArtDisplayName(art: ArtEntry, index: Int): String {
+    return if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
+        stringResource(art.nameRes)
+    } else {
+        stringResource(Res.string.art_name_label, index + 1)
+    }
+}
+
+@Composable
 fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Color, onClick: () -> Unit) {
-    // Silhouette matrix: everything black except alpha
     val silhouetteMatrix = remember {
         ColorMatrix(floatArrayOf(
             0f, 0f, 0f, 0f, 0f,
@@ -147,13 +147,7 @@ fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Colo
         ))
     }
 
-    val currentLang = stringResource(Res.string.language_title)
-    val isSpanish = currentLang.contains("Idioma")
-    val artName = if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
-        stringResource(art.nameRes)
-    } else {
-        if (isSpanish) "Arte ${index + 1}" else "Art ${index + 1}"
-    }
+    val artName = getArtDisplayName(art, index)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
@@ -194,13 +188,7 @@ fun ArtViewerDialog(artList: List<ArtEntry>, initialIndex: Int, onDismiss: () ->
                     modifier = Modifier.fillMaxSize()
                 ) { page ->
                     val art = artList[page]
-                    val currentLang = stringResource(Res.string.language_title)
-                    val isSpanish = currentLang.contains("Idioma")
-                    val artName = if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
-                        stringResource(art.nameRes)
-                    } else {
-                        if (isSpanish) "Arte ${ArtRepository.artEntries.indexOf(art) + 1}" else "Art ${ArtRepository.artEntries.indexOf(art) + 1}"
-                    }
+                    val artName = getArtDisplayName(art, ArtRepository.artEntries.indexOf(art))
 
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -225,7 +213,7 @@ fun ArtViewerDialog(artList: List<ArtEntry>, initialIndex: Int, onDismiss: () ->
                     onClick = onDismiss,
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
                 ) {
-                    Text(if (stringResource(Res.string.language_title).contains("Idioma")) "Cerrar" else "Close", color = Color.White)
+                    Text(stringResource(Res.string.close_label), color = Color.White)
                 }
             }
         }
