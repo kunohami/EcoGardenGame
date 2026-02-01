@@ -1,139 +1,144 @@
 package com.rafarg.ecogardengame.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import com.rafarg.ecogardengame.data.WeatherResponse
-import com.rafarg.ecogardengame.data.WeatherService
 import com.rafarg.ecogardengame.model.GameItem
-import com.rafarg.ecogardengame.util.rememberLocationProvider
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
+import com.rafarg.ecogardengame.viewmodel.getWeatherDescription
+import com.rafarg.ecogardengame.util.rememberLocationProvider
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
-fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
-    var menuVisible by remember { mutableStateOf(false) }
+fun GameScreen(
+    viewModel: GameViewModel,
+    onNavigateToStore: () -> Unit
+) {
     var itemToPurchase by remember { mutableStateOf<GameItem?>(null) }
-    var showTutorial by remember { mutableStateOf(false) }
     var showWeatherDialog by remember { mutableStateOf(false) }
+    var showTutorial by remember { mutableStateOf(false) }
+    var vegetableMenuVisible by remember { mutableStateOf(false) }
 
-    val textColor = if (viewModel.shaderBackgroundEnabled) Color.White else Color.Unspecified
-    val secondaryTextColor = if (viewModel.shaderBackgroundEnabled) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.primary
+    val wavy = viewModel.shaderBackgroundEnabled
+    val topBarHeight = 64.dp 
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if (menuVisible) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        
+        // --- MAIN GAME AREA ---
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = topBarHeight) 
+                .zIndex(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            viewModel.currentItem.Content(
+                modifier = Modifier,
+                onVegetableClick = { viewModel.onVegetableClick(it) },
+                activeModifiers = viewModel.currentItem.modifiers.filter { it.isEnabled },
+                vibrationEnabled = viewModel.vibrationEnabled,
+                vibrationIntensity = viewModel.vibrationIntensity
+            )
+        }
+
+        // --- DISMISS LAYER FOR MENU ---
+        if (vegetableMenuVisible) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .zIndex(2.5f)
+                    .zIndex(5f)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
-                    ) { menuVisible = false }
+                    ) { vegetableMenuVisible = false }
             )
         }
 
         // --- TOP BAR ---
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .height(topBarHeight)
                 .padding(horizontal = 16.dp)
-                .zIndex(2f)
+                .zIndex(10f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.align(Alignment.CenterStart),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Weather Button (Clicky)
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { showWeatherDialog = true },
+                contentAlignment = Alignment.Center
             ) {
-                // Money Counter
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                SpriteAnimation(
+                    painter = painterResource(Res.drawable.clickycheekykneel_strip),
+                    frameCount = 3,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Money Counter
+            Surface(
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(24.dp),
+                tonalElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.coin_strip),
                         frameCount = 3,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(28.dp)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "${viewModel.money}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = textColor,
-                        maxLines = 1
-                    )
-                }
-
-                // Specific Fruit Counter
-                val fruitCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(viewModel.currentItem.particleEmoji, fontSize = 18.sp)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "$fruitCount",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = secondaryTextColor,
-                        maxLines = 1
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = if (wavy) Color.White else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
 
+            // Right side buttons: Tutorial then Menu
             Row(
-                modifier = Modifier.align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy((0).dp) // Joined even more
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Weather / Clicky Cheeky
+                // Tutorial Button (Bunny)
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { showWeatherDialog = true },
-                    contentAlignment = Alignment.Center
-                ) {
-                    SpriteAnimation(
-                        painter = painterResource(Res.drawable.clickycheekykneel_strip),
-                        frameCount = 3,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-
-                // Info Bunny
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
+                        .size(56.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -147,14 +152,15 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                     )
                 }
 
-                // Menu Toggle
+                // Fruit Menu Toggle Button (Width expanded based on 840x180 strip / 3 frames = 280x180 per frame)
                 Box(
                     modifier = Modifier
-                        .size(width = 64.dp, height = 48.dp)
+                        .height(56.dp)
+                        .width(87.dp) // Ratio 280/180 * 56.dp height
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) { menuVisible = !menuVisible },
+                        ) { vegetableMenuVisible = !vegetableMenuVisible },
                     contentAlignment = Alignment.Center
                 ) {
                     SpriteAnimation(
@@ -166,52 +172,56 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- FRUIT SELECTION MENU ---
-        if (menuVisible) {
-            Card(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 64.dp, end = 16.dp)
-                    .width(160.dp)
-                    .zIndex(3f),
-                shape = SpeechBubbleShape(tipAtTop = true, tipPaddingEnd = 32.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        // --- FRUIT DROPDOWN OVERLAY ---
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = topBarHeight, end = 16.dp)
+                .zIndex(15f),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            AnimatedVisibility(
+                visible = vegetableMenuVisible,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
             ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(top = 16.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.wrapContentHeight()
+                Surface(
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                    shape = RoundedCornerShape(16.dp),
+                    tonalElevation = 8.dp,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
                 ) {
-                    items(viewModel.itemsList) { item ->
-                        val isSelected = item.id == viewModel.currentItem.id
-                        Box(
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    if (isSelected) MaterialTheme.colorScheme.primaryContainer 
-                                    else Color.Transparent
-                                )
-                                .clickable {
-                                    if (item.unlocked) {
-                                        viewModel.selectItem(item)
-                                        menuVisible = false
-                                    } else {
-                                        itemToPurchase = item
-                                    }
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            val colorFilter = if (item.unlocked) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
-                            Box(modifier = Modifier.graphicsLayer { alpha = if (item.unlocked) 1f else 0.4f }) {
+                    Column(
+                        modifier = Modifier.padding(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        viewModel.itemsList.forEach { item ->
+                            val isSelected = viewModel.currentItem.id == item.id
+                            val isUnlocked = item.unlocked
+                            
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isSelected) MaterialTheme.colorScheme.primaryContainer 
+                                        else Color.Transparent
+                                    )
+                                    .clickable {
+                                        if (isUnlocked) viewModel.selectItem(item)
+                                        else itemToPurchase = item
+                                        vegetableMenuVisible = false 
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
                                 SpriteAnimation(
                                     painter = painterResource(item.resource),
                                     frameCount = 3,
-                                    modifier = Modifier.size(48.dp),
-                                    colorFilter = colorFilter
+                                    modifier = Modifier.size(36.dp).graphicsLayer { alpha = if (isUnlocked) 1f else 0.4f }
                                 )
+                                if (!isUnlocked) {
+                                    Text("🔒", modifier = Modifier.align(Alignment.BottomEnd), fontSize = 10.sp)
+                                }
                             }
                         }
                     }
@@ -219,50 +229,44 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             }
         }
 
-        // --- MAIN GAME AREA ---
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 24.dp, bottom = 0.dp)
-                .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            viewModel.currentItem.Content(
-                modifier = Modifier,
-                onVegetableClick = { rewards -> viewModel.onVegetableClick(rewards) },
-                activeModifiers = viewModel.currentItem.modifiers,
-                vibrationEnabled = viewModel.vibrationEnabled,
-                vibrationIntensity = viewModel.vibrationIntensity
-            )
-        }
-
-        // --- CPS Meter ---
+        // --- BOTTOM RIGHT: STATS & RESOURCES ---
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
-                .zIndex(1f)
+                .zIndex(20f)
         ) {
             Column(horizontalAlignment = Alignment.End) {
+                val currentCount = viewModel.fruitCounts[viewModel.currentItem.id] ?: 0
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "$currentCount",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = if (wavy) Color.White else MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    SpriteAnimation(
+                        painter = painterResource(viewModel.currentItem.resource),
+                        frameCount = 3,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                
                 Text(
-                    text = "${viewModel.currentCps.toInt()}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (viewModel.shaderBackgroundEnabled) Color.White else MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = stringResource(Res.string.cps_label),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (viewModel.shaderBackgroundEnabled) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                    text = "${viewModel.currentCps} ${stringResource(Res.string.cps_label)}",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (wavy) Color.White else MaterialTheme.colorScheme.primary
                 )
             }
         }
 
-        // --- WEATHER DIALOG ---
+        // --- DIALOGS ---
         if (showWeatherDialog) {
             WeatherDialog(viewModel = viewModel, onDismiss = { showWeatherDialog = false }, onNavigateToStore = onNavigateToStore)
         }
 
-        // --- TUTORIAL DIALOG ---
         if (showTutorial) {
             AlertDialog(
                 onDismissRequest = { showTutorial = false },
@@ -297,7 +301,6 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
             )
         }
 
-        // --- PURCHASE DIALOG ---
         itemToPurchase?.let { item ->
             AlertDialog(
                 onDismissRequest = { itemToPurchase = null },
@@ -332,7 +335,6 @@ fun GameScreen(viewModel: GameViewModel, onNavigateToStore: () -> Unit) {
                         Button(onClick = {
                             viewModel.tryUnlockItem(item)
                             itemToPurchase = null
-                            menuVisible = false
                         }) {
                             Text(stringResource(Res.string.unlock_confirm))
                         }
@@ -488,28 +490,20 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
             }) {
                 Text(stringResource(Res.string.weather_update_location))
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.close))
-            }
         }
     )
 }
 
 @Composable
 fun WeatherBonusItem(title: String, desc: String, isActive: Boolean) {
-    Column {
-        Text(
-            text = title,
-            fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
-            fontSize = if (isActive) 16.sp else 14.sp,
-            color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = desc,
-            style = MaterialTheme.typography.bodySmall,
-            color = if (isActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-        )
+    Surface(
+        color = if (isActive) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+            Text(text = desc, style = MaterialTheme.typography.labelSmall)
+        }
     }
 }

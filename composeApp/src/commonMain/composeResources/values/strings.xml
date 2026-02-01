@@ -461,6 +461,18 @@
     <string name="ach_bio_technician_name">Bio Technician</string>
     <string name="ach_bio_technician_desc">Unlock all information about genetic modification.</string>
 
+    <!-- Art Gallery -->
+    <string name="unlock_art_title">Unlock Art</string>
+    <string name="unlock_art_msg">Do you want to unlock %1$s for %2$d coins?</string>
+    <string name="art_name_label">Art %1$d</string>
+
+    <!-- Common Actions -->
+    <string name="confirm_label">Confirm</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="unlock_label">Unlock</string>
+    <string name="close_label">Close</string>
+    <string name="back_label">Back</string>
+
     <!-- Art Gallery Achievements -->
     <string name="ach_art_collector_name">Art Collector</string>
     <string name="ach_art_collector_desc">Unlock all art pieces in the gallery.</string>
