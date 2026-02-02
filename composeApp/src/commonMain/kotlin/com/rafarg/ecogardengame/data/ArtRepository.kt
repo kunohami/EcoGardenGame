@@ -16,6 +16,8 @@ object ArtRepository {
         ArtEntry("clicky_cheeky", Res.drawable.clickycheekykneel_strip, Res.string.nav_profile, 3500),
         ArtEntry("clicky_explain", Res.drawable.clickyexplain_strip, Res.string.app_name, 3500),
         ArtEntry("clicky_open", Res.drawable.clickyopenarms_strip, Res.string.congratulations, 3500),
+        ArtEntry("clicky_sad", Res.drawable.clickysad_strip, Res.string.error_generic, 3500),
+        ArtEntry("clicky_garden_nologo", Res.drawable.clickysgardennologo, Res.string.app_name, 5000, frameCount = 1),
         ArtEntry("sickle_farmer", Res.drawable.sicklefarmer_strip, Res.string.developed_with, 4000),
         ArtEntry("garden_menu", Res.drawable.gardenmainmenu_strip, Res.string.nav_garden, 3000),
         ArtEntry("shop_menu", Res.drawable.shopmainmenu_strip, Res.string.nav_shop, 3000),

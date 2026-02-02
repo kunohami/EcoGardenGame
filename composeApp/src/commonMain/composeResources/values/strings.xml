@@ -524,4 +524,16 @@
     <string name="weather_bonus_storm_desc">Tomato critical cycle reduced to 2 seconds.</string>
     <string name="weather_bonus_snow_title">Hibernation (Snow)</string>
     <string name="weather_bonus_snow_desc">Garlic reward multiplier increased to x2.0.</string>
+
+    <!-- Common -->
+
+
+
+
+    <string name="weather_title">Garden Weather</string>
+    <string name="stats_money">Money</string>
+    <string name="stats_now">Now</string>
+    <string name="stats_fruits_harvested">Fruits Harvested</string>
+    <string name="stats_current">Current</string>
+    <string name="stats_total">Total</string>
 </resources>

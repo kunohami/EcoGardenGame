@@ -26,6 +26,12 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.*
 import kotlin.random.Random
 
+/**
+ * Bell Pepper vegetable implementation.
+ * Mechanics: Moves in bursts. It remains stationary for a period, then dashes in a random
+ * direction with a speed curve, and stops again.
+ * Modifier "Turbo Harvest" makes the cycles faster and increases rewards.
+ */
 class BellPepper : BaseVegetable() {
     override val id: String = "bell_pepper"
     override val nameRes = Res.string.item_bell_pepper
@@ -63,6 +69,7 @@ class BellPepper : BaseVegetable() {
         val scale = remember { Animatable(1f) }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
 
+        // State for movement bursts
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
         var dirX by remember { mutableStateOf(0f) }
@@ -77,13 +84,15 @@ class BellPepper : BaseVegetable() {
         val itemSize = 120.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
         
-        // Halve the durations if Turbo is active
+        // Define burst durations
         val stationaryDuration = if (isTurbo) 500L else 1000L
         val movingDuration = if (isTurbo) 1000L else 2000L
         val maxBaseSpeed = 100f
 
+        // Movement logic loop
         LaunchedEffect(parentWidth, parentHeight, isTurbo) {
             if (parentWidth > 0 && parentHeight > 0) {
+                // Initial direction
                 val angle = Random.nextFloat() * 2 * PI.toFloat()
                 dirX = cos(angle)
                 dirY = sin(angle)
@@ -94,6 +103,7 @@ class BellPepper : BaseVegetable() {
                         val elapsed = frameTime - phaseStartTime
 
                         if (!isMoving) {
+                            // Wait stationary
                             if (elapsed >= stationaryDuration) {
                                 isMoving = true
                                 phaseStartTime = frameTime
@@ -102,11 +112,13 @@ class BellPepper : BaseVegetable() {
                                 dirY = sin(newAngle)
                             }
                         } else {
+                            // Move in a burst
                             if (elapsed >= movingDuration) {
                                 isMoving = false
                                 phaseStartTime = frameTime
                             } else {
                                 val progress = elapsed.toFloat() / movingDuration
+                                // Use sine for a smooth speed up and speed down during the dash
                                 val speedFactor = sin(progress * PI.toFloat()) 
                                 val speed = speedFactor * maxBaseSpeed
                                 posX += dirX * speed
@@ -115,6 +127,7 @@ class BellPepper : BaseVegetable() {
                                 val limitX = (parentWidth - itemSizePx) / 2
                                 val limitY = (parentHeight - itemSizePx) / 2
 
+                                // Bounce logic with slight direction randomness on impact
                                 if (abs(posX) >= limitX) {
                                     dirX = -dirX
                                     dirY += (Random.nextFloat() - 0.5f) * 0.2f
@@ -169,6 +182,7 @@ class BellPepper : BaseVegetable() {
                             val currentX = posX
                             val currentY = posY
                             
+                            // Apply turbo multiplier if active
                             val rewards = if (isTurbo) {
                                 baseRewards.map { it.copy(
                                     moneyValue = it.moneyValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO, 
@@ -191,6 +205,7 @@ class BellPepper : BaseVegetable() {
                                 offsetY = currentY
                             )
 
+                            // Manage particle lifecycle
                             val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                             val overflow = (activeCount + newOnes.size) - 20
                             if (overflow > 0) {

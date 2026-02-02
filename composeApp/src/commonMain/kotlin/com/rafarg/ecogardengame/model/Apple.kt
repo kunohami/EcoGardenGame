@@ -27,8 +27,10 @@ import kotlin.math.*
 import kotlin.random.Random
 
 /**
- * Apple implementation with "Compass/Rotation" gameplay.
- * The apple moves around a circle, and the player must rotate the phone to point at it.
+ * Apple vegetable implementation.
+ * Mechanics: Passive harvest based on device rotation. The apple moves around a circular path.
+ * The user must rotate the physical device (using the compass/gyroscope) to align a pointer
+ * with the apple. When aligned, it automatically harvests rewards every 333ms.
  */
 class Apple : BaseVegetable() {
     override val id: String = "apple"
@@ -65,6 +67,7 @@ class Apple : BaseVegetable() {
     ) {
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
+        // State for target position and device orientation
         var targetAngle by remember { mutableStateOf(0f) }
         var deviceRotation by remember { mutableStateOf(0f) }
         
@@ -74,7 +77,7 @@ class Apple : BaseVegetable() {
 
         val isOverclocked = activeModifiers.any { it.id == "apple_overclock" && it.isEnabled }
         
-        // Listen for device rotation (Compass Azimuth)
+        // Setup rotation sensor listener
         DisposableEffect(Unit) {
             startListeningForRotation { azimuth ->
                 deviceRotation = azimuth
@@ -84,7 +87,7 @@ class Apple : BaseVegetable() {
             }
         }
 
-        // Logic to move the apple target around the circle with speed and direction variations
+        // Target movement logic: moves the apple around the circle with random speed/direction variations
         LaunchedEffect(Unit, isOverclocked) {
             var lastTime = withFrameMillis { it }
             var currentSpeed = 20f
@@ -96,7 +99,7 @@ class Apple : BaseVegetable() {
                 withFrameMillis { time ->
                     val delta = (time - lastTime) / 1000f
                     
-                    // Periodically change speed and direction (every 2-5 seconds)
+                    // Periodically update movement parameters for unpredictability
                     if (lastChangeTime == 0L || time - lastChangeTime > (Random.nextLong(2000, 5000))) {
                         currentSpeed = (Random.nextFloat() * 40f + 15f) * speedMultiplier
                         if (Random.nextFloat() > 0.6f) { // 40% chance to flip direction
@@ -111,13 +114,14 @@ class Apple : BaseVegetable() {
             }
         }
 
-        // Check alignment and grant rewards
+        // Determine if the player is currently aligned with the apple
         val isAligned = remember(targetAngle, deviceRotation) {
             val diff = abs(targetAngle - deviceRotation)
             val shortestDiff = if (diff > 180) 360 - diff else diff
             shortestDiff < 15f
         }
 
+        // Automatic harvest loop when aligned
         LaunchedEffect(isAligned, isOverclocked) {
             if (isAligned) {
                 val currentRewards = if (isOverclocked) {
@@ -140,7 +144,7 @@ class Apple : BaseVegetable() {
                     }
                     flyingParticles.addAll(newOnes)
                     
-                    delay(333)
+                    delay(333) // Harvest tick every 333ms
                 }
             }
         }
@@ -148,6 +152,7 @@ class Apple : BaseVegetable() {
         val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            // Circle path visualization
             Canvas(modifier = Modifier.size(circleRadius * 2)) {
                 drawCircle(
                     color = onBackgroundColor.copy(alpha = 0.2f),
@@ -156,13 +161,15 @@ class Apple : BaseVegetable() {
                 )
             }
             
+            // Pointer at the top
             Box(
                 modifier = Modifier
                     .size(4.dp, 40.dp)
-                    .offset(y = (-circleRadius)) // Fixed pointer at the top edge of circle
+                    .offset(y = (-circleRadius))
                     .background(if (isAligned) Color.Green else onBackgroundColor.copy(alpha = 0.5f))
             )
 
+            // Calculate apple screen position based on target and device rotation
             val displayAngle = (targetAngle - deviceRotation + 360) % 360
             val radians = displayAngle.toDouble() * PI / 180.0
             val appleX = (circleRadiusPx * sin(radians)).toFloat()

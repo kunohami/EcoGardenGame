@@ -6,6 +6,14 @@ import androidx.compose.runtime.setValue
 import org.jetbrains.compose.resources.StringResource
 import ecogardengame.composeapp.generated.resources.*
 
+/**
+ * Represents a single piece of information or "fact" in the Knowledge Library.
+ * @property id Unique identifier for the entry.
+ * @property titleRes Resource ID for the fact's title.
+ * @property contentRes Resource ID for the fact's detailed description.
+ * @property cost The price in coins to unlock this fact.
+ * @property isUnlocked Current unlock status.
+ */
 class LibraryEntry(
     val id: String,
     val titleRes: StringResource,
@@ -16,6 +24,13 @@ class LibraryEntry(
     var isUnlocked by mutableStateOf(isUnlockedInitial)
 }
 
+/**
+ * Represents a collection of library entries grouped by topic.
+ * @property id Unique identifier for the category.
+ * @property nameRes Resource ID for the category name.
+ * @property icon Emoji or icon representation for the category.
+ * @property entries List of library facts belonging to this category.
+ */
 data class LibraryCategory(
     val id: String,
     val nameRes: StringResource,
@@ -23,8 +38,14 @@ data class LibraryCategory(
     val entries: List<LibraryEntry>
 )
 
+/**
+ * Data repository containing all the categories and facts for the Knowledge Library.
+ */
 object LibraryRepository {
 
+    /**
+     * Helper function to create a new LibraryEntry with a standardized ID.
+     */
     private fun createEntry(
         cat: String,
         index: Int,
@@ -39,6 +60,8 @@ object LibraryRepository {
             cost = ItemCost(money = price)
         )
     }
+
+    // --- FACT ENTRIES FOR EACH VEGETABLE AND TOPIC ---
 
     val tomatoEntries = listOf(
         createEntry("tomato", 1, Res.string.lib_tomato_t1, Res.string.lib_tomato_c1, 100),
@@ -183,6 +206,7 @@ object LibraryRepository {
         createEntry("genetic", 10, Res.string.lib_genetic_t10, Res.string.lib_genetic_c10, 10000)
     )
 
+    /** Full list of categories available in the library. */
     val categories = listOf(
         LibraryCategory("tomato", Res.string.item_tomato, "🍅", tomatoEntries),
         LibraryCategory("broccoli", Res.string.item_broccoli, "🥦", broccoliEntries),

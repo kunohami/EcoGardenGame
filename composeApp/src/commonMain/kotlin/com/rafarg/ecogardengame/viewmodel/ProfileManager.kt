@@ -14,20 +14,33 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * Manages the user's profile, including authentication state, username, 
+ * profile image, and public profile synchronization with Firebase.
+ */
 @OptIn(ExperimentalTime::class)
 class ProfileManager(
     private val scope: CoroutineScope,
     private val authRepository: AuthRepository?
 ) {
+    /** The currently authenticated user, or null if not signed in. */
     var currentUser by mutableStateOf<UserProfile?>(null)
         private set
 
+    /** The user's display name, defaults to "Farmer". */
     var username by mutableStateOf("Farmer")
+    
+    /** The ID of the selected profile image/avatar. */
     var profileImageId by mutableStateOf("tomato")
+    
+    /** Timestamp of the last time the public profile was updated to enforce cooldown. */
     var lastProfileUpdateTime by mutableStateOf(0L)
 
+    /** List of profiles found during a player search. */
     var searchResults = mutableStateListOf<PublicProfile>()
         private set
+    
+    /** Indicates if a search operation is currently in progress. */
     var isSearching by mutableStateOf(false)
         private set
 
@@ -35,6 +48,9 @@ class ProfileManager(
         observeAuth()
     }
 
+    /**
+     * Observes changes in the authentication state from the AuthRepository.
+     */
     private fun observeAuth() {
         scope.launch {
             authRepository?.currentUser?.collect { user ->
@@ -46,14 +62,24 @@ class ProfileManager(
         }
     }
 
+    /** Updates the local username. */
     fun updateUsername(newName: String) {
         username = newName
     }
 
+    /** Updates the local profile image ID. */
     fun updateProfileImage(imageId: String) {
         profileImageId = imageId
     }
 
+    /**
+     * Synchronizes the user's local profile data with the Firebase Firestore public database.
+     * Enforces a 60-second cooldown between updates.
+     * 
+     * @param unlockedAchievements List of achievement IDs to share publicly.
+     * @param onSuccess Callback invoked when the update is successful.
+     * @param onError Callback invoked with an error message (cooldown remaining or generic error).
+     */
     fun updatePublicProfile(
         unlockedAchievements: List<String>,
         onSuccess: () -> Unit,
@@ -85,6 +111,10 @@ class ProfileManager(
         }
     }
 
+    /**
+     * Searches for other players by username in the Firestore database.
+     * @param query The search term.
+     */
     fun searchPlayers(query: String) {
         val cleanedQuery = query.trim()
         if (cleanedQuery.isBlank()) return
@@ -94,6 +124,7 @@ class ProfileManager(
         
         scope.launch {
             try {
+                // Search both exact casing and lowercase for better results
                 val searchTerms = listOf(cleanedQuery, cleanedQuery.lowercase()).distinct()
                 searchTerms.forEach { term ->
                     val result = Firebase.firestore.collection("users")

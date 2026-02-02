@@ -503,6 +503,19 @@
     <string name="weather_bonus_clouds_desc">10% de descuento en Biblioteca y Galería.</string>
     <string name="weather_bonus_storm_title">Carga Eléctrica (Tormenta)</string>
     <string name="weather_bonus_storm_desc">Ciclo crítico del Tomate reducido a 2 segundos.</string>
-    <string name="weather_bonus_snow_title">Hibernation (Snow)</string>
+    <string name="weather_bonus_snow_title">Hibernación (Nieve)</string>
     <string name="weather_bonus_snow_desc">Multiplicador de recompensa del Ajo aumentado a x2.0.</string>
+
+    <!-- Adiciones -->
+    <string name="confirm_label">Confirmar</string>
+    <string name="cancel_label">Cancelar</string>
+    <string name="unlock_label">Desbloquear</string>
+    <string name="close_label">Cerrar</string>
+    <string name="back_label">Atrás</string>
+    <string name="weather_title">Clima del Jardín</string>
+    <string name="stats_money">Dinero</string>
+    <string name="stats_now">Ahora</string>
+    <string name="stats_fruits_harvested">Frutas Cosechadas</string>
+    <string name="stats_current">Actual</string>
+    <string name="stats_total">Total</string>
 </resources>
