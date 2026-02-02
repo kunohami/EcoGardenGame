@@ -20,12 +20,20 @@ import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * WeatherScreen allows the player to fetch and view real-time weather data.
+ * This data is used by the ViewModel to apply productivity bonuses based on actual local conditions.
+ */
 @Composable
 fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+    // Utility to get the device's GPS coordinates
     val locationProvider = rememberLocationProvider()
+    // Service that connects to the weather API
     val weatherService = remember { WeatherService() }
+    // Coroutine scope needed for asynchronous network calls
     val scope = rememberCoroutineScope()
     
+    // UI states to handle the asynchronous flow
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -37,6 +45,7 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // --- HEADER ---
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -53,15 +62,18 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // --- WEATHER DISPLAY ---
         if (isLoading) {
-            CircularProgressIndicator()
+            CircularProgressIndicator() // Show spinner while fetching
         } else {
             weatherData?.let { data ->
+                // Large temperature display
                 Text(
                     text = "${data.current_weather.temperature}°C",
                     fontSize = 64.sp,
                     color = primaryText
                 )
+                // Human-readable description based on the WMO code
                 Text(
                     text = getWeatherDescription(data.current_weather.weathercode),
                     style = MaterialTheme.typography.titleLarge,
@@ -69,11 +81,13 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 )
             }
 
+            // Initial instruction message
             if (weatherData == null && !isLoading) {
                 Text("Tap the button to check your garden's climate", color = Color.Gray)
             }
         }
 
+        // --- ERROR HANDLING ---
         error?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = MaterialTheme.colorScheme.error)
@@ -81,12 +95,15 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // --- ACTION BUTTON ---
         Button(
             onClick = {
                 isLoading = true
                 error = null
+                // 1. Request GPS location
                 locationProvider.requestLocation { coords ->
                     if (coords != null) {
+                        // 2. If coords obtained, start network coroutine
                         scope.launch {
                             val result = weatherService.fetchWeather(coords.latitude, coords.longitude)
                             if (result != null) {
@@ -111,6 +128,10 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     }
 }
 
+/**
+ * Converts a WMO Weather interpretation code into a user-friendly string.
+ * Reference: https://open-meteo.com/en/docs
+ */
 fun getWeatherDescription(code: Int): String {
     return when (code) {
         0 -> "Clear sky"

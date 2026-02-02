@@ -7,7 +7,7 @@ import com.rafarg.ecogardengame.model.ItemCost
 import com.rafarg.ecogardengame.model.Reward
 
 /**
- * --- ENCAPSULATION (OOP Principle) ---
+ * --- ENCAPSULATION  ---
  * The EconomyManager class encapsulates all logic related to currency and inventory.
  * By isolating this logic, the ViewModel doesn't need to know 'how' money is added,
  * only that it needs to call a method to do so.

@@ -32,30 +32,45 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * Codename: EcoGardenGame
+ * Final name: Clicky's Garden
+ * Developed by: Rafael Robles García
+ *
+ * GameScreen is the main interactive screen of the game.
+ * It displays the current vegetable, the currency (money), 
+ * and various menus for navigation and progression.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun GameScreen(
-    viewModel: GameViewModel,
-    onNavigateToStore: () -> Unit
+    viewModel: GameViewModel, // Manages the game logic and state
+    onNavigateToStore: () -> Unit // Callback to navigate to the shop
 ) {
+    // --- UI STATE VARIABLES ---
+    // These 'remember' variables keep track of UI states like dialog visibility.
     var itemToPurchase by remember { mutableStateOf<GameItem?>(null) }
     var showWeatherDialog by remember { mutableStateOf(false) }
     var showTutorial by remember { mutableStateOf(false) }
     var vegetableMenuVisible by remember { mutableStateOf(false) }
 
+    // Check if background shaders are enabled from settings
     val wavy = viewModel.shaderBackgroundEnabled
     val topBarHeight = 64.dp 
 
+    // Box is like a FrameLayout, it allows layering elements on top of each other.
     Box(modifier = Modifier.fillMaxSize()) {
         
         // --- MAIN GAME AREA ---
+        // This is where the vegetable is displayed and clicked.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = topBarHeight) 
-                .zIndex(1f),
+                .zIndex(1f), // Lower zIndex means it's at the back
             contentAlignment = Alignment.Center
         ) {
+            // Displays the current vegetable and handles its clicking logic
             viewModel.currentItem.Content(
                 modifier = Modifier,
                 onVegetableClick = { viewModel.onVegetableClick(it) },
@@ -66,6 +81,8 @@ fun GameScreen(
         }
 
         // --- DISMISS LAYER FOR MENU ---
+        // If the side menu is open, this invisible layer detects clicks 
+        // outside the menu to close it automatically.
         if (vegetableMenuVisible) {
             Box(
                 modifier = Modifier
@@ -73,12 +90,13 @@ fun GameScreen(
                     .zIndex(5f)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null
+                        indication = null // No visual ripple effect
                     ) { vegetableMenuVisible = false }
             )
         }
 
         // --- TOP BAR ---
+        // Contains the Weather button, Money counter, Tutorial, and Menu buttons.
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -88,7 +106,7 @@ fun GameScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Weather Button (Clicky)
+            // Weather Button (Animated Sprite)
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -105,7 +123,7 @@ fun GameScreen(
                 )
             }
 
-            // Money Counter
+            // Money Counter: Shows current currency with a coin animation
             Surface(
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
                 shape = RoundedCornerShape(24.dp),
@@ -130,12 +148,12 @@ fun GameScreen(
                 }
             }
 
-            // Right side buttons: Tutorial then Menu
+            // Right side buttons: Bunny (Tutorial) then Fruit Menu
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // Tutorial Button (Bunny)
+                // Tutorial Button
                 Box(
                     modifier = Modifier
                         .size(56.dp)
@@ -152,11 +170,11 @@ fun GameScreen(
                     )
                 }
 
-                // Fruit Menu Toggle Button (Width expanded based on 840x180 strip / 3 frames = 280x180 per frame)
+                // Fruit Menu Toggle Button
                 Box(
                     modifier = Modifier
                         .height(56.dp)
-                        .width(87.dp) // Ratio 280/180 * 56.dp height
+                        .width(87.dp)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -173,6 +191,7 @@ fun GameScreen(
         }
 
         // --- FRUIT DROPDOWN OVERLAY ---
+        // A vertical list of vegetables to switch between.
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -208,8 +227,8 @@ fun GameScreen(
                                         else Color.Transparent
                                     )
                                     .clickable {
-                                        if (isUnlocked) viewModel.selectItem(item)
-                                        else itemToPurchase = item
+                                        if (isUnlocked) viewModel.selectItem(item) // Switch to this item
+                                        else itemToPurchase = item // Open purchase dialog
                                         vegetableMenuVisible = false 
                                     },
                                 contentAlignment = Alignment.Center
@@ -230,6 +249,8 @@ fun GameScreen(
         }
 
         // --- BOTTOM RIGHT: STATS & RESOURCES ---
+        // Displays how many items of the current vegetable you have collected
+        // and your current "Coins Per Second" (CPS) generation.
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -262,11 +283,14 @@ fun GameScreen(
             }
         }
 
-        // --- DIALOGS ---
+        // --- DIALOGS SECTION ---
+        
+        // 1. Weather Dialog: Manages weather-based bonuses
         if (showWeatherDialog) {
             WeatherDialog(viewModel = viewModel, onDismiss = { showWeatherDialog = false }, onNavigateToStore = onNavigateToStore)
         }
 
+        // 2. Tutorial Dialog: Explains the current vegetable and its upgrades
         if (showTutorial) {
             AlertDialog(
                 onDismissRequest = { showTutorial = false },
@@ -301,6 +325,7 @@ fun GameScreen(
             )
         }
 
+        // 3. Unlock Item Dialog: Shown when clicking a locked vegetable in the menu
         itemToPurchase?.let { item ->
             AlertDialog(
                 onDismissRequest = { itemToPurchase = null },
@@ -311,6 +336,7 @@ fun GameScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         val hasMoney = viewModel.money >= item.unlockCost.money
                         val youHave = stringResource(Res.string.you_have)
+                        // Requirement: Money
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             SpriteAnimation(
                                 painter = painterResource(Res.drawable.coin_strip),
@@ -321,6 +347,7 @@ fun GameScreen(
                             Text("${item.unlockCost.money} ($youHave: ${viewModel.money})",
                                 color = if (hasMoney) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
                         }
+                        // Requirement: Other vegetables
                         item.unlockCost.vegetableCosts.forEach { (vegId, amount) ->
                             val currentCount = viewModel.fruitCounts[vegId] ?: 0
                             val vegEmoji = viewModel.itemsList.find { it.id == vegId }?.particleEmoji ?: "?"
@@ -339,6 +366,7 @@ fun GameScreen(
                             Text(stringResource(Res.string.unlock_confirm))
                         }
                     } else {
+                        // If not enough resources, offer to go to the shop
                         Button(onClick = { 
                             onNavigateToStore()
                             itemToPurchase = null
@@ -357,6 +385,10 @@ fun GameScreen(
     }
 }
 
+/**
+ * WeatherDialog displays real-world weather and applies bonuses to game production.
+ * This encourages players to play in different real-world conditions!
+ */
 @OptIn(ExperimentalTime::class)
 @Composable
 fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToStore: () -> Unit) {
@@ -365,8 +397,10 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
     val hasWeatherUpgrade = viewModel.globalUpgrades.find { it.id == "weather_bonus" }?.unlockedLevel ?: 0 > 0
     val scrollState = rememberScrollState()
     
+    // Countdown timer for active weather bonuses
     var timeRemaining by remember { mutableStateOf(0L) }
     
+    // Side effect to update the timer every second
     LaunchedEffect(weatherBonusActive, viewModel.lastWeatherUpdateTime) {
         while(weatherBonusActive) {
             val now = Clock.System.now().toEpochMilliseconds()
@@ -398,12 +432,14 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
                     .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // If weather data is available, show temperature and description
                 if (viewModel.currentWeatherData != null) {
                     val weather = viewModel.currentWeatherData!!
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text("${weather.current_weather.temperature}°C", fontSize = 32.sp, fontWeight = FontWeight.Bold)
                         Text(getWeatherDescription(weather.current_weather.weathercode))
                         
+                        // Show timer if a bonus is currently active
                         if (weatherBonusActive) {
                             val hours = (timeRemaining / (1000 * 60 * 60)) % 24
                             val minutes = (timeRemaining / (1000 * 60)) % 60
@@ -422,6 +458,7 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
                 }
 
                 // --- BONUSES LIST ---
+                // Shows various weather conditions and highlights the one currently active.
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     val temp = viewModel.currentWeatherData?.current_weather?.temperature ?: 0.0
                     val code = viewModel.currentWeatherData?.current_weather?.weathercode ?: -1
@@ -468,6 +505,7 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
                     )
                 }
 
+                // If the player hasn't bought the weather upgrade yet, show a button to the store
                 if (!hasWeatherUpgrade) {
                     Button(
                         onClick = { 
@@ -483,6 +521,7 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
             }
         },
         confirmButton = {
+            // Button to refresh the current location and weather
             Button(onClick = {
                 locationProvider.requestLocation { coords ->
                     coords?.let { viewModel.updateWeather(it.latitude, it.longitude) }
@@ -494,6 +533,9 @@ fun WeatherDialog(viewModel: GameViewModel, onDismiss: () -> Unit, onNavigateToS
     )
 }
 
+/**
+ * A small UI component representing a single weather bonus entry.
+ */
 @Composable
 fun WeatherBonusItem(title: String, desc: String, isActive: Boolean) {
     Surface(

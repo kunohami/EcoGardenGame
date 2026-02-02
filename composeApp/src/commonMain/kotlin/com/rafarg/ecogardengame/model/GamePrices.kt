@@ -71,16 +71,16 @@ object GamePrices {
     fun libraryPrice(cat: String, index: Int): Int {
         return when(cat) {
             "tomato" -> index * 100
-            "broccoli" -> index * 150
-            "bell_pepper" -> index * 200
-            "garlic" -> index * 250
-            "purple_onion" -> index * 300
-            "squash" -> index * 350
-            "apple" -> index * 350
-            "plagues" -> index * 350
-            "farmers" -> index * 350
-            "pesticides" -> index * 300
-            "genetic" -> index * 300
+            "broccoli" -> index * 100
+            "bell_pepper" -> index * 100
+            "garlic" -> index * 100
+            "purple_onion" -> index * 100
+            "squash" -> index * 100
+            "apple" -> index * 100
+            "plagues" -> index * 150
+            "farmers" -> index * 100
+            "pesticides" -> index * 150
+            "genetic" -> index * 150
             else -> index * 100
         }
     }

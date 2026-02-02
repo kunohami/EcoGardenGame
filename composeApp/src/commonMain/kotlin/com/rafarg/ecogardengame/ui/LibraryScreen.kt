@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.data.ArtRepository
@@ -33,14 +34,20 @@ import ecogardengame.composeapp.generated.resources.coin_strip
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * LibraryScreen is a dual-purpose screen that houses:
+ * 1. The "Knowledge" section: Unlockable facts and information about gardening and sustainability.
+ * 2. The "Gallery" section: A collection of unlockable game art.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(viewModel: GameViewModel) {
+    // UI state for navigation within the library
     var selectedCategory by remember { mutableStateOf<LibraryCategory?>(null) }
     var entryToShowInDialog by remember { mutableStateOf<LibraryEntry?>(null) }
     var selectedTab by remember { mutableStateOf(0) } // 0: Knowledge, 1: Gallery
     
-    // Gallery state
+    // Gallery specific state
     var selectedArtIndex by remember { mutableStateOf<Int?>(null) }
     var artToBuy by remember { mutableStateOf<ArtEntry?>(null) }
     val unlockedArt = ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }
@@ -52,12 +59,12 @@ fun LibraryScreen(viewModel: GameViewModel) {
     val currentLang = stringResource(Res.string.language_title)
     val isSpanish = currentLang.contains("Idioma")
 
-    // Handle back button when in a category or in gallery fullscreen
+    // BackHandler handles the system back button (or swipe) to navigate levels within the UI
     BackHandler(enabled = selectedCategory != null || selectedArtIndex != null) {
         if (selectedArtIndex != null) {
-            selectedArtIndex = null
+            selectedArtIndex = null // Close fullscreen viewer
         } else {
-            selectedCategory = null
+            selectedCategory = null // Back to main library menu
         }
     }
 
@@ -69,7 +76,9 @@ fun LibraryScreen(viewModel: GameViewModel) {
     ) {
         val currentCategory = selectedCategory
         if (currentCategory == null) {
-            // Header with Library Front
+            // --- MAIN LIBRARY MENU ---
+            
+            // Header: Visual representation of a library building
             val libraryFrontResource = if (isSpanish) {
                 Res.drawable.libraryfrontspanish_strip
             } else {
@@ -89,12 +98,12 @@ fun LibraryScreen(viewModel: GameViewModel) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Tab Buttons
+            // --- TAB NAVIGATION ---
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Knowledge Tab
+                // Knowledge Tab Button
                 val knowledgeRes = if (isSpanish) Res.drawable.knowledgespanish_strip else Res.drawable.knowledgeenglish_strip
                 Box(
                     modifier = Modifier
@@ -117,7 +126,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
                     )
                 }
 
-                // Gallery Tab
+                // Gallery Tab Button
                 val galleryRes = if (isSpanish) Res.drawable.galleryspanish_strip else Res.drawable.galleryenglish_strip
                 Box(
                     modifier = Modifier
@@ -143,8 +152,9 @@ fun LibraryScreen(viewModel: GameViewModel) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            // --- TAB CONTENT ---
             if (selectedTab == 0) {
-                // Knowledge Content
+                // Knowledge: List of categories (e.g., Composting, Water conservation)
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -157,9 +167,9 @@ fun LibraryScreen(viewModel: GameViewModel) {
                     }
                 }
             } else {
-                // Gallery Content
+                // Gallery: Grid of art pieces
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
+                    columns = GridCells.Fixed(4), // 4 items per row
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     contentPadding = PaddingValues(8.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -176,8 +186,10 @@ fun LibraryScreen(viewModel: GameViewModel) {
                             textColor = primaryText,
                             onClick = {
                                 if (isUnlocked) {
+                                    // Open in fullscreen if already owned
                                     selectedArtIndex = unlockedArt.indexOfFirst { it.id == art.id }
                                 } else {
+                                    // Show purchase prompt if locked
                                     artToBuy = art
                                 }
                             }
@@ -186,7 +198,8 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 }
             }
         } else {
-            // Category Detail View
+            // --- CATEGORY DETAIL VIEW ---
+            // Shown when a specific knowledge category is selected
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = { selectedCategory = null }) {
                     Text(stringResource(Res.string.back))
@@ -196,10 +209,8 @@ fun LibraryScreen(viewModel: GameViewModel) {
                 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Money counter overlayed top-right in facts view
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                // Money display
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     SpriteAnimation(
                         painter = painterResource(Res.drawable.coin_strip),
                         frameCount = 3,
@@ -231,7 +242,9 @@ fun LibraryScreen(viewModel: GameViewModel) {
         }
     }
 
-    // Knowledge Dialog
+    // --- DIALOGS ---
+
+    // 1. Knowledge Dialog: Shows the full text of an unlocked fact
     entryToShowInDialog?.let { entry ->
         AlertDialog(
             onDismissRequest = { entryToShowInDialog = null },
@@ -246,7 +259,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
         )
     }
 
-    // Gallery Purchase Dialog
+    // 2. Gallery Purchase Dialog: Prompt to buy a new art piece
     artToBuy?.let { art ->
         val artName = if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
             stringResource(art.nameRes)
@@ -279,7 +292,7 @@ fun LibraryScreen(viewModel: GameViewModel) {
         )
     }
 
-    // Gallery Fullscreen Viewer
+    // 3. Fullscreen Viewer: Allows swiping through unlocked art pieces
     selectedArtIndex?.let { startIndex ->
         ArtViewerDialog(
             artList = unlockedArt,
@@ -289,6 +302,9 @@ fun LibraryScreen(viewModel: GameViewModel) {
     }
 }
 
+/**
+ * A card representing a category of knowledge (e.g. "Water").
+ */
 @Composable
 fun CategoryCard(category: LibraryCategory, labelColor: Color, wavy: Boolean, onClick: (LibraryCategory) -> Unit) {
     Card(
@@ -304,16 +320,20 @@ fun CategoryCard(category: LibraryCategory, labelColor: Color, wavy: Boolean, on
             modifier = Modifier.padding(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(category.icon, fontSize = 32.sp)
+            Text(category.icon, fontSize = 32.sp) // Emoji icon
             Spacer(modifier = Modifier.width(16.dp))
             Text(stringResource(category.nameRes), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.weight(1f))
+            // Progress indicator (e.g. "3 / 10")
             val unlockedCount = category.entries.count { it.isUnlocked }
             Text("$unlockedCount / 10", style = MaterialTheme.typography.labelSmall, color = labelColor)
         }
     }
 }
 
+/**
+ * A list item representing a specific fact or information piece.
+ */
 @Composable
 fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, onShowContent: (LibraryEntry) -> Unit) {
     val lockColor = if (wavy) Color.White.copy(alpha = 0.5f) else Color.Gray
@@ -339,6 +359,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
                     fontWeight = FontWeight.Bold,
                     color = if (entry.isUnlocked) MaterialTheme.colorScheme.onSecondaryContainer else lockColor
                 )
+                // If locked, show the price tag
                 if (!entry.isUnlocked) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -351,6 +372,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("${entry.cost.money}", style = MaterialTheme.typography.labelSmall, color = lockColor)
                         }
+                        // Vegetable requirements
                         entry.cost.vegetableCosts.forEach { cost ->
                             val emoji = viewModel.itemsList.find { it.id == cost.key }?.particleEmoji ?: ""
                             Spacer(modifier = Modifier.width(8.dp))
@@ -360,6 +382,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
                 }
             }
             
+            // Show checkmark if already owned
             if (entry.isUnlocked) {
                 SpriteAnimation(
                     painter = painterResource(Res.drawable.greentick_strip),
@@ -367,6 +390,7 @@ fun EntryListItem(entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, 
                     modifier = Modifier.size(40.dp)
                 )
             } else {
+                // Otherwise show the buy button
                 val canAfford = viewModel.canAfford(entry.cost)
                 Button(
                     onClick = { viewModel.tryUnlockLibraryEntry(entry) },
