@@ -28,6 +28,9 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
+/**
+ * Data class representing a small piece of garlic that appears after an explosion.
+ */
 class GarlicPiece(
     val id: Long,
     val animatableX: Animatable<Float, *>,
@@ -37,6 +40,12 @@ class GarlicPiece(
     var isVisible by mutableStateOf(isVisibleInitial)
 }
 
+/**
+ * Garlic vegetable implementation.
+ * Mechanics: Requires 10 clicks to "explode" into multiple small cloves. 
+ * The player must then click all cloves to receive a large bonus.
+ * Modifier "Shake to Harvest" allows collecting multiple cloves by shaking the device.
+ */
 class Garlic : BaseVegetable() {
     override val id: String = "garlic"
     override val nameRes = Res.string.item_garlic
@@ -87,6 +96,7 @@ class Garlic : BaseVegetable() {
         val isClusterActive = activeModifiers.any { it.id == "garlic_cluster" && it.isEnabled }
         val isShakeActive = activeModifiers.any { it.id == "garlic_shake" && it.isEnabled }
 
+        // Visual vibration effect that increases as clickCount approach 10
         val vibrationIntensityVal = (clickCount.toFloat() / 10f) * 10f
         val infiniteTransition = rememberInfiniteTransition()
         val vibX by infiniteTransition.animateFloat(
@@ -98,7 +108,11 @@ class Garlic : BaseVegetable() {
             )
         )
 
-        // Function to collect pieces (either by click or by shake)
+        /**
+         * Collects garlic cloves and handles the final reward logic once all pieces are gone.
+         * @param count Number of pieces to collect (used for shake).
+         * @param pieceToCollect Specific piece if clicked manually.
+         */
         fun collectPieces(count: Int, pieceToCollect: GarlicPiece? = null) {
             val piecesToProcess = if (pieceToCollect != null) {
                 listOf(pieceToCollect)
@@ -115,7 +129,7 @@ class Garlic : BaseVegetable() {
             piecesToProcess.forEach { piece ->
                 piece.isVisible = false
                 
-                // Final reward logic
+                // When the last piece is collected, grant the big explosion reward
                 if (pieces.none { it.isVisible }) {
                     val multiplier = if (isClusterActive) GamePrices.MULTIPLIER_GARLIC_CLUSTER else 1.0f
                     val bonusRewards = listOf(
@@ -141,6 +155,7 @@ class Garlic : BaseVegetable() {
                     }
                     flyingParticles.addAll(newOnes)
                     
+                    // Reset state
                     isExploded = false
                     clickCount = 0
                     pieces.clear()
@@ -148,7 +163,7 @@ class Garlic : BaseVegetable() {
             }
         }
 
-        // Shake detection logic
+        // Setup accelerometer listener for "Shake to Harvest"
         DisposableEffect(isExploded, isShakeActive) {
             if (isExploded && isShakeActive) {
                 startListeningForShake {
@@ -162,6 +177,7 @@ class Garlic : BaseVegetable() {
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (!isExploded) {
+                // Render main Garlic bulb
                 Box(contentAlignment = Alignment.Center) {
                     SpriteAnimation(
                         painter = painterResource(resource),
@@ -180,6 +196,7 @@ class Garlic : BaseVegetable() {
                             ) {
                                 clickCount++
                                 if (clickCount >= 10) {
+                                    // Trigger explosion
                                     pieces.clear()
                                     val pieceCount = if (isClusterActive) 20 else 10
                                     repeat(pieceCount) {
@@ -196,6 +213,7 @@ class Garlic : BaseVegetable() {
                                     }
                                     isExploded = true
                                 } else {
+                                    // Normal click reward
                                     val finalRewards = onVegetableClick(baseRewards)
                                     scope.launch {
                                         scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
@@ -214,6 +232,7 @@ class Garlic : BaseVegetable() {
                     )
                 }
             } else {
+                // Render scattered cloves
                 pieces.forEach { piece ->
                     key(piece.id) {
                         if (piece.isVisible) {
@@ -238,7 +257,6 @@ class Garlic : BaseVegetable() {
                                             interactionSource = remember { MutableInteractionSource() },
                                             indication = null
                                         ) {
-                                            // Fix: Pass the specific piece to ensure the clicked one disappears
                                             collectPieces(1, piece)
                                         }
                                 )

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
+import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -23,7 +24,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Button(onClick = onBack) {
-                Text(stringResource(Res.string.back))
+                Text(stringResource(Res.string.back_label))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(stringResource(Res.string.stats_title), style = MaterialTheme.typography.displaySmall)
@@ -47,16 +48,16 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("🪙 Money", style = MaterialTheme.typography.labelLarge)
-                    Text("Now: ${viewModel.money}", style = MaterialTheme.typography.bodyMedium)
-                    Text("Total: ${viewModel.totalMoneyEarned}", style = MaterialTheme.typography.bodySmall)
+                    Text("🪙 ${stringResource(Res.string.stats_money)}", style = MaterialTheme.typography.labelLarge)
+                    Text("${stringResource(Res.string.stats_now)}: ${viewModel.money}", style = MaterialTheme.typography.bodyMedium)
+                    Text("${stringResource(Res.string.stats_total)}: ${viewModel.totalMoneyEarned}", style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Fruit Harvested", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.Start))
+        Text(stringResource(Res.string.stats_fruits_harvested), style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.Start))
         
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -72,8 +73,8 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     headlineContent = { Text(stringResource(item.nameRes)) },
                     supportingContent = { 
                         Column {
-                            Text("Current: $current")
-                            Text("Total: $total")
+                            Text("${stringResource(Res.string.stats_current)}: $current")
+                            Text("${stringResource(Res.string.stats_total)}: $total")
                         }
                     },
                     trailingContent = { 

@@ -3,6 +3,14 @@ package com.rafarg.ecogardengame.model
 import org.jetbrains.compose.resources.StringResource
 import ecogardengame.composeapp.generated.resources.*
 
+/**
+ * Data class representing an in-game achievement.
+ * @property id Unique identifier for the achievement.
+ * @property nameRes Resource ID for the achievement's name.
+ * @property descriptionRes Resource ID for the description of how to earn it.
+ * @property emoji The emoji icon associated with the achievement.
+ * @property checkEarned Lambda function that defines the logic to determine if the achievement is met.
+ */
 data class Achievement(
     val id: String,
     val nameRes: StringResource,
@@ -11,6 +19,10 @@ data class Achievement(
     val checkEarned: (GameItemProvider) -> Boolean
 )
 
+/**
+ * Interface that provides access to the necessary game data for checking achievement progress.
+ * Implemented by the GameViewModel.
+ */
 interface GameItemProvider {
     val items: List<GameItem>
     val globalUpgrades: List<GlobalUpgrade>
@@ -20,9 +32,12 @@ interface GameItemProvider {
     fun getArtCount(): Int
 }
 
+/**
+ * Data repository containing all the achievements available in the game.
+ */
 object AchievementRepository {
     val achievements = listOf(
-        // --- FRUIT UNLOCKS ---
+        // --- PROGRESSION ACHIEVEMENTS ---
         Achievement(
             id = "unlock_all_fruits",
             nameRes = Res.string.ach_master_gardener_name,
@@ -31,7 +46,6 @@ object AchievementRepository {
             checkEarned = { provider -> provider.items.all { it.unlocked } }
         ),
         
-        // --- MODIFIERS ---
         Achievement(
             id = "unlock_all_modifiers",
             nameRes = Res.string.ach_geneticist_name,
@@ -44,7 +58,6 @@ object AchievementRepository {
             }
         ),
 
-        // --- UPGRADES ---
         Achievement(
             id = "unlock_all_upgrades",
             nameRes = Res.string.ach_shopaholic_name,
@@ -53,7 +66,7 @@ object AchievementRepository {
             checkEarned = { provider -> provider.globalUpgrades.all { it.isMaxLevel } }
         ),
 
-        // --- SQUASH SPEED ---
+        // --- SKILL ACHIEVEMENTS ---
         Achievement(
             id = "squash_sonic_speed",
             nameRes = Res.string.ach_sonic_squash_name,
@@ -64,7 +77,6 @@ object AchievementRepository {
             }
         ),
 
-        // --- TOMATO CRITICAL ---
         Achievement(
             id = "tomato_critical_master",
             nameRes = Res.string.ach_tomato_sniper_name,
@@ -105,7 +117,7 @@ object AchievementRepository {
             checkEarned = { it.totalClicks >= 20000 }
         ),
 
-        // --- LIBRARY CATEGORIES ---
+        // --- KNOWLEDGE (LIBRARY) ACHIEVEMENTS ---
         Achievement(
             id = "lib_tomato_pro",
             nameRes = Res.string.ach_tomato_expert_name,
@@ -184,23 +196,13 @@ object AchievementRepository {
             checkEarned = { provider -> provider.libraryCategories.find { it.id == "genetic" }?.entries?.all { it.isUnlocked } ?: false }
         ),
 
-        // --- ART GALLERY ---
+        // --- ART GALLERY ACHIEVEMENT ---
         Achievement(
             id = "art_collector",
             nameRes = Res.string.ach_art_collector_name,
             descriptionRes = Res.string.ach_art_collector_desc,
             emoji = "🎨",
-            checkEarned = { provider -> 
-                val totalArt = provider.getArtCount()
-                if (totalArt == 0) false else {
-                    // This is a bit tricky since we don't have the list of IDs here directly
-                    // We'll rely on the provider implementation
-                    (0 until totalArt).all { index -> true } // Placeholder, logic in checkEarned needs better provider access
-                    // Better approach: GameViewModel will implement getArtCount and check if all are unlocked
-                    // For now, I'll update checkEarned in GameViewModel
-                    false // will be handled by viewModel.checkAchievements override or ArtRepository check
-                }
-            }
+            checkEarned = { false } // Logic override is implemented in GameViewModel.checkAchievements
         )
     )
 }

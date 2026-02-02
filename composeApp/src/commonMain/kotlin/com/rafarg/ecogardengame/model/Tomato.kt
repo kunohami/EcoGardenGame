@@ -25,6 +25,11 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+/**
+ * Tomato vegetable implementation.
+ * Mechanics: Every 5 seconds it enters a "precision window" where it grows, vibrates, 
+ * and glows. Clicking during this window grants a massive bonus.
+ */
 class Tomato : BaseVegetable() {
     override val id: String = "tomato"
     override val nameRes = Res.string.item_tomato
@@ -40,7 +45,7 @@ class Tomato : BaseVegetable() {
         Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_TOMATO, countValue = 0)
     )
 
-    // Track critical hits for achievement
+    /** Counter for critical hits (precision clicks) to track achievement progress. */
     var criticalHits by mutableStateOf(0)
 
     override val modifiers: List<GameplayModifier> = listOf(
@@ -69,13 +74,7 @@ class Tomato : BaseVegetable() {
         var currentTime by remember { mutableStateOf(0L) }
         var lastClickTime by remember { mutableStateOf(0L) }
 
-        // Acceder a la información del clima a través de una composición local o similar
-        // Para simplificar, asumiremos que el ViewModel está accesible o pasamos el estado
-        // Pero como Content es una función de la interfaz, usaremos un truco visual o esperaremos a que el GameViewModel maneje la lógica de recompensas.
-        // ACTUALIZACIÓN: La duración del ciclo la manejaremos aquí si podemos detectar la tormenta.
-        
-        val hasPrecisionVibration = activeModifiers.any { it.id == "tomato_precision_vibration" && it.isEnabled }
-
+        // Start internal timer for the precision cycle
         LaunchedEffect(Unit) {
             var firstFrame = true
             while(true) {
@@ -89,22 +88,24 @@ class Tomato : BaseVegetable() {
             }
         }
 
-        // --- DINAMIC CYCLE DURATION (Thunderstorm Bonus) ---
-        // Buscamos si hay una tormenta activa en el ViewModel (esto requiere que el ViewModel sea accesible)
-        // Por consistencia con el diseño actual, el ciclo de 5s es visual.
-        val cycleDuration = 5000f // Default
-        
+        // --- DYNAMIC CYCLE DURATION ---
+        // Cycle is 5 seconds. Precision window is the last 10% of the cycle.
+        val cycleDuration = 5000f
         val elapsed = (currentTime - cycleStartTime).coerceAtLeast(0L)
         val cycleProgress = (elapsed % cycleDuration.toLong()) / cycleDuration
         
+        // Active when progress > 90% and hasn't been clicked recently
         val isPrecisionWindowActive = cycleProgress > 0.90f && (currentTime - lastClickTime) > 1500
 
+        // Haptic feedback for the modifier "Haptic Timing"
+        val hasPrecisionVibration = activeModifiers.any { it.id == "tomato_precision_vibration" && it.isEnabled }
         LaunchedEffect(isPrecisionWindowActive) {
             if (isPrecisionWindowActive && hasPrecisionVibration && vibrationEnabled) {
                 vibrate(30)
             }
         }
 
+        // Calculate visual vibration based on cycle progress
         val vibrationIntensityVal = cycleProgress * 15f
         val vibrationValue = if (cycleProgress > 0.1f) {
             (sin(currentTime.toDouble() / 30.0) * vibrationIntensityVal.toDouble()).toFloat()
@@ -114,6 +115,7 @@ class Tomato : BaseVegetable() {
         val shineAlpha = cycleProgress
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            // Background glow effect
             Canvas(modifier = Modifier.size(300.dp)) {
                 drawCircle(
                     brush = Brush.radialGradient(
@@ -147,6 +149,7 @@ class Tomato : BaseVegetable() {
                         val now = currentTime
                         val isPrecisionClick = isPrecisionWindowActive
                         
+                        // Define rewards based on whether it was a precision click or a normal click
                         val rewards = if (isPrecisionClick) {
                             criticalHits++
                             listOf(
@@ -159,13 +162,14 @@ class Tomato : BaseVegetable() {
 
                         val finalRewards = onVegetableClick(rewards)
                         lastClickTime = now
-                        cycleStartTime = now
+                        cycleStartTime = now // Reset cycle on click
 
                         scope.launch {
                             punchScale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             punchScale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                         }
                         
+                        // Particle creation logic
                         val newOnes = createRewardParticles(finalRewards)
                         val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                         val overflow = (activeCount + newOnes.size) - 20

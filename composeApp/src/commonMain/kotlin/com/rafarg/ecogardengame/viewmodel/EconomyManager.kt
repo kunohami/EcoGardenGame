@@ -6,13 +6,31 @@ import androidx.compose.runtime.setValue
 import com.rafarg.ecogardengame.model.ItemCost
 import com.rafarg.ecogardengame.model.Reward
 
+/**
+ * Manages the game economy, including currency (money), click counts, 
+ * and fruit/vegetable inventory.
+ */
 class EconomyManager {
+    /** Total number of clicks performed by the user across all sessions. */
     var totalClicks by mutableStateOf(0)
+    
+    /** Current available money to spend. */
     var money by mutableStateOf(0)
+    
+    /** Total money earned throughout the entire game. */
     var totalMoneyEarned by mutableStateOf(0)
+    
+    /** Current inventory counts for each type of fruit/vegetable. */
     var fruitCounts by mutableStateOf<Map<String, Int>>(emptyMap())
+    
+    /** Total amount harvested for each type of fruit/vegetable throughout the game. */
     var totalFruitHarvested by mutableStateOf<Map<String, Int>>(emptyMap())
 
+    /**
+     * Processes and adds rewards (money and items) to the user's account.
+     * @param rewards The list of rewards to be added.
+     * @param currentItemId The ID of the item currently being harvested.
+     */
     fun addRewards(rewards: List<Reward>, currentItemId: String) {
         val newFruitCounts = fruitCounts.toMutableMap()
         val newTotalHarvested = totalFruitHarvested.toMutableMap()
@@ -32,6 +50,11 @@ class EconomyManager {
         totalFruitHarvested = newTotalHarvested
     }
 
+    /**
+     * Checks if the user has enough resources to afford a certain cost.
+     * @param cost The required money and items.
+     * @return True if the user can afford it, false otherwise.
+     */
     fun canAfford(cost: ItemCost): Boolean {
         if (money < cost.money) return false
         cost.vegetableCosts.forEach { (vegId, amount) ->
@@ -40,6 +63,11 @@ class EconomyManager {
         return true
     }
 
+    /**
+     * Deducts the specified cost from the user's resources.
+     * Assumes canAfford has been called before.
+     * @param cost The resources to be deducted.
+     */
     fun spend(cost: ItemCost) {
         money -= cost.money
         val newCounts = fruitCounts.toMutableMap()
@@ -49,10 +77,16 @@ class EconomyManager {
         fruitCounts = newCounts
     }
 
+    /**
+     * Increments the total click counter.
+     */
     fun addClicks(count: Int = 1) {
         totalClicks += count
     }
 
+    /**
+     * Applies loaded save data to the current session.
+     */
     fun applySaveData(
         clicks: Int,
         currentMoney: Int,
@@ -67,6 +101,9 @@ class EconomyManager {
         totalFruitHarvested = totalHarvested
     }
 
+    /**
+     * Resets all economic progress to zero.
+     */
     fun reset() {
         totalClicks = 0
         money = 0
@@ -75,9 +112,11 @@ class EconomyManager {
         totalFruitHarvested = emptyMap()
     }
     
+    /**
+     * Debug function to grant a large amount of resources for testing.
+     */
     fun debugAddResources() {
         money += 100000
         totalMoneyEarned += 100000
-        // Note: Individual item counts update would need item list, handled in ViewModel or passed here
     }
 }

@@ -28,6 +28,13 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 
+/**
+ * Purple Onion vegetable implementation.
+ * Mechanics: Teleports to a random location on the screen and performs a quick rotation. 
+ * Clicking while it's rotating grants a higher reward.
+ * Modifiers allow adding more onions (at the cost of reduced individual bonus) 
+ * or increasing the duration of the rotation window.
+ */
 class PurpleOnion : BaseVegetable() {
     override val id: String = "purple_onion"
     override val nameRes = Res.string.item_purple_onion
@@ -38,7 +45,6 @@ class PurpleOnion : BaseVegetable() {
     override val particleEmoji: String = "🧅"
     override val tutorialRes = Res.string.tutorial_purple_onion
 
-    // Base reward when NOT spinning: 1 money, 1 onion
     override val baseRewards: List<Reward> get() = listOf(
         Reward(emoji = particleEmoji, countValue = 1, resource = resource),
         Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_PURPLE_ONION, countValue = 0)
@@ -80,6 +86,7 @@ class PurpleOnion : BaseVegetable() {
         val hasPlus2 = activeModifiers.any { it.id == "purple_onion_plus_2" && it.isEnabled }
         val hasLongSpin = activeModifiers.any { it.id == "purple_onion_long_spin" && it.isEnabled }
         
+        // Calculate number of onions and reward reduction based on active modifiers
         val onionCount = when {
             hasPlus2 -> 3
             hasPlus1 -> 2
@@ -100,6 +107,7 @@ class PurpleOnion : BaseVegetable() {
         val itemSize = 130.dp
         val itemSizePx = with(density) { itemSize.toPx() }
 
+        // Track positions of all onions to avoid overlaps during teleportation
         val onionPositions = remember { mutableStateListOf<Pair<Float, Float>>() }
         if (onionPositions.size != onionCount) {
             onionPositions.clear()
@@ -140,6 +148,9 @@ class PurpleOnion : BaseVegetable() {
         }
     }
 
+    /**
+     * Composable representing a single onion instance with its own teleportation and spin logic.
+     */
     @Composable
     private fun SingleOnion(
         modifier: Modifier,
@@ -163,6 +174,10 @@ class PurpleOnion : BaseVegetable() {
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
 
+        /**
+         * Teleports the onion to a new random position, ensuring no overlaps with other onions.
+         * Triggers a rotation animation upon reappearing.
+         */
         suspend fun teleport() {
             canClick = false
             alpha.animateTo(0f, tween(100))
@@ -228,8 +243,9 @@ class PurpleOnion : BaseVegetable() {
                             if (!canClick) return@clickable
                             canClick = false
 
+                            // Check if the onion was clicked while spinning
                             val isRotating = rotation.value > 0 && rotation.value < 360
-                            var rewards = if (isRotating) {
+                            val rewards = if (isRotating) {
                                 listOf(
                                     Reward(emoji = particleEmoji, countValue = 1, resource = resource),
                                     Reward(emoji = "🪙", moneyValue = (GamePrices.REWARD_ONION_SPIN_MONEY_BASE - coinReduction).coerceAtLeast(1), countValue = 0)

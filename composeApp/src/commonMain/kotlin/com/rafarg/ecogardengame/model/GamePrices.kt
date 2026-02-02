@@ -1,7 +1,8 @@
 package com.rafarg.ecogardengame.model
 
 /**
- * Centralized game prices, costs and rewards.
+ * Centralized game prices, costs and reward values.
+ * This object serves as a single source of truth for the game's economic balance.
  */
 object GamePrices {
     
@@ -12,11 +13,12 @@ object GamePrices {
     val UNLOCK_GARLIC = ItemCost(money = 750, vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15))
     val UNLOCK_PURPLE_ONION = ItemCost(money = 500, vegetableCosts = mapOf("tomato" to 100, "broccoli" to 25, "bell_pepper" to 10))
     val UNLOCK_SQUASH = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 200, "broccoli" to 75, "bell_pepper" to 30, "purple_onion" to 15))
-    val UNLOCK_APPLE = ItemCost(money = 2000, vegetableCosts = mapOf("tomato" to 500, "squash" to 50))
+    val UNLOCK_APPLE = ItemCost(money = 1500, vegetableCosts = mapOf("tomato" to 400, "squash" to 75, "bell_pepper" to 30, "purple_onion" to 15))
 
     // --- GLOBAL UPGRADES ---
     val UPGRADE_PRECISE_HARVEST = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 100))
-    val UPGRADE_LUCKY_HARVEST = ItemCost(money = 5000, vegetableCosts = mapOf("apple" to 50, "garlic" to 50))
+    val UPGRADE_LUCKY_HARVEST = ItemCost(money = 1500, vegetableCosts = mapOf("apple" to 50, "garlic" to 50))
+    val UPGRADE_WEATHER_BONUS = ItemCost(money = 1000)
 
     // --- MODIFIER COSTS ---
     val MOD_TOMATO_HAPTIC = ItemCost(money = 300, vegetableCosts = mapOf("tomato" to 150))
@@ -42,17 +44,17 @@ object GamePrices {
     val REWARD_MONEY_APPLE = 1
 
     // --- SPECIAL REWARDS ---
-    // Tomato Precision (Critical)
+    // Tomato Precision (Critical Hits)
     val REWARD_TOMATO_CRIT_MONEY = 30
     val REWARD_TOMATO_CRIT_COUNT = 20
 
-    // Broccoli Fast Multiplier
+    // Broccoli Overclocked Multiplier
     val MULTIPLIER_BROCCOLI_FAST = 2
 
     // Bell Pepper Turbo Multiplier
     val MULTIPLIER_BELL_PEPPER_TURBO = 2
 
-    // Garlic Explosion Bonus
+    // Garlic Explosion Bonuses
     val REWARD_GARLIC_EXPLOSION_MONEY = 20
     val REWARD_GARLIC_EXPLOSION_COUNT = 10
     val MULTIPLIER_GARLIC_CLUSTER = 2.5f
@@ -60,10 +62,12 @@ object GamePrices {
     // Purple Onion Spinning Bonus
     val REWARD_ONION_SPIN_MONEY_BASE = 5
 
-    // Apple High Frequency
+    // Apple High Frequency Bonus
     val REWARD_APPLE_HIGH_FREQ_MONEY = 5
 
-    // --- LIBRARY COSTS ---
+    /**
+     * Helper function to calculate the library price based on category and fact index.
+     */
     fun libraryPrice(cat: String, index: Int): Int {
         return when(cat) {
             "tomato" -> index * 100
@@ -72,11 +76,11 @@ object GamePrices {
             "garlic" -> index * 250
             "purple_onion" -> index * 300
             "squash" -> index * 350
-            "apple" -> index * 400
-            "plagues" -> index * 500
-            "farmers" -> index * 450
-            "pesticides" -> index * 600
-            "genetic" -> index * 1000
+            "apple" -> index * 350
+            "plagues" -> index * 350
+            "farmers" -> index * 350
+            "pesticides" -> index * 300
+            "genetic" -> index * 300
             else -> index * 100
         }
     }

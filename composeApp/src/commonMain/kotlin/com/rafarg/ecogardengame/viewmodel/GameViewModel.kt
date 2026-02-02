@@ -29,6 +29,9 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * Data class representing a player's public profile for the leaderboard/search.
+ */
 data class PublicProfile(
     val id: String,
     val username: String,
@@ -36,6 +39,10 @@ data class PublicProfile(
     val achievements: List<String>
 )
 
+/**
+ * The main ViewModel for the game, orchestrating state between various managers 
+ * (Economy, Profile, Weather) and handling data persistence.
+ */
 @OptIn(ExperimentalTime::class)
 class GameViewModel(
     private val gameRepository: GameRepository,
@@ -52,6 +59,7 @@ class GameViewModel(
     private val economyManager = EconomyManager()
 
     // --- LOADING STATE ---
+    /** Indicates if the initial game data has been loaded from the repository. */
     var isDataLoaded by mutableStateOf(false)
         private set
 
@@ -80,8 +88,9 @@ class GameViewModel(
     
     fun canAfford(cost: ItemCost) = economyManager.canAfford(cost)
 
-    // --- CPS LOGIC ---
+    // --- CPS (Clicks Per Second) LOGIC ---
     private val clickTimestamps = mutableStateListOf<Long>()
+    /** Current clicks per second, updated in real-time. */
     var currentCps by mutableStateOf(0.0f)
         private set
 
@@ -106,7 +115,7 @@ class GameViewModel(
     override var globalUpgrades = listOf(
         GlobalUpgrade("double_click_10", Res.string.upg_precise_harvest_name, Res.string.upg_precise_harvest_desc, GamePrices.UPGRADE_PRECISE_HARVEST, 5),
         GlobalUpgrade("lucky_harvest", Res.string.upg_lucky_harvest_name, Res.string.upg_lucky_harvest_desc, GamePrices.UPGRADE_LUCKY_HARVEST, 5),
-        GlobalUpgrade("weather_bonus", Res.string.upg_weather_bonus_name, Res.string.upg_weather_bonus_desc, ItemCost(money = 5000), 1)
+        GlobalUpgrade("weather_bonus", Res.string.upg_weather_bonus_name, Res.string.upg_weather_bonus_desc, GamePrices.UPGRADE_WEATHER_BONUS, 1)
     )
     private var globalClickCounter = 0
 
@@ -125,6 +134,7 @@ class GameViewModel(
     override fun isArtUnlocked(artId: String): Boolean = unlockedArtIds.contains(artId)
     override fun getArtCount(): Int = ArtRepository.artEntries.size
     
+    /** Unlocks a piece of art from the gallery if the user can afford it. */
     fun unlockArt(artId: String, cost: Int) {
         val finalCost = calculateDiscountedPrice(cost)
         if (money >= finalCost && !isArtUnlocked(artId)) {
@@ -152,7 +162,8 @@ class GameViewModel(
         private set
     var showTutorial by mutableStateOf(false)
 
-    // --- STATE ---
+    // --- GAME STATE ---
+    /** The item (vegetable) currently being displayed and interacted with in the garden. */
     var currentItem by mutableStateOf<GameItem>(staticItemsList.first())
         private set
     override var items by mutableStateOf(staticItemsList)
@@ -164,6 +175,9 @@ class GameViewModel(
         startCpsTracker()
     }
 
+    /**
+     * Coroutine that updates the currentCps value by tracking click timestamps over a 1-second window.
+     */
     private fun startCpsTracker() {
         viewModelScope.launch {
             while (isActive) {
@@ -178,6 +192,7 @@ class GameViewModel(
 
     private fun currentTimeMillis(): Long = Clock.System.now().toEpochMilliseconds()
 
+    /** Loads game progress from local storage. */
     private fun loadData() {
         viewModelScope.launch {
             val saveData = gameRepository.loadGameData()
@@ -187,6 +202,7 @@ class GameViewModel(
         }
     }
 
+    /** Updates the ViewModel's state based on a GameSaveData object. */
     private fun applySaveData(saveData: GameSaveData) {
         vibrationEnabled = saveData.vibrationEnabled; vibrationIntensity = saveData.vibrationIntensity
         isDarkTheme = saveData.isDarkTheme; isAutumnTheme = saveData.isAutumnTheme
@@ -216,6 +232,11 @@ class GameViewModel(
         checkAchievements(isInitialLoad = true)
     }
 
+    /**
+     * Handles a click on a vegetable, calculating rewards based on active upgrades and weather.
+     * @param rewards The base rewards for the clicked item.
+     * @return The final rewards granted after all modifiers are applied.
+     */
     fun onVegetableClick(rewards: List<Reward>): List<Reward> {
         economyManager.addClicks()
         globalClickCounter++
@@ -232,6 +253,7 @@ class GameViewModel(
         saveData(); return finalRewards
     }
 
+    /** Checks if any new achievements have been earned. */
     private fun checkAchievements(isInitialLoad: Boolean = false) {
         achievements.forEach { achievement ->
             if (!unlockedAchievements.contains(achievement.id)) {
@@ -246,6 +268,7 @@ class GameViewModel(
         }
     }
 
+    /** Displays a temporary UI toast for a newly unlocked achievement. */
     private fun showAchievementToast(achievement: Achievement) {
         viewModelScope.launch {
             achievementToast = achievement
@@ -254,12 +277,15 @@ class GameViewModel(
         }
     }
 
+    /** Applies active discounts (e.g., from weather) to a price. */
     fun calculateDiscountedPrice(basePrice: Int): Int = 
         if (isWeatherBonusActive && weatherManager.isCloudy()) (basePrice * 0.9).toInt() else basePrice
 
+    /** Gets the drawable resource associated with a specific avatar ID. */
     fun getAvatarResource(id: String): DrawableResource =
         itemsList.find { it.id == id }?.resource ?: ArtRepository.artEntries.find { it.id == id }?.resource ?: Res.drawable.tomato_strip
 
+    /** Attempts to level up a global upgrade. */
     fun tryUnlockGlobalUpgrade(upgrade: GlobalUpgrade) {
         val nextCost = upgrade.getNextLevelCost()
         if (!upgrade.isMaxLevel && canAfford(nextCost)) {
@@ -269,6 +295,7 @@ class GameViewModel(
         }
     }
 
+    /** Attempts to unlock a specific entry in the library. */
     fun tryUnlockLibraryEntry(entry: LibraryEntry) {
         val finalMoneyCost = calculateDiscountedPrice(entry.cost.money)
         val adjustedCost = entry.cost.copy(money = finalMoneyCost)
@@ -279,6 +306,7 @@ class GameViewModel(
         }
     }
 
+    // --- SETTINGS UPDATERS ---
     fun setVibration(enabled: Boolean) { vibrationEnabled = enabled; saveData() }
     fun updateVibrationIntensity(intensity: Float) { vibrationIntensity = intensity; saveData() }
     fun setTheme(dark: Boolean) { isDarkTheme = dark; saveData() }
@@ -290,6 +318,7 @@ class GameViewModel(
     fun completeTutorial() { tutorialSeen = true; showTutorial = false; saveData() }
     fun replayTutorial() { showTutorial = true }
 
+    /** Uploads current progress to Firebase Firestore. */
     fun uploadSaveToCloud(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val user = currentUser ?: return
         val now = currentTimeMillis()
@@ -306,6 +335,7 @@ class GameViewModel(
         }
     }
 
+    /** Downloads and applies game progress from Firebase Firestore. */
     fun downloadSaveFromCloud(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val user = currentUser ?: return
         isCloudLoading = true
@@ -320,6 +350,7 @@ class GameViewModel(
         }
     }
 
+    /** Creates a snapshot of the current game state for saving. */
     private fun getSaveDataSnapshot(): GameSaveData {
         val modUnlocked = mutableMapOf<String, Boolean>()
         val modEnabled = mutableMapOf<String, Boolean>()
@@ -343,8 +374,10 @@ class GameViewModel(
         )
     }
 
+    /** Selects a new item to be displayed in the garden. */
     fun selectItem(item: GameItem) { if (item.unlocked) currentItem = item }
 
+    /** Attempts to unlock a new vegetable for the garden. */
     fun tryUnlockItem(item: GameItem) {
         if (!item.unlocked && canAfford(item.unlockCost)) {
             economyManager.spend(item.unlockCost)
@@ -353,6 +386,7 @@ class GameViewModel(
         }
     }
 
+    /** Attempts to unlock a specific modifier for a vegetable. */
     fun tryUnlockModifier(modifier: GameplayModifier) {
         if (!modifier.isUnlocked && canAfford(modifier.unlockCost)) {
             economyManager.spend(modifier.unlockCost)
@@ -361,8 +395,10 @@ class GameViewModel(
         }
     }
 
+    /** Toggles an already unlocked modifier on or off. */
     fun toggleModifier(modifier: GameplayModifier) { if (modifier.isUnlocked) { modifier.isEnabled = !modifier.isEnabled; saveData() } }
 
+    /** Debug function to add a large amount of all resources. */
     fun debugAddResources() {
         economyManager.debugAddResources()
         val newCounts = fruitCounts.toMutableMap(); val newTotals = totalFruitHarvested.toMutableMap()
@@ -371,6 +407,7 @@ class GameViewModel(
         checkAchievements(); saveData()
     }
 
+    /** Resets all progress and clears local save data. */
     fun resetGame() {
         economyManager.reset()
         profileManager.username = "Farmer"; profileManager.profileImageId = "tomato"
@@ -380,5 +417,6 @@ class GameViewModel(
         unlockedArtIds.clear(); tutorialSeen = false; currentItem = items.first(); saveData()
     }
 
+    /** Saves current game state to local storage. */
     private fun saveData() { viewModelScope.launch { gameRepository.saveGameData(getSaveDataSnapshot()) } }
 }

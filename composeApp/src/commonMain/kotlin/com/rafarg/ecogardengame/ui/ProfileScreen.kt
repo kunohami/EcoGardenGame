@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.data.ArtRepository
 import com.rafarg.ecogardengame.model.Achievement
+import com.rafarg.ecogardengame.model.ArtEntry
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import com.rafarg.ecogardengame.viewmodel.PublicProfile
 import ecogardengame.composeapp.generated.resources.*
@@ -86,8 +87,9 @@ fun ProfileView(
     headerContent: @Composable () -> Unit = {}
 ) {
     // Find the current avatar in items or gallery art
+    val avatarArt = ArtRepository.artEntries.find { it.id == profileImageId }
     val avatarResource = viewModel.itemsList.find { it.id == profileImageId }?.resource 
-        ?: ArtRepository.artEntries.find { it.id == profileImageId }?.resource
+        ?: avatarArt?.resource
         ?: Res.drawable.tomato_strip // Fallback
 
     Column(
@@ -121,7 +123,7 @@ fun ProfileView(
                 ) {
                     SpriteAnimation(
                         painter = painterResource(avatarResource),
-                        frameCount = 3,
+                        frameCount = avatarArt?.frameCount ?: 3,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -224,8 +226,8 @@ fun MyProfileTab(
     }
 
     if (showAvatarDialog) {
-        val availableAvatars = (viewModel.itemsList.map { it.id to it.resource } + 
-                              ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }.map { it.id to it.resource })
+        val availableAvatars = (viewModel.itemsList.map { Triple(it.id, it.resource, 3) } + 
+                              ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }.map { Triple(it.id, it.resource, it.frameCount) })
                               .distinctBy { it.first }
 
         AlertDialog(
@@ -236,7 +238,7 @@ fun MyProfileTab(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier.height(300.dp)
                 ) {
-                    items(availableAvatars) { (id, resource) ->
+                    items(availableAvatars) { (id, resource, frames) ->
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
@@ -252,7 +254,7 @@ fun MyProfileTab(
                         ) {
                             SpriteAnimation(
                                 painter = painterResource(resource),
-                                frameCount = 3,
+                                frameCount = frames,
                                 modifier = Modifier.size(60.dp)
                             )
                         }
@@ -361,10 +363,11 @@ fun PublicProfileCard(profile: PublicProfile, viewModel: GameViewModel, onClick:
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically) {
+            val avatarArt = ArtRepository.artEntries.find { it.id == profile.profileImageId }
             val avatarRes = viewModel.itemsList.find { it.id == profile.profileImageId }?.resource 
-                ?: ArtRepository.artEntries.find { it.id == profile.profileImageId }?.resource
+                ?: avatarArt?.resource
             if (avatarRes != null) {
-                SpriteAnimation(painter = painterResource(avatarRes), frameCount = 3, modifier = Modifier.size(48.dp))
+                SpriteAnimation(painter = painterResource(avatarRes), frameCount = avatarArt?.frameCount ?: 3, modifier = Modifier.size(48.dp))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {

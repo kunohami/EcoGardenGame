@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -27,6 +28,12 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
+/**
+ * Broccoli vegetable implementation.
+ * Mechanics: Moves around the screen bouncing off the edges.
+ * Modifiers include: Giant size (more clicks needed), Speed/Overclocked (faster and more rewards), 
+ * and Air Harvest (using proximity sensor).
+ */
 class Broccoli : BaseVegetable() {
     override val id: String = "broccoli"
     override val nameRes = Res.string.item_broccoli
@@ -78,6 +85,7 @@ class Broccoli : BaseVegetable() {
         val scale = remember { Animatable(1f) }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
+        // Motion state
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
         var baseVelX by remember { mutableStateOf(4f) }
@@ -86,6 +94,7 @@ class Broccoli : BaseVegetable() {
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         
+        // Active modifier checks
         val isGiant = activeModifiers.any { it.id == "broccoli_giant" && it.isEnabled }
         val isFast = activeModifiers.any { it.id == "broccoli_speed" && it.isEnabled }
         val isAirHarvest = activeModifiers.any { it.id == "broccoli_proximity" && it.isEnabled }
@@ -98,6 +107,9 @@ class Broccoli : BaseVegetable() {
 
         var clickCounter by remember { mutableStateOf(0) }
 
+        /**
+         * Shared interaction logic for both manual clicks and proximity sensor triggers.
+         */
         val handleInteraction = {
             val currentX = posX
             val currentY = posY
@@ -106,7 +118,7 @@ class Broccoli : BaseVegetable() {
             
             if (isGiant) {
                 clickCounter++
-                if (clickCounter >= 2) {
+                if (clickCounter >= 2) { // Giant Broccoli requires 2 hits
                     clickCounter = 0
                     rewardsToGive.addAll(baseRewards)
                 }
@@ -124,7 +136,6 @@ class Broccoli : BaseVegetable() {
                     rewardsToGive
                 }
 
-                // Call ViewModel and get FINAL rewards (including global upgrades)
                 val finalRewards = onVegetableClick(basePlusMultipliers)
                 
                 val newOnes = createRewardParticles(
@@ -149,6 +160,7 @@ class Broccoli : BaseVegetable() {
             }
         }
 
+        // Animation loop for movement and bouncing
         LaunchedEffect(parentWidth, parentHeight, speedMultiplier) {
             if (parentWidth > 0 && parentHeight > 0) {
                 while (true) {
@@ -172,7 +184,7 @@ class Broccoli : BaseVegetable() {
             }
         }
 
-        // Proximity sensor logic
+        // Setup proximity sensor for "Air Harvest"
         DisposableEffect(isAirHarvest) {
             if (isAirHarvest) {
                 startListeningForProximity {
@@ -193,7 +205,7 @@ class Broccoli : BaseVegetable() {
                 },
             contentAlignment = Alignment.Center
         ) {
-            // THE MOVING BROCCOLI
+            // Render the moving Broccoli
             Box(
                 modifier = Modifier
                     .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
@@ -218,7 +230,7 @@ class Broccoli : BaseVegetable() {
                 )
             }
 
-            // STATIC PARTICLE LAYER
+            // Particle effect layer
             ParticleEffect(flyingParticles)
         }
     }

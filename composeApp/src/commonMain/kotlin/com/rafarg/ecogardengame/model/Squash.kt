@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -37,10 +38,11 @@ import kotlin.math.sqrt
 import kotlin.math.pow
 
 /**
- * Squash implementation with a "Zelda Tennis" timing gameplay.
- * Moves diagonally between two fixed points.
- * Click anywhere in the play area to slash with the sickle.
- * Includes a Speed Momentum modifier that increases speed and rewards on consecutive hits.
+ * Squash (Zucchini) vegetable implementation.
+ * Mechanics: "Zelda Tennis" / Ping-pong gameplay. The squash bounces diagonally between
+ * two corners. The player must click anywhere on the screen when the squash is near
+ * the farmer (bottom-left) to "hit" it back.
+ * Modifier "Speed Momentum" increases speed and rewards with each consecutive hit.
  */
 class Squash : BaseVegetable() {
     override val id: String = "squash"
@@ -52,7 +54,7 @@ class Squash : BaseVegetable() {
     override val particleEmoji: String = "🥒"
     override val tutorialRes = Res.string.tutorial_squash
 
-    // Track max streak for achievement
+    /** Tracks the maximum hit streak achieved in the current session. */
     var maxStreak by mutableStateOf(0)
 
     override val baseRewards: List<Reward> get() = listOf(
@@ -103,17 +105,16 @@ class Squash : BaseVegetable() {
         // --- MOVEMENT STATE ---
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
-        // 1 means moving towards Bottom-Left, -1 means moving towards Top-Right
+        // 1 means moving towards Bottom-Left (Farmer), -1 means moving towards Top-Right
         var moveDirection by remember { mutableStateOf(1) }
         
-        // Base Speed: 800 dp per second
         val baseSpeedDpPerSecond = 800.dp
-        
-        // Points defining the path
         var travelPoints by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
 
+        // Movement loop
         LaunchedEffect(parentWidth, parentHeight, consecutiveHits, isMomentumActive) {
             if (parentWidth > 0 && parentHeight > 0) {
+                // Calculate path bounds
                 val limitX = (parentWidth - itemSizePx) / 2
                 val limitY = (parentHeight - itemSizePx) / 2
                 
@@ -135,9 +136,8 @@ class Squash : BaseVegetable() {
                 val dirX = if (distance > 0) dx / distance else 0f
                 val dirY = if (distance > 0) dy / distance else 0f
 
-                // Current speed calculation
+                // Speed increases by 10% per consecutive hit if modifier is active
                 val speedMultiplier = if (isMomentumActive) {
-                    // 10% increase per hit
                     1.1.pow(consecutiveHits.toDouble()).toFloat()
                 } else 1f
                 
@@ -158,6 +158,7 @@ class Squash : BaseVegetable() {
                             posX += moveDirection * dirX * speedPxPerSecond * deltaSeconds
                             posY += moveDirection * dirY * speedPxPerSecond * deltaSeconds
                             
+                            // Check for arrival at corners
                             if (moveDirection == 1) { // Moving towards Bottom-Left
                                 if (posX <= endX && posY >= endY) {
                                     posX = endX
@@ -170,7 +171,6 @@ class Squash : BaseVegetable() {
                                     posY = startY
                                     moveDirection = 1
                                     
-                                    // Haptic feedback when hitting top-right corner
                                     if (vibrationEnabled) {
                                         vibrate(vibrationIntensity.toLong())
                                     }
@@ -194,11 +194,12 @@ class Squash : BaseVegetable() {
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    // HIT CHECK
+                    // Interaction: Slash with the sickle
                     val targetX = travelPoints?.second?.x ?: 0f
                     val targetY = travelPoints?.second?.y ?: 0f
                     val tolerancePx = itemSizePx * 0.7f
                     
+                    // Hit logic: check if the squash is within the hit zone near the farmer
                     val isNearBottomLeft = 
                         parentWidth > 0 && parentHeight > 0 && 
                         posX <= targetX + tolerancePx && 
@@ -206,7 +207,7 @@ class Squash : BaseVegetable() {
                         posY >= targetY - tolerancePx &&
                         posY <= targetY + tolerancePx
 
-                    // Slash animation
+                    // Execute slash animation regardless of hit success
                     scope.launch {
                         sickleRotation.stop()
                         sickleRotation.snapTo(0f)
@@ -215,14 +216,14 @@ class Squash : BaseVegetable() {
                     }
 
                     if (isNearBottomLeft && moveDirection == 1) {
-                        // Successful hit
+                        // Successful hit!
                         moveDirection = -1
                         consecutiveHits++
                         if (consecutiveHits > maxStreak) {
                             maxStreak = consecutiveHits
                         }
                         
-                        // Calculate final rewards with momentum bonus
+                        // Apply momentum bonuses to rewards
                         val finalRewardsBase = bonusRewards.map { reward ->
                             if (isMomentumActive && consecutiveHits > 0) {
                                 when {
@@ -260,7 +261,7 @@ class Squash : BaseVegetable() {
                         }
                         flyingParticles.addAll(newOnes)
                     } else {
-                        // Miss - reset momentum if active
+                        // Miss: Reset momentum
                         if (isMomentumActive) {
                             consecutiveHits = 0
                         }
@@ -268,7 +269,7 @@ class Squash : BaseVegetable() {
                 },
             contentAlignment = Alignment.Center
         ) {
-            // --- THE SQUASH ---
+            // Render the Squash (the "ball")
             Box(
                 modifier = Modifier
                     .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
@@ -304,16 +305,15 @@ class Squash : BaseVegetable() {
                 )
             }
 
-            // --- THE SICKLE FARMER ---
+            // Render the Sickle Farmer (the "player")
             val farmerSize = 125.dp
-            
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .size(farmerSize)
                     .offset(x = (-10).dp, y = 10.dp)
             ) {
-                // SICKLE ARM (behind the farmer)
+                // SICKLE ARM (animated)
                 val armSize = 60.dp
                 Box(
                     modifier = Modifier
@@ -327,13 +327,12 @@ class Squash : BaseVegetable() {
                             .fillMaxSize()
                             .graphicsLayer {
                                 rotationZ = sickleRotation.value - 30f
-                                // Pivot at the bottom-left of the arm box
                                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 1f)
                             }
                     )
                 }
 
-                // FARMER BODY (in front of the arm)
+                // Farmer body
                 SpriteAnimation(
                     painter = painterResource(Res.drawable.sicklefarmer_strip),
                     frameCount = 3,
@@ -341,7 +340,7 @@ class Squash : BaseVegetable() {
                 )
             }
 
-            // Particles layer
+            // Particle effect layer
             ParticleEffect(flyingParticles)
         }
     }

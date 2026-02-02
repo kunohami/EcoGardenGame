@@ -7,13 +7,17 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
+/**
+ * Data class that represents the entire state of the game for persistence.
+ * All fields have default values to allow for easy initial state creation.
+ */
 @Serializable
 data class GameSaveData(
     val totalClicks: Int = 0,
     val money: Int = 0,
     val totalMoneyEarned: Int = 0,
-    val vibrationEnabled: Boolean = false,
-    val vibrationIntensity: Float = 10f,
+    val vibrationEnabled: Boolean = true, // Default to true for new players
+    val vibrationIntensity: Float = 15f, // Default to 15ms for new players
     val isDarkTheme: Boolean = false,
     val isAutumnTheme: Boolean = false,
     val shaderBackgroundEnabled: Boolean = false,
@@ -37,13 +41,22 @@ data class GameSaveData(
     val weatherDataJson: String? = null
 )
 
+/**
+ * Repository interface for managing game data persistence.
+ */
 interface GameRepository {
+    /** Loads the game state from persistent storage. */
     suspend fun loadGameData(): GameSaveData
+    /** Saves the current game state to persistent storage. */
     suspend fun saveGameData(data: GameSaveData)
 }
 
+/**
+ * Implementation of [GameRepository] using Jetpack DataStore (Preferences).
+ */
 class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : GameRepository {
 
+    // Define keys for simple data types
     private val totalClicksKey = intPreferencesKey("total_clicks")
     private val moneyKey = intPreferencesKey("money")
     private val totalMoneyEarnedKey = intPreferencesKey("total_money_earned")
@@ -64,6 +77,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val lastWeatherUpdateTimeKey = longPreferencesKey("last_weather_update_time")
     private val weatherDataJsonKey = stringPreferencesKey("weather_data_json")
 
+    /** Set of keys that are not dynamic (not related to specific items/modifiers). */
     private val fixedKeys = setOf(
         "total_clicks", "money", "total_money_earned", "vibration_enabled",
         "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
@@ -83,6 +97,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
         val modifierUnlocked = mutableMapOf<String, Boolean>()
         val modifierEnabled = mutableMapOf<String, Boolean>()
 
+        // Iterate through all preferences to reconstruct dynamic maps
         prefs.asMap().forEach { (key, value) ->
             val name = key.name
             if (name in fixedKeys) return@forEach
@@ -102,8 +117,8 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             totalClicks = prefs[totalClicksKey] ?: 0,
             money = prefs[moneyKey] ?: 0,
             totalMoneyEarned = prefs[totalMoneyEarnedKey] ?: 0,
-            vibrationEnabled = prefs[vibrationEnabledKey] ?: false,
-            vibrationIntensity = prefs[vibrationIntensityKey] ?: 10f,
+            vibrationEnabled = prefs[vibrationEnabledKey] ?: true, // Default to true if not found
+            vibrationIntensity = prefs[vibrationIntensityKey] ?: 15f, // Default to 15f if not found
             isDarkTheme = prefs[darkThemeKey] ?: false,
             isAutumnTheme = prefs[autumnThemeKey] ?: false,
             shaderBackgroundEnabled = prefs[shaderBackgroundEnabledKey] ?: false,
@@ -130,6 +145,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
 
     override suspend fun saveGameData(data: GameSaveData) {
         dataStore.edit { prefs ->
+            // Save fixed fields
             prefs[totalClicksKey] = data.totalClicks
             prefs[moneyKey] = data.money
             prefs[totalMoneyEarnedKey] = data.totalMoneyEarned
@@ -150,6 +166,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[lastWeatherUpdateTimeKey] = data.lastWeatherUpdateTime
             data.weatherDataJson?.let { prefs[weatherDataJsonKey] = it }
 
+            // Save dynamic map entries
             data.fruitCounts.forEach { (id, count) -> prefs[intPreferencesKey("fruit_count_$id")] = count }
             data.totalFruitHarvested.forEach { (id, count) -> prefs[intPreferencesKey("total_harvested_$id")] = count }
             data.unlockedItems.forEach { (id, unlocked) -> prefs[booleanPreferencesKey("unlocked_$id")] = unlocked }
