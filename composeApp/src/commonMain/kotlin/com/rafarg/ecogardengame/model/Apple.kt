@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.ui.SpriteAnimation
 import com.rafarg.ecogardengame.util.startListeningForRotation
 import com.rafarg.ecogardengame.util.stopListeningForRotation
@@ -27,10 +26,13 @@ import kotlin.math.*
 import kotlin.random.Random
 
 /**
- * Apple vegetable implementation.
- * Mechanics: Passive harvest based on device rotation. The apple moves around a circular path.
- * The user must rotate the physical device (using the compass/gyroscope) to align a pointer
- * with the apple. When aligned, it automatically harvests rewards every 333ms.
+ * --- GAMEPLAY MECHANIC: COMPASS / ROTATION ---
+ * The Apple represents a "Passive Harvest" mechanic. Unlike other crops that require clicking,
+ * the Apple rewards players for physical movement and orientation.
+ *
+ * --- OOP PRINCIPLES ---
+ * - INHERITANCE: Inherits from 'BaseVegetable' to reuse reward calculation and particle logic.
+ * - POLYMORPHISM: Overrides 'Content' to provide its unique sensor-based interface.
  */
 class Apple : BaseVegetable() {
     override val id: String = "apple"
@@ -57,6 +59,10 @@ class Apple : BaseVegetable() {
         )
     )
 
+    /**
+     * The Apple's UI is a circular path with a pointer.
+     * The player must rotate the device to align with the moving apple.
+     */
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -65,10 +71,13 @@ class Apple : BaseVegetable() {
         vibrationEnabled: Boolean,
         vibrationIntensity: Float
     ) {
+        // List of particles currently flying on screen. Backed by Compose state.
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
-        // State for target position and device orientation
+        // --- LOGIC STATES ---
+        // 'targetAngle' is where the apple is currently "hiding" in the 360-degree circle.
         var targetAngle by remember { mutableStateOf(0f) }
+        // 'deviceRotation' is the real-world azimuth fetched from the phone's compass.
         var deviceRotation by remember { mutableStateOf(0f) }
         
         val density = LocalDensity.current
@@ -77,7 +86,11 @@ class Apple : BaseVegetable() {
 
         val isOverclocked = activeModifiers.any { it.id == "apple_overclock" && it.isEnabled }
         
-        // Setup rotation sensor listener
+        /**
+         * --- HARDWARE INTERACTION (KMP Pattern) ---
+         * 'DisposableEffect' manages the lifecycle of the rotation sensor.
+         * It starts listening when the screen opens and stops when it's closed/disposed.
+         */
         DisposableEffect(Unit) {
             startListeningForRotation { azimuth ->
                 deviceRotation = azimuth
@@ -87,7 +100,11 @@ class Apple : BaseVegetable() {
             }
         }
 
-        // Target movement logic: moves the apple around the circle with random speed/direction variations
+        /**
+         * --- ANIMATION LOOP (Coroutines) ---
+         * This 'LaunchedEffect' runs a continuous loop that moves the apple target.
+         * We use 'withFrameMillis' to ensure smooth motion synced with the screen refresh rate.
+         */
         LaunchedEffect(Unit, isOverclocked) {
             var lastTime = withFrameMillis { it }
             var currentSpeed = 20f
@@ -99,7 +116,7 @@ class Apple : BaseVegetable() {
                 withFrameMillis { time ->
                     val delta = (time - lastTime) / 1000f
                     
-                    // Periodically update movement parameters for unpredictability
+                    // Periodically change speed and direction randomly to make it a game.
                     if (lastChangeTime == 0L || time - lastChangeTime > (Random.nextLong(2000, 5000))) {
                         currentSpeed = (Random.nextFloat() * 40f + 15f) * speedMultiplier
                         if (Random.nextFloat() > 0.6f) { // 40% chance to flip direction
@@ -108,20 +125,29 @@ class Apple : BaseVegetable() {
                         lastChangeTime = time
                     }
 
+                    // Update the angle and keep it within [0, 360)
                     targetAngle = (targetAngle + currentDirection * currentSpeed * delta + 360f) % 360f
                     lastTime = time
                 }
             }
         }
 
-        // Determine if the player is currently aligned with the apple
+        /**
+         * --- ALIGNMENT LOGIC ---
+         * We calculate the shortest distance between the apple's angle and the device angle.
+         * If they are within 15 degrees, the user is "pointing" at the apple.
+         */
         val isAligned = remember(targetAngle, deviceRotation) {
             val diff = abs(targetAngle - deviceRotation)
             val shortestDiff = if (diff > 180) 360 - diff else diff
             shortestDiff < 15f
         }
 
-        // Automatic harvest loop when aligned
+        /**
+         * --- AUTO-HARVEST LOOP ---
+         * When aligned, this loop automatically triggers rewards.
+         * This demonstrates how Coroutines can handle periodic tasks (ticks).
+         */
         LaunchedEffect(isAligned, isOverclocked) {
             if (isAligned) {
                 val currentRewards = if (isOverclocked) {
@@ -134,8 +160,10 @@ class Apple : BaseVegetable() {
                 }
 
                 while (isActive) {
+                    // Trigger the reward logic in the ViewModel
                     val finalRewards = onVegetableClick(currentRewards)
                     
+                    // Visual feedback: Create flying reward particles
                     val newOnes = createRewardParticles(finalRewards)
                     val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                     val overflow = (activeCount + newOnes.size) - 20
@@ -144,7 +172,7 @@ class Apple : BaseVegetable() {
                     }
                     flyingParticles.addAll(newOnes)
                     
-                    delay(333) // Harvest tick every 333ms
+                    delay(333) // Harvest interval
                 }
             }
         }
@@ -152,7 +180,7 @@ class Apple : BaseVegetable() {
         val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            // Circle path visualization
+            // Draw the circular path UI
             Canvas(modifier = Modifier.size(circleRadius * 2)) {
                 drawCircle(
                     color = onBackgroundColor.copy(alpha = 0.2f),
@@ -161,15 +189,19 @@ class Apple : BaseVegetable() {
                 )
             }
             
-            // Pointer at the top
+            // Fixed pointer at the top edge of the circle (representing the front of the phone)
             Box(
                 modifier = Modifier
                     .size(4.dp, 40.dp)
-                    .offset(y = (-circleRadius))
+                    .offset(y = (-circleRadius)) 
                     .background(if (isAligned) Color.Green else onBackgroundColor.copy(alpha = 0.5f))
             )
 
-            // Calculate apple screen position based on target and device rotation
+            /**
+             * --- TRIGONOMETRY (Math in UI) ---
+             * We calculate the (X, Y) position of the apple image on the circle
+             * based on the relative angle between the target and the device rotation.
+             */
             val displayAngle = (targetAngle - deviceRotation + 360) % 360
             val radians = displayAngle.toDouble() * PI / 180.0
             val appleX = (circleRadiusPx * sin(radians)).toFloat()
@@ -197,6 +229,7 @@ class Apple : BaseVegetable() {
                 )
             }
 
+            // Render the particles layer
             ParticleEffect(flyingParticles)
         }
     }

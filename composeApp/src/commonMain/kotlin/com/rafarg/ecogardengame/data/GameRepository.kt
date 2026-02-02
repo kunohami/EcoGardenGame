@@ -8,16 +8,21 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
 /**
- * Data class that represents the entire state of the game for persistence.
- * All fields have default values to allow for easy initial state creation.
+ * --- DATA MODEL: GAME SNAPSHOT ---
+ * This serializable class represents the entire state of the game.
+ * It is used both for local storage (DataStore) and cloud storage (Firestore).
+ * 
+ * DESIGN PATTERN: Memento
+ * This object captures the internal state of the game so it can be restored later
+ * without exposing the complex logic of the Managers.
  */
 @Serializable
 data class GameSaveData(
     val totalClicks: Int = 0,
     val money: Int = 0,
     val totalMoneyEarned: Int = 0,
-    val vibrationEnabled: Boolean = true, // Default to true for new players
-    val vibrationIntensity: Float = 15f, // Default to 15ms for new players
+    val vibrationEnabled: Boolean = true, 
+    val vibrationIntensity: Float = 15f, 
     val isDarkTheme: Boolean = false,
     val isAutumnTheme: Boolean = false,
     val shaderBackgroundEnabled: Boolean = false,
@@ -42,21 +47,33 @@ data class GameSaveData(
 )
 
 /**
- * Repository interface for managing game data persistence.
+ * --- REPOSITORY PATTERN ---
+ * Defines an abstraction for data operations.
+ * This allows the GameViewModel to save/load data without knowing IF it is
+ * stored in a file, a database, or a cloud server.
  */
 interface GameRepository {
-    /** Loads the game state from persistent storage. */
+    /** 
+     * Suspended function: runs asynchronously to prevent UI freezing.
+     * Fetches the last saved state from storage.
+     */
     suspend fun loadGameData(): GameSaveData
-    /** Saves the current game state to persistent storage. */
+    
+    /** 
+     * Suspended function: saves the current game snapshot to persistent storage.
+     */
     suspend fun saveGameData(data: GameSaveData)
 }
 
 /**
- * Implementation of [GameRepository] using Jetpack DataStore (Preferences).
+ * --- DATASTORE IMPLEMENTATION ---
+ * Uses Jetpack DataStore (Preferences) to store game data as key-value pairs.
+ * This is more efficient and safer than the older SharedPreferences.
  */
 class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : GameRepository {
 
-    // Define keys for simple data types
+    // --- PREFERENCE KEYS ---
+    // We define unique keys for each data field we want to persist.
     private val totalClicksKey = intPreferencesKey("total_clicks")
     private val moneyKey = intPreferencesKey("money")
     private val totalMoneyEarnedKey = intPreferencesKey("total_money_earned")
@@ -77,7 +94,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val lastWeatherUpdateTimeKey = longPreferencesKey("last_weather_update_time")
     private val weatherDataJsonKey = stringPreferencesKey("weather_data_json")
 
-    /** Set of keys that are not dynamic (not related to specific items/modifiers). */
+    /** List of "Fixed" keys that do not belong to dynamic maps. */
     private val fixedKeys = setOf(
         "total_clicks", "money", "total_money_earned", "vibration_enabled",
         "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
@@ -86,9 +103,16 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
         "tutorial_seen", "last_weather_update_time", "weather_data_json"
     )
 
+    /**
+     * READ OPERATION
+     * Accesses the DataStore flow and converts the key-value pairs back into 
+     * a structured GameSaveData object.
+     */
     override suspend fun loadGameData(): GameSaveData {
+        // 'first()' collects the current snapshot of the data stream.
         val prefs = dataStore.data.first()
         
+        // Reconstruct dynamic maps (Inventory, Upgrades, etc.)
         val fruitCounts = mutableMapOf<String, Int>()
         val totalFruitHarvested = mutableMapOf<String, Int>()
         val unlockedItems = mutableMapOf<String, Boolean>()
@@ -97,7 +121,11 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
         val modifierUnlocked = mutableMapOf<String, Boolean>()
         val modifierEnabled = mutableMapOf<String, Boolean>()
 
-        // Iterate through all preferences to reconstruct dynamic maps
+        /**
+         * --- DYNAMIC KEY PARSING ---
+         * DataStore doesn't support nested maps directly. 
+         * We solve this by iterating through ALL stored keys and identifying them by prefix.
+         */
         prefs.asMap().forEach { (key, value) ->
             val name = key.name
             if (name in fixedKeys) return@forEach
@@ -113,12 +141,13 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             }
         }
 
+        // Return the fully hydrated data object.
         return GameSaveData(
             totalClicks = prefs[totalClicksKey] ?: 0,
             money = prefs[moneyKey] ?: 0,
             totalMoneyEarned = prefs[totalMoneyEarnedKey] ?: 0,
-            vibrationEnabled = prefs[vibrationEnabledKey] ?: true, // Default to true if not found
-            vibrationIntensity = prefs[vibrationIntensityKey] ?: 15f, // Default to 15f if not found
+            vibrationEnabled = prefs[vibrationEnabledKey] ?: true,
+            vibrationIntensity = prefs[vibrationIntensityKey] ?: 15f,
             isDarkTheme = prefs[darkThemeKey] ?: false,
             isAutumnTheme = prefs[autumnThemeKey] ?: false,
             shaderBackgroundEnabled = prefs[shaderBackgroundEnabledKey] ?: false,
@@ -143,9 +172,14 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
         )
     }
 
+    /**
+     * WRITE OPERATION
+     * Atomically updates the persistent file with new values.
+     * 'prefs.edit' ensures that if the process is interrupted, no partial data is saved.
+     */
     override suspend fun saveGameData(data: GameSaveData) {
         dataStore.edit { prefs ->
-            // Save fixed fields
+            // Save fixed-name fields
             prefs[totalClicksKey] = data.totalClicks
             prefs[moneyKey] = data.money
             prefs[totalMoneyEarnedKey] = data.totalMoneyEarned
@@ -166,7 +200,11 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[lastWeatherUpdateTimeKey] = data.lastWeatherUpdateTime
             data.weatherDataJson?.let { prefs[weatherDataJsonKey] = it }
 
-            // Save dynamic map entries
+            /** 
+             * --- MAP SERIALIZATION ---
+             * We convert map entries into individual keys using prefixes.
+             * Example: { "tomato": 50 } becomes a key named "fruit_count_tomato" with value 50.
+             */
             data.fruitCounts.forEach { (id, count) -> prefs[intPreferencesKey("fruit_count_$id")] = count }
             data.totalFruitHarvested.forEach { (id, count) -> prefs[intPreferencesKey("total_harvested_$id")] = count }
             data.unlockedItems.forEach { (id, unlocked) -> prefs[booleanPreferencesKey("unlocked_$id")] = unlocked }

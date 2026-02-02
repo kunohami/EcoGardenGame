@@ -38,11 +38,17 @@ import kotlin.math.sqrt
 import kotlin.math.pow
 
 /**
- * Squash (Zucchini) vegetable implementation.
- * Mechanics: "Zelda Tennis" / Ping-pong gameplay. The squash bounces diagonally between
- * two corners. The player must click anywhere on the screen when the squash is near
- * the farmer (bottom-left) to "hit" it back.
- * Modifier "Speed Momentum" increases speed and rewards with each consecutive hit.
+ * --- GAMEPLAY MECHANIC: RHYTHM & PRECISION (Zelda Tennis) ---
+ * The Squash (Zucchini) implements a "Tennis" mechanic. The vegetable bounces 
+ * diagonally. The player must click when it is near the farmer (bottom-left) 
+ * to hit it back.
+ *
+ * --- OOP PRINCIPLES ---
+ * - INHERITANCE: Extends 'BaseVegetable' to share common reward and particle functionality.
+ * - ENCAPSULATION: Logic for calculating the diagonal trajectory and hit-zone detection
+ *   is kept within this class.
+ * - POLYMORPHISM: The 'Content' function is overridden to create a complex interactive scene
+ *   instead of a simple clickable sprite.
  */
 class Squash : BaseVegetable() {
     override val id: String = "squash"
@@ -54,7 +60,10 @@ class Squash : BaseVegetable() {
     override val particleEmoji: String = "🥒"
     override val tutorialRes = Res.string.tutorial_squash
 
-    /** Tracks the maximum hit streak achieved in the current session. */
+    /** 
+     * Tracks the maximum hit streak for achievements. 
+     * In Kotlin, 'by' delegating to 'mutableStateOf' allows the UI to observe changes.
+     */
     var maxStreak by mutableStateOf(0)
 
     override val baseRewards: List<Reward> get() = listOf(
@@ -77,6 +86,10 @@ class Squash : BaseVegetable() {
         )
     )
 
+    /**
+     * The Squash's UI implementation.
+     * Manages high-speed diagonal motion and synchronized animations.
+     */
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -86,11 +99,15 @@ class Squash : BaseVegetable() {
         vibrationIntensity: Float
     ) {
         val scope = rememberCoroutineScope()
+        
+        // --- ANIMATION STATES (Animatable) ---
+        // We use individual animatables for precise timing of the hit flash and sickle slash.
         val scale = remember { Animatable(1f) }
         val hitFlash = remember { Animatable(0f) }
         val sickleRotation = remember { Animatable(0f) }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
+        // --- LAYOUT STATE ---
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         val density = LocalDensity.current
@@ -99,28 +116,33 @@ class Squash : BaseVegetable() {
         val itemSizePx = with(density) { itemSize.toPx() }
 
         // --- MOMENTUM STATE ---
+        // Tracks consecutive hits to calculate speed and bonus increases.
         var consecutiveHits by remember { mutableStateOf(0) }
         val isMomentumActive = activeModifiers.any { it.id == "squash_speed_momentum" && it.isEnabled }
 
-        // --- MOVEMENT STATE ---
+        // --- MOTION STATE ---
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
-        // 1 means moving towards Bottom-Left (Farmer), -1 means moving towards Top-Right
+        // 1 = towards Farmer (Bottom-Left), -1 = towards Sky (Top-Right)
         var moveDirection by remember { mutableStateOf(1) }
         
         val baseSpeedDpPerSecond = 800.dp
         var travelPoints by remember { mutableStateOf<Pair<Offset, Offset>?>(null) }
 
-        // Movement loop
+        /**
+         * --- THE PHYSICS LOOP (Coroutines) ---
+         * Handles the continuous diagonal travel of the zucchini.
+         */
         LaunchedEffect(parentWidth, parentHeight, consecutiveHits, isMomentumActive) {
             if (parentWidth > 0 && parentHeight > 0) {
-                // Calculate path bounds
+                // Define the bounding box for the movement path.
                 val limitX = (parentWidth - itemSizePx) / 2
                 val limitY = (parentHeight - itemSizePx) / 2
                 
                 val startX = limitX * 0.9f
                 val startY = -limitY * 0.9f
                 
+                // End position is where the farmer stands.
                 val sicklePaddingPx = with(density) { 16.dp.toPx() }
                 val endX = -limitX + sicklePaddingPx
                 val endY = limitY - sicklePaddingPx
@@ -129,6 +151,7 @@ class Squash : BaseVegetable() {
                 val endPoint = Offset(endX, endY)
                 travelPoints = Pair(startPoint, endPoint)
 
+                // Vector math to calculate direction normalized between 0 and 1.
                 val dx = endX - startX
                 val dy = endY - startY
                 val distance = sqrt(dx * dx + dy * dy)
@@ -136,13 +159,15 @@ class Squash : BaseVegetable() {
                 val dirX = if (distance > 0) dx / distance else 0f
                 val dirY = if (distance > 0) dy / distance else 0f
 
-                // Speed increases by 10% per consecutive hit if modifier is active
+                // --- PROGRESSIVE DIFFICULTY ---
+                // Speed increases by 10% per consecutive hit if the modifier is on.
                 val speedMultiplier = if (isMomentumActive) {
                     1.1.pow(consecutiveHits.toDouble()).toFloat()
                 } else 1f
                 
                 val speedPxPerSecond = with(density) { baseSpeedDpPerSecond.toPx() } * speedMultiplier
 
+                // Reset position if it's the first time running.
                 if (posX == 0f && posY == 0f) {
                     posX = startX
                     posY = startY
@@ -155,22 +180,24 @@ class Squash : BaseVegetable() {
                         if (lastFrameTime != 0L) {
                             val deltaSeconds = (frameTime - lastFrameTime) / 1000f
                             
+                            // Move zucchini along its current vector.
                             posX += moveDirection * dirX * speedPxPerSecond * deltaSeconds
                             posY += moveDirection * dirY * speedPxPerSecond * deltaSeconds
                             
-                            // Check for arrival at corners
-                            if (moveDirection == 1) { // Moving towards Bottom-Left
+                            // Check for arrival at the corners to auto-bounce.
+                            if (moveDirection == 1) { // Arrived at Farmer (but missed hit)
                                 if (posX <= endX && posY >= endY) {
                                     posX = endX
                                     posY = endY
-                                    moveDirection = -1
+                                    moveDirection = -1 // Auto-return
                                 }
-                            } else { // Moving towards Top-Right
+                            } else { // Arrived at Top-Right
                                 if (posX >= startX && posY <= startY) {
                                     posX = startX
                                     posY = startY
-                                    moveDirection = 1
+                                    moveDirection = 1 // Start return trip
                                     
+                                    // Feedback: small vibration when zucchini hits the "wall".
                                     if (vibrationEnabled) {
                                         vibrate(vibrationIntensity.toLong())
                                     }
@@ -194,12 +221,12 @@ class Squash : BaseVegetable() {
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    // Interaction: Slash with the sickle
+                    // --- HIT DETECTION LOGIC ---
                     val targetX = travelPoints?.second?.x ?: 0f
                     val targetY = travelPoints?.second?.y ?: 0f
+                    // Hit zone is slightly larger than the zucchini for better feel.
                     val tolerancePx = itemSizePx * 0.7f
                     
-                    // Hit logic: check if the squash is within the hit zone near the farmer
                     val isNearBottomLeft = 
                         parentWidth > 0 && parentHeight > 0 && 
                         posX <= targetX + tolerancePx && 
@@ -207,7 +234,8 @@ class Squash : BaseVegetable() {
                         posY >= targetY - tolerancePx &&
                         posY <= targetY + tolerancePx
 
-                    // Execute slash animation regardless of hit success
+                    // --- SICKLE ANIMATION ---
+                    // Slash occurs on EVERY click, regardless of hit success.
                     scope.launch {
                         sickleRotation.stop()
                         sickleRotation.snapTo(0f)
@@ -216,14 +244,14 @@ class Squash : BaseVegetable() {
                     }
 
                     if (isNearBottomLeft && moveDirection == 1) {
-                        // Successful hit!
-                        moveDirection = -1
+                        // --- SUCCESSFUL HIT ---
+                        moveDirection = -1 // Reverse zucchini direction immediately
                         consecutiveHits++
                         if (consecutiveHits > maxStreak) {
                             maxStreak = consecutiveHits
                         }
                         
-                        // Apply momentum bonuses to rewards
+                        // Apply momentum bonuses to rewards (+1 per streak level).
                         val finalRewardsBase = bonusRewards.map { reward ->
                             if (isMomentumActive && consecutiveHits > 0) {
                                 when {
@@ -236,8 +264,10 @@ class Squash : BaseVegetable() {
                             }
                         }
                         
+                        // Execute rewards in ViewModel.
                         val finalRewards = onVegetableClick(finalRewardsBase)
                         
+                        // UI Feedbacks: Scale "punch" and white flash.
                         scope.launch {
                             launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
@@ -248,7 +278,7 @@ class Squash : BaseVegetable() {
                                 hitFlash.animateTo(0f, tween(200))
                             }
                         }
-                        
+
                         val newOnes = createRewardParticles(
                             rewards = finalRewards,
                             offsetX = posX,
@@ -261,7 +291,8 @@ class Squash : BaseVegetable() {
                         }
                         flyingParticles.addAll(newOnes)
                     } else {
-                        // Miss: Reset momentum
+                        // --- MISS ---
+                        // Reset speed momentum if the player mistimes the hit.
                         if (isMomentumActive) {
                             consecutiveHits = 0
                         }
@@ -269,7 +300,7 @@ class Squash : BaseVegetable() {
                 },
             contentAlignment = Alignment.Center
         ) {
-            // Render the Squash (the "ball")
+            // --- THE ZUCCHINI ---
             Box(
                 modifier = Modifier
                     .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
@@ -286,6 +317,7 @@ class Squash : BaseVegetable() {
                             scaleY = scale.value
                         }
                         .drawWithContent {
+                            // Custom drawing: Render a radial glow during a successful hit.
                             if (hitFlash.value > 0f) {
                                 drawCircle(
                                     brush = Brush.radialGradient(
@@ -305,7 +337,7 @@ class Squash : BaseVegetable() {
                 )
             }
 
-            // Render the Sickle Farmer (the "player")
+            // --- THE SICKLE FARMER (Scene Composition) ---
             val farmerSize = 125.dp
             Box(
                 modifier = Modifier
@@ -313,7 +345,7 @@ class Squash : BaseVegetable() {
                     .size(farmerSize)
                     .offset(x = (-10).dp, y = 10.dp)
             ) {
-                // SICKLE ARM (animated)
+                // SICKLE ARM (Layered behind farmer)
                 val armSize = 60.dp
                 Box(
                     modifier = Modifier
@@ -326,13 +358,14 @@ class Squash : BaseVegetable() {
                         modifier = Modifier
                             .fillMaxSize()
                             .graphicsLayer {
+                                // Pivot point logic: rotation happens around the bottom-left corner.
                                 rotationZ = sickleRotation.value - 30f
                                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 1f)
                             }
                     )
                 }
 
-                // Farmer body
+                // Farmer body (Layered in front)
                 SpriteAnimation(
                     painter = painterResource(Res.drawable.sicklefarmer_strip),
                     frameCount = 3,
@@ -340,7 +373,7 @@ class Squash : BaseVegetable() {
                 )
             }
 
-            // Particle effect layer
+            // Global particles layer.
             ParticleEffect(flyingParticles)
         }
     }

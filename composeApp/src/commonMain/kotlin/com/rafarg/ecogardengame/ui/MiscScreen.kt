@@ -93,16 +93,22 @@ fun MiscSquareButton(
             .fillMaxHeight()
             .aspectRatio(1f, matchHeightConstraintsFirst = true),
         shape = RoundedCornerShape(16.dp),
-        contentPadding = PaddingValues(4.dp), // Reduced padding to give text more room
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+        contentPadding = PaddingValues(4.dp),
+        // Set elevation to 0 to remove shadows
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
+            hoveredElevation = 0.dp,
+            focusedElevation = 0.dp
+        )
     ) {
         Text(
             text = text,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
-            fontSize = 15.sp, // Larger fixed font size
-            lineHeight = 18.sp, // Proportional line height
-            softWrap = true // Ensure it wraps into multiple lines
+            fontSize = 15.sp,
+            lineHeight = 18.sp,
+            softWrap = true
         )
     }
 }

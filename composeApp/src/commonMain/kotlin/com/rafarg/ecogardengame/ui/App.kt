@@ -33,6 +33,13 @@ import org.jetbrains.compose.resources.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
+/**
+ * --- POLYMORPHISM (OOP Principle) ---
+ * Here we define a list of objects that all implement the 'GameItem' interface.
+ * Even though 'Tomato', 'Broccoli', etc., are different classes with unique mechanics,
+ * the rest of the app can treat them as a generic 'GameItem'.
+ * This makes the code scalable: adding a new vegetable only requires adding it to this list.
+ */
 val items: List<GameItem> = listOf(
     Tomato(),
     Broccoli(),
@@ -43,6 +50,12 @@ val items: List<GameItem> = listOf(
     Apple()
 )
 
+/**
+ * --- ENCAPSULATION (OOP Principle) ---
+ * This Enum centralizes all screen-related metadata.
+ * By defining 'showInBottomBar' here, we don't need 'if' statements spread across the UI
+ * to decide which screens appear in the navigation bar.
+ */
 enum class Screen(val showInBottomBar: Boolean = true) {
     GAME(true),
     STORE(true),
@@ -59,6 +72,11 @@ enum class Screen(val showInBottomBar: Boolean = true) {
     WEATHER(false)
 }
 
+/**
+ * Extension function for the Screen enum.
+ * Kotlin allows adding functionality to existing classes without inheriting from them.
+ * This helper returns the localized title string for each screen.
+ */
 @Composable
 fun Screen.getTitle(): String {
     return stringResource(when(this) {
@@ -74,10 +92,17 @@ fun Screen.getTitle(): String {
         Screen.LOGIN -> Res.string.login_title
         Screen.GALLERY -> Res.string.achievements_title
         Screen.TUTORIAL -> Res.string.tutorial_title
-        Screen.WEATHER -> Res.string.app_name // Using app_name or adding a new string
+        Screen.WEATHER -> Res.string.app_name 
     })
 }
 
+/**
+ * The main entry point of the application UI.
+ * 
+ * @param prefs DataStore for persistence (passed from platform-specific code).
+ * @param authRepository Handles Google Auth (Dependency Injection principle).
+ * @param onGoogleSignIn Callback to trigger the native login flow.
+ */
 @OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class)
 @Composable
 @Preview
@@ -86,20 +111,38 @@ fun App(
     authRepository: AuthRepository? = null,
     onGoogleSignIn: () -> Unit = {}
 ) {
+    /**
+     * --- STATE MANAGEMENT & MVVM ---
+     * We initialize the ViewModel using a factory.
+     * The ViewModel acts as the "Source of Truth" for all game data.
+     */
     val viewModel: GameViewModel = viewModel { 
-        val repository = if (prefs != null) DataStoreGameRepository(prefs) else object : com.rafarg.ecogardengame.data.GameRepository {
-            override suspend fun loadGameData() = com.rafarg.ecogardengame.data.GameSaveData()
-            override suspend fun saveGameData(data: com.rafarg.ecogardengame.data.GameSaveData) {}
+        val repository = if (prefs != null) {
+            DataStoreGameRepository(prefs) 
+        } else {
+            // Mock repository for Previews/Tests
+            object : com.rafarg.ecogardengame.data.GameRepository {
+                override suspend fun loadGameData() = com.rafarg.ecogardengame.data.GameSaveData()
+                override suspend fun saveGameData(data: com.rafarg.ecogardengame.data.GameSaveData) {}
+            }
         }
         GameViewModel(repository, authRepository) 
     }
     
     val scope = rememberCoroutineScope()
+    
+    // Local state for navigation
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
     
+    // Pager state for the 3D Cube transition
     val mainScreens = remember { Screen.entries.filter { it.showInBottomBar } }
     val pagerState = rememberPagerState(pageCount = { mainScreens.size })
 
+    /**
+     * --- SIDE EFFECTS ---
+     * LaunchedEffect reacts to changes in 'currentScreen'.
+     * When the user picks a screen from the bottom bar, we programmatically scroll the pager.
+     */
     LaunchedEffect(currentScreen) {
         val index = mainScreens.indexOf(currentScreen)
         if (index != -1 && pagerState.currentPage != index) {
@@ -107,6 +150,11 @@ fun App(
         }
     }
     
+    /**
+     * --- COMPOSITION & THEMING ---
+     * We wrap the entire UI in our custom Theme.
+     * It observes 'viewModel' states to toggle Dark/Wavy/Autumn modes instantly.
+     */
     EcoGardenTheme(
         useDarkTheme = viewModel.isDarkTheme,
         useWavyTheme = viewModel.shaderBackgroundEnabled,
@@ -114,12 +162,18 @@ fun App(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (!viewModel.isDataLoaded) {
+                // Initial loading screen
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             } else {
+                // Background Layer (Wavy shader)
                 WavyBackground(enabled = viewModel.shaderBackgroundEnabled)
 
+                /**
+                 * --- MATERIAL 3 SCAFFOLD ---
+                 * A standard Android layout structure providing slots for a TopBar, BottomBar, etc.
+                 */
                 Scaffold(
                     containerColor = if (viewModel.shaderBackgroundEnabled) Color.Transparent else MaterialTheme.colorScheme.background,
                     bottomBar = {
@@ -142,6 +196,7 @@ fun App(
                                             else -> null
                                         }
                                         if (iconRes != null) {
+                                            // Animate icons in the bottom bar
                                             SpriteAnimation(
                                                 painter = painterResource(iconRes),
                                                 frameCount = 3,
@@ -166,13 +221,26 @@ fun App(
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
+                        /**
+                         * --- NAVIGATION LOGIC ---
+                         * Screens in the Bottom Bar use a Pager for the Cube effect.
+                         * Secondary screens (Settings, Stats) are swapped using standard Compose logic.
+                         */
                         if (currentScreen.showInBottomBar) {
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = false
+                                userScrollEnabled = false // Manual scrolling is disabled to prioritize clicking
                             ) { page ->
                                 val screen = mainScreens[page]
+                                
+                                /**
+                                 * --- 3D CUBE EFFECT (Graphics Math) ---
+                                 * We manipulate the 'graphicsLayer' based on the scroll progress.
+                                 * - rotationY: Turns the page like a face of a cube.
+                                 * - transformOrigin: Sets the "hinge" at the edge.
+                                 * - cameraDistance: Adds perspective depth.
+                                 */
                                 Box(
                                     Modifier
                                         .fillMaxSize()
@@ -208,6 +276,7 @@ fun App(
                                 }
                             }
                         } else {
+                            // Non-pager screens (Overlay style)
                             when (currentScreen) {
                                 Screen.STATS -> StatsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.SETTINGS -> SettingsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
@@ -222,12 +291,16 @@ fun App(
                     }
                 }
 
-                // Overlay Tutorial
+                // Overlay Tutorial: Appears over everything if not seen yet
                 if (viewModel.showTutorial) {
                     TutorialScreen(viewModel)
                 }
 
-                // Achievement Toast
+                /**
+                 * --- ANIMATED UI COMPONENTS ---
+                 * This is an Achievement Toast. It uses 'AnimatedVisibility' to slide in/out.
+                 * It also adapts its color palette based on the active game theme.
+                 */
                 AnimatedVisibility(
                     visible = viewModel.achievementToast != null,
                     enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
