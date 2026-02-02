@@ -16,6 +16,10 @@ import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * MiscScreen serves as the main navigation hub for secondary features of the game.
+ * It uses a grid-like layout of square buttons to navigate to settings, stats, gallery, etc.
+ */
 @Composable
 fun MiscScreen(
     viewModel: GameViewModel,
@@ -28,6 +32,7 @@ fun MiscScreen(
     onNavigateToTutorial: () -> Unit,
     onNavigateToWeather: () -> Unit
 ) {
+    // Check if background shaders are active to adjust text color for readability
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
 
@@ -38,6 +43,7 @@ fun MiscScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // --- HEADER STRIP ---
+        // A visual title for the "Extras" or "Misc" section using a sprite animation.
         SpriteAnimation(
             painter = painterResource(Res.drawable.miscmainmenu_strip),
             frameCount = 3,
@@ -48,7 +54,9 @@ fun MiscScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // --- BUTTON GRID (Fixed to screen height) ---
+        // --- BUTTON GRID ---
+        // We use a Column of Rows to create a 2-column grid.
+        // weight(1f) ensures the grid expands to fill available space.
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -56,21 +64,25 @@ fun MiscScreen(
         ) {
             val rowModifier = Modifier.weight(1f).fillMaxWidth()
             
+            // Row 1: Settings and Themes
             Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MiscSquareButton(stringResource(Res.string.settings_title), onNavigateToSettings, Modifier.weight(1f))
                 MiscSquareButton(stringResource(Res.string.themes_title), onNavigateToThemes, Modifier.weight(1f))
             }
             
+            // Row 2: Stats and Gallery
             Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MiscSquareButton(stringResource(Res.string.stats_title), onNavigateToStats, Modifier.weight(1f))
                 MiscSquareButton("Art Gallery", onNavigateToGallery, Modifier.weight(1f))
             }
 
+            // Row 3: Weather and Tutorial
             Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MiscSquareButton(stringResource(Res.string.weather_title), onNavigateToWeather, Modifier.weight(1f))
                 MiscSquareButton(stringResource(Res.string.tutorial_title), onNavigateToTutorial, Modifier.weight(1f))
             }
 
+            // Row 4: Login and About
             Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MiscSquareButton(stringResource(Res.string.login_title), onNavigateToLogin, Modifier.weight(1f))
                 MiscSquareButton(stringResource(Res.string.about_title), onNavigateToAbout, Modifier.weight(1f))
@@ -81,6 +93,9 @@ fun MiscScreen(
     }
 }
 
+/**
+ * A customized button styled as a square for the Misc menu.
+ */
 @Composable
 fun MiscSquareButton(
     text: String,
@@ -91,10 +106,11 @@ fun MiscSquareButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxHeight()
+            // aspectRatio(1f) tries to keep the button perfectly square
             .aspectRatio(1f, matchHeightConstraintsFirst = true),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(4.dp),
-        // Set elevation to 0 to remove shadows
+        // Shadows are removed here to match the flat 2D game aesthetic
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp,
@@ -108,7 +124,7 @@ fun MiscSquareButton(
             style = MaterialTheme.typography.titleMedium,
             fontSize = 15.sp,
             lineHeight = 18.sp,
-            softWrap = true
+            softWrap = true // Allows text to wrap into multiple lines if too long
         )
     }
 }

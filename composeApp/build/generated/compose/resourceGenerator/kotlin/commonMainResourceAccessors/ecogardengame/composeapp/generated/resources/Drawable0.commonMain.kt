@@ -29,12 +29,6 @@ internal val Res.drawable.broccoli_strip: DrawableResource by lazy {
       ))
     }
 
-internal val Res.drawable.buttons: DrawableResource by lazy {
-      DrawableResource("drawable:buttons", setOf(
-        ResourceItem(setOf(), "${MD}drawable/buttons", -1, -1),
-      ))
-    }
-
 internal val Res.drawable.clickycheekykneel_strip: DrawableResource by lazy {
       DrawableResource("drawable:clickycheekykneel_strip", setOf(
         ResourceItem(setOf(), "${MD}drawable/clickycheekykneel_strip.png", -1, -1),
@@ -256,7 +250,6 @@ internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, Drawab
   map.put("apple_strip", Res.drawable.apple_strip)
   map.put("bellpepper_strip", Res.drawable.bellpepper_strip)
   map.put("broccoli_strip", Res.drawable.broccoli_strip)
-  map.put("buttons", Res.drawable.buttons)
   map.put("clickycheekykneel_strip", Res.drawable.clickycheekykneel_strip)
   map.put("clickyexplain_strip", Res.drawable.clickyexplain_strip)
   map.put("clickyopenarms_strip", Res.drawable.clickyopenarms_strip)

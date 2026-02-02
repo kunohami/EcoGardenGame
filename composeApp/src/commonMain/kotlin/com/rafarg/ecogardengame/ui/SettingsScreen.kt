@@ -36,19 +36,31 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * SettingsScreen allows players to customize their experience and manage their game data.
+ */
 @Composable
 fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+    // Visibility states for confirmation dialogs
     var showResetDialog by remember { mutableStateOf(false) }
     var showDebugDialog by remember { mutableStateOf(false) }
+    // Holds the text currently typed into the password field
     var passwordInput by remember { mutableStateOf("") }
+    // Controls the visibility and content of the custom toast message
     var toastMessage by remember { mutableStateOf<String?>(null) }
+    
+    // Coroutine scope is needed to run background tasks like the toast timer
     val scope = rememberCoroutineScope()
+    // rememberScrollState allows the Column to be scrollable if content overflows
     val scrollState = rememberScrollState()
 
+    /**
+     * Shows a temporary message at the bottom of the screen.
+     */
     fun showToast(message: String) {
         scope.launch {
             toastMessage = message
-            delay(2000)
+            delay(2000) // Message stays for 2 seconds
             toastMessage = null
         }
     }
@@ -71,7 +83,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    // Vibration Toggle
+                    // Vibration Toggle: Communicates directly with the ViewModel
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -84,6 +96,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         )
                     }
                     
+                    // Only show the Intensity slider if vibration is ON
                     if (viewModel.vibrationEnabled) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(stringResource(Res.string.intensity_label, viewModel.vibrationIntensity.toInt()), style = MaterialTheme.typography.labelSmall)
@@ -91,7 +104,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                             value = viewModel.vibrationIntensity,
                             onValueChange = { viewModel.updateVibrationIntensity(it) },
                             valueRange = 5f..100f,
-                            steps = 19
+                            steps = 19 // Results in 20 distinct points on the slider
                         )
                     }
                 }
@@ -99,7 +112,8 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Debug/Testing Section
+            // --- DEBUG / TESTING SECTION ---
+            // Hidden behind a simple password for developer/tester use.
             Text(stringResource(Res.string.debug_options), style = MaterialTheme.typography.titleMedium, color = Color.Gray)
             
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -112,7 +126,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         value = passwordInput,
                         onValueChange = { passwordInput = it },
                         label = { Text("Password") },
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = PasswordVisualTransformation(), // Masks text with dots
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         modifier = Modifier.weight(1f)
                     )
@@ -127,13 +141,14 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         },
                         enabled = passwordInput.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        modifier = Modifier.padding(top = 8.dp) // Align slightly better with text field
+                        modifier = Modifier.padding(top = 8.dp)
                     ) {
                         Text("OK")
                     }
                 }
             }
 
+            // Danger Zone: Resetting progress
             Button(
                 onClick = { showResetDialog = true },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
@@ -148,7 +163,9 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             }
         }
 
-        // Confirmation Dialog for Debug
+        // --- DIALOGS ---
+
+        // Debug Confirmation Dialog
         if (showDebugDialog) {
             val resourcesAddedToast = stringResource(Res.string.resources_added_toast)
             AlertDialog(
@@ -157,9 +174,9 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 text = { Text(stringResource(Res.string.add_resources_confirm)) },
                 confirmButton = {
                     TextButton(onClick = {
-                        viewModel.debugAddResources()
+                        viewModel.debugAddResources() // Cheat: adds coins and veggies
                         showDebugDialog = false
-                        passwordInput = "" // Clear password
+                        passwordInput = "" // Clear password for security
                         showToast(resourcesAddedToast)
                     }) { Text(stringResource(Res.string.confirm)) }
                 },
@@ -169,7 +186,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             )
         }
 
-        // Confirmation Dialog for Reset
+        // Reset Confirmation Dialog
         if (showResetDialog) {
             val resetProgressToast = stringResource(Res.string.reset_progress_toast)
             AlertDialog(
@@ -179,7 +196,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            viewModel.resetGame()
+                            viewModel.resetGame() // Wipes all local data
                             showResetDialog = false
                             showToast(resetProgressToast)
                         },
@@ -192,7 +209,8 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             )
         }
 
-        // Simple Custom Toast
+        // --- CUSTOM TOAST UI ---
+        // A simple overlay that appears at the bottom center.
         toastMessage?.let { message ->
             Surface(
                 modifier = Modifier

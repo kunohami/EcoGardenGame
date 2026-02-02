@@ -19,6 +19,10 @@ import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * ThemesScreen allows the user to switch between different visual styles for the app.
+ * It manages light, dark, autumn, and a special "Wavy" shader-based theme.
+ */
 @Composable
 fun ThemesScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     val scrollState = rememberScrollState()
@@ -36,7 +40,9 @@ fun ThemesScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // 1. Dry Sage Option
+            // --- THEME OPTIONS ---
+
+            // 1. Dry Sage Option (Light Theme)
             ThemeCard(
                 name = stringResource(Res.string.theme_light),
                 colors = listOf(SageColor, BeigeColor, CornsilkColor, PapayaColor, BronzeColor),
@@ -60,7 +66,7 @@ fun ThemesScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 }
             )
 
-            // 3. Ink Black Option
+            // 3. Ink Black Option (Dark Theme)
             ThemeCard(
                 name = stringResource(Res.string.theme_dark),
                 colors = listOf(InkBlack, JetBlack, CharcoalBlue, DeepTeal, DarkSlateGrey, Evergreen),
@@ -72,7 +78,7 @@ fun ThemesScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 }
             )
 
-            // 4. Wavy Theme (Shader) Option
+            // 4. Wavy Theme Option (Uses an AGSL Shader background)
             ThemeCard(
                 name = stringResource(Res.string.theme_wavy),
                 colors = listOf(Color(0xFF0D0221), Color(0xFF1B065E), Color(0xFF4A00E0), Color(0xFF8E2DE2)),
@@ -93,6 +99,9 @@ fun ThemesScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     }
 }
 
+/**
+ * A reusable component to display a theme option with a color preview.
+ */
 @Composable
 fun ThemeCard(
     name: String,
@@ -107,6 +116,7 @@ fun ThemeCard(
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
         ),
+        // Add a primary border to the selected card to make it stand out
         border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Row(
@@ -116,6 +126,7 @@ fun ThemeCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(name, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
+                // Color preview dots
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     colors.take(6).forEach { color ->
                         Box(
@@ -127,6 +138,7 @@ fun ThemeCard(
                     }
                 }
             }
+            // RadioButton provides a clear visual indicator of selection
             RadioButton(selected = isSelected, onClick = onClick)
         }
     }

@@ -51,7 +51,7 @@
 
     <!-- Acerca de -->
     <string name="app_version">Clicky's Garden v1.0</string>
-    <string name="developed_with">Desarrollado con Compose Multiplatform por Rafa R. G.</string>
+    <string name="developed_with">Desarrollado con Compose Multiplatform por Rafael Robles García</string>
     <string name="human_made_art">Artista: kunohami</string>
 
     <!-- Pantalla de Juego -->

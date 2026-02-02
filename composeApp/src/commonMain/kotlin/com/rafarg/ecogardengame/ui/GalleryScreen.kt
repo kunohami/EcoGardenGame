@@ -29,20 +29,28 @@ import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * GalleryScreen displays a grid of unlockable art pieces.
+ * Locked items appear as silhouettes, and unlocked items can be viewed in a fullscreen slider.
+ */
 @Composable
 fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
     
+    // State to track which art is being viewed in fullscreen
     var selectedArtIndex by remember { mutableStateOf<Int?>(null) }
+    // State to track which art is currently being prompted for purchase
     var artToBuy by remember { mutableStateOf<ArtEntry?>(null) }
 
+    // List of art pieces the player has already purchased
     val unlockedArt = ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // --- HEADER ---
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -51,7 +59,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back_label), tint = primaryText)
             }
             Text(
-                stringResource(Res.string.achievements_title), // "Art Gallery" / "Logros"
+                text = stringResource(Res.string.achievements_title), // Title label
                 style = MaterialTheme.typography.headlineMedium,
                 color = primaryText,
                 modifier = Modifier.padding(start = 8.dp)
@@ -60,6 +68,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // --- GRID OF ART ---
         LazyVerticalGrid(
             columns = GridCells.Fixed(4),
             modifier = Modifier.fillMaxSize(),
@@ -67,6 +76,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Iterate over all available art entries in the repository
             items(ArtRepository.artEntries.indices.toList()) { index ->
                 val art = ArtRepository.artEntries[index]
                 val isUnlocked = viewModel.isArtUnlocked(art.id)
@@ -78,8 +88,10 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     textColor = primaryText,
                     onClick = {
                         if (isUnlocked) {
+                            // Find the index within the "unlockedArt" list for the pager
                             selectedArtIndex = unlockedArt.indexOfFirst { it.id == art.id }
                         } else {
+                            // Show purchase dialog
                             artToBuy = art
                         }
                     }
@@ -88,7 +100,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         }
     }
 
-    // Purchase Dialog
+    // --- PURCHASE DIALOG ---
     artToBuy?.let { art ->
         val artName = getArtDisplayName(art, ArtRepository.artEntries.indexOf(art))
 
@@ -99,6 +111,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             confirmButton = {
                 Button(
                     onClick = {
+                        // Apply potential store discounts from upgrades
                         if (viewModel.money >= viewModel.calculateDiscountedPrice(art.cost)) {
                             viewModel.unlockArt(art.id, art.cost)
                             artToBuy = null
@@ -117,7 +130,8 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         )
     }
 
-    // Fullscreen Viewer
+    // --- FULLSCREEN VIEWER ---
+    // If an index is selected, show a Dialog that covers the screen with a swipable pager.
     selectedArtIndex?.let { startIndex ->
         ArtViewerDialog(
             artList = unlockedArt,
@@ -127,6 +141,9 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     }
 }
 
+/**
+ * Helper function to get the localized name of an art piece.
+ */
 @Composable
 fun getArtDisplayName(art: ArtEntry, index: Int): String {
     return if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
@@ -136,8 +153,12 @@ fun getArtDisplayName(art: ArtEntry, index: Int): String {
     }
 }
 
+/**
+ * A thumbnail component that shows either the art or a silhouette if locked.
+ */
 @Composable
 fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Color, onClick: () -> Unit) {
+    // Silhouette matrix: turns all pixels to black while keeping transparency
     val silhouetteMatrix = remember {
         ColorMatrix(floatArrayOf(
             0f, 0f, 0f, 0f, 0f,
@@ -170,12 +191,17 @@ fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Colo
     }
 }
 
+/**
+ * A full-screen dialog using HorizontalPager to swipe through unlocked art.
+ */
 @Composable
 fun ArtViewerDialog(artList: List<ArtEntry>, initialIndex: Int, onDismiss: () -> Unit) {
+    // HorizontalPager state keeps track of the current page
     val pagerState = rememberPagerState(initialPage = initialIndex, pageCount = { artList.size })
 
     Dialog(
         onDismissRequest = onDismiss,
+        // usePlatformDefaultWidth = false allows the dialog to be truly full-screen
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(
@@ -209,6 +235,7 @@ fun ArtViewerDialog(artList: List<ArtEntry>, initialIndex: Int, onDismiss: () ->
                     }
                 }
                 
+                // Exit button
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)

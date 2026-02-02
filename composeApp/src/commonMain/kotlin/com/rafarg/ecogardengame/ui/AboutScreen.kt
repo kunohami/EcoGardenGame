@@ -21,18 +21,25 @@ import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * AboutScreen displays information about the application version and credits.
+ * It uses a speech bubble style to maintain the game's visual theme.
+ */
 @Composable
 fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+    // Check if background shaders are enabled to adjust UI colors
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
     val surfaceColor = if (wavy) Color.Black.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)
 
+    // Manual localization for the back button text
     val currentLang = stringResource(Res.string.language_title)
     val isSpanish = currentLang.contains("Idioma")
     val backText = if (isSpanish) "Volver" else "Back"
 
     Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // --- TOP BACK BUTTON ---
+        // A simple text button with an icon to navigate back.
         TextButton(
             onClick = onBack,
             modifier = Modifier.align(Alignment.TopStart)
@@ -48,10 +55,11 @@ fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             verticalArrangement = Arrangement.Bottom
         ) {
             // --- SPEECH BUBBLE CONTENT ---
+            // This Surface uses the custom SpeechBubbleShape to look like a comic dialogue box.
             Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .clip(SpeechBubbleShape())
+                    .clip(SpeechBubbleShape()) // Custom shape that adds a "tail" to the bubble
                     .background(surfaceColor)
                     .padding(24.dp),
                 color = Color.Transparent
@@ -92,7 +100,8 @@ fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // --- CLICKY AT THE BOTTOM ---
+            // --- CHARACTER ANIMATION ---
+            // "Clicky" is shown at the bottom, appearing to "speak" the content in the bubble above.
             SpriteAnimation(
                 painter = painterResource(Res.drawable.clickyexplain_strip),
                 frameCount = 3,

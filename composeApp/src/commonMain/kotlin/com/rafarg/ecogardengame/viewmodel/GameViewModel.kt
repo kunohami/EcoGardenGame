@@ -49,7 +49,7 @@ data class PublicProfile(
  * 2. Logic Coordinator: Calls specialized managers to process game rules.
  * 3. Persistence: Interfaces with the Repository to save/load progress.
  *
- * --- OOP PRINCIPLE: ABSTRACTION & COMPOSITION ---
+ * --- ABSTRACTION & COMPOSITION ---
  * Instead of having one massive class, GameViewModel is composed of specialized managers.
  * This makes the code easier to maintain and test (Separation of Concerns).
  */

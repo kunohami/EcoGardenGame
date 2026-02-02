@@ -20,6 +20,11 @@ import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * LoginScreen handles user authentication and cloud synchronization.
+ * It allows players to sign in with Google, upload their progress to the cloud,
+ * or download an existing save.
+ */
 @Composable
 fun LoginScreen(
     viewModel: GameViewModel, 
@@ -29,16 +34,19 @@ fun LoginScreen(
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
     val user = viewModel.currentUser
+    
+    // Coroutine scope for showing snackbars (toasts)
     val scope = rememberCoroutineScope()
+    // Manages the display of bottom notifications
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
     
-    // Dialog states
+    // Confirmation dialog states
     var showSignOutDialog by remember { mutableStateOf(false) }
     var showUploadDialog by remember { mutableStateOf(false) }
     var showDownloadDialog by remember { mutableStateOf(false) }
 
-    // Resource strings
+    // Localization strings
     val saveUploadedMsg = stringResource(Res.string.save_uploaded)
     val saveDownloadedMsg = stringResource(Res.string.save_downloaded)
     val noCloudSaveMsg = stringResource(Res.string.no_cloud_save)
@@ -46,7 +54,7 @@ fun LoginScreen(
     val cooldownMsg = stringResource(Res.string.cooldown_wait)
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) }, // Necessary to show snackbars
         containerColor = Color.Transparent
     ) { padding ->
         Column(
@@ -68,8 +76,9 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // --- USER STATUS UI ---
             if (user == null) {
-                // ... (Google Sign In UI remains the same)
+                // If NOT logged in, show the Google Sign In button
                 Text(
                     text = stringResource(Res.string.login_desc),
                     style = MaterialTheme.typography.bodyLarge,
@@ -79,6 +88,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                // Custom styled Google Button
                 OutlinedButton(
                     onClick = onGoogleSignIn,
                     modifier = Modifier.fillMaxWidth(0.8f).height(50.dp),
@@ -93,6 +103,7 @@ fun LoginScreen(
                     }
                 }
             } else {
+                // If logged in, show cloud synchronization options
                 Text(
                     text = stringResource(Res.string.logged_in_as, user.name ?: user.email ?: "User"),
                     style = MaterialTheme.typography.titleMedium,
@@ -112,9 +123,10 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 if (viewModel.isCloudLoading) {
+                    // Show a spinner while syncing with the server
                     CircularProgressIndicator(modifier = Modifier.size(48.dp))
                 } else {
-                    // 1. UPLOAD SAVE (With confirmation)
+                    // 1. UPLOAD SAVE: Sends local data to the server
                     Button(
                         onClick = { showUploadDialog = true },
                         modifier = Modifier.fillMaxWidth(0.8f)
@@ -124,7 +136,7 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // 2. DOWNLOAD SAVE (With confirmation)
+                    // 2. DOWNLOAD SAVE: Retrieves remote data (overwrites local progress)
                     OutlinedButton(
                         onClick = { showDownloadDialog = true },
                         modifier = Modifier.fillMaxWidth(0.8f),
@@ -137,13 +149,14 @@ fun LoginScreen(
                     HorizontalDivider(modifier = Modifier.fillMaxWidth(0.5f), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // 3. UPDATE PROFILE
+                    // 3. UPDATE PROFILE: Updates leaderboard info (CPS, level, etc.)
                     Button(
                         onClick = {
                             viewModel.updatePublicProfile(
                                 onSuccess = { scope.launch { snackbarHostState.showSnackbar(profileUpdatedMsg) } },
                                 onError = { error ->
                                     scope.launch {
+                                        // Some errors contain a cooldown time in seconds
                                         if (error.toIntOrNull() != null) {
                                             snackbarHostState.showSnackbar(cooldownMsg.replace("%1\$d", error))
                                         } else {
@@ -162,6 +175,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(40.dp))
 
+                // Log out button
                 Button(
                     onClick = { showSignOutDialog = true },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)),
@@ -179,8 +193,9 @@ fun LoginScreen(
         }
     }
     
-    // --- DIALOGS ---
+    // --- CONFIRMATION DIALOGS ---
 
+    // Upload Confirmation
     if (showUploadDialog) {
         AlertDialog(
             onDismissRequest = { showUploadDialog = false },
@@ -209,6 +224,7 @@ fun LoginScreen(
         )
     }
 
+    // Download Confirmation
     if (showDownloadDialog) {
         AlertDialog(
             onDismissRequest = { showDownloadDialog = false },
@@ -232,6 +248,7 @@ fun LoginScreen(
         )
     }
 
+    // Sign Out Confirmation
     if (showSignOutDialog) {
         AlertDialog(
             onDismissRequest = { showSignOutDialog = false },
@@ -241,7 +258,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         viewModel.onUserLoggedOut()
-                        viewModel.resetGame()
+                        viewModel.resetGame() // Security measure: reset local state on logout
                         showSignOutDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)

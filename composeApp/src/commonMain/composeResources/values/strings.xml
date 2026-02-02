@@ -51,8 +51,8 @@
 
     <!-- About Screen -->
     <string name="app_version">Clicky's Garden v1.0</string>
-    <string name="developed_with">Developed with Compose Multiplatform by Rafa R. G.</string>
-    <string name="human_made_art">Human-made art by kunohami</string>
+    <string name="developed_with">Developed with Compose Multiplatform by Rafael Robles García</string>
+    <string name="human_made_art">Art by Kunohami</string>
 
     <!-- Game Screen -->
     <string name="cps_label">CPS</string>

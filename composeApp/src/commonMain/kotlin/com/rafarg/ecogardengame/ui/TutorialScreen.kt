@@ -19,11 +19,17 @@ import ecogardengame.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * TutorialScreen provides an overlay that guides new players through the game mechanics.
+ * It uses a "Visual Novel" style with a mascot (Clicky) and sequential text steps.
+ */
 @Composable
 fun TutorialScreen(viewModel: GameViewModel) {
+    // Local state to track progress within the tutorial steps
     var currentStep by remember { mutableStateOf(1) }
     val totalSteps = 7
 
+    // Logic to select the appropriate text for each step
     val stepText = when (currentStep) {
         1 -> stringResource(Res.string.tutorial_step1)
         2 -> stringResource(Res.string.tutorial_step2)
@@ -35,6 +41,7 @@ fun TutorialScreen(viewModel: GameViewModel) {
         else -> ""
     }
 
+    // Changes the visual expression of Clicky based on the current step
     val clickySprite = when (currentStep) {
         1, 6 -> Res.drawable.clickyopenarms_strip
         4, 7 -> Res.drawable.clickycheekykneel_strip
@@ -44,8 +51,9 @@ fun TutorialScreen(viewModel: GameViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            // Semi-transparent black background to focus attention on the tutorial
             .background(Color.Black.copy(alpha = 0.7f))
-            .clickable(enabled = false) { } // Intercept clicks
+            .clickable(enabled = false) { } // Intercept clicks to prevent interaction with the game behind
     ) {
         Column(
             modifier = Modifier
@@ -54,8 +62,9 @@ fun TutorialScreen(viewModel: GameViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Clicky Sprite
+            // --- MASCOT AREA ---
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.BottomCenter) {
+                // key(clickySprite) ensures the SpriteAnimation restarts when the resource changes
                 key(clickySprite) {
                     SpriteAnimation(
                         painter = painterResource(clickySprite),
@@ -67,13 +76,13 @@ fun TutorialScreen(viewModel: GameViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Text Box (Visual Novel Style) - Centered and smaller height
+            // --- DIALOGUE BOX ---
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight() // Auto-adjust to content
+                    .wrapContentHeight()
                     .padding(horizontal = 8.dp)
-                    .clip(SpeechBubbleShape()),
+                    .clip(SpeechBubbleShape()), // Custom shape for the dialogue bubble
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
@@ -87,20 +96,24 @@ fun TutorialScreen(viewModel: GameViewModel) {
                         fontWeight = FontWeight.Medium
                     )
 
+                    // --- NAVIGATION BUTTONS ---
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (currentStep < totalSteps) {
+                            // "Skip" allows experienced players to exit the tutorial immediately
                             TextButton(onClick = { viewModel.completeTutorial() }) {
                                 Text(stringResource(Res.string.skip), color = Color.Gray)
                             }
                             Spacer(modifier = Modifier.width(12.dp))
+                            // "Next" advances the local step counter
                             Button(onClick = { currentStep++ }) {
                                 Text(stringResource(Res.string.next))
                             }
                         } else {
+                            // On the last step, show "Finish" which tells the ViewModel to save completion status
                             Button(onClick = { viewModel.completeTutorial() }) {
                                 Text(stringResource(Res.string.finish))
                             }
@@ -109,7 +122,7 @@ fun TutorialScreen(viewModel: GameViewModel) {
                 }
             }
             
-            // Push everything slightly up towards the center
+            // Spacer at the bottom to push content slightly up from the very bottom of the screen
             Spacer(modifier = Modifier.weight(0.4f))
         }
     }

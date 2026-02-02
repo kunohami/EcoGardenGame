@@ -14,6 +14,10 @@ import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * StatsScreen provides a detailed breakdown of the player's progress.
+ * It shows total clicks, lifetime earnings, and specific harvest counts for each crop.
+ */
 @Composable
 fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     Column(
@@ -22,6 +26,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // --- HEADER ---
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             Button(onClick = onBack) {
                 Text(stringResource(Res.string.back_label))
@@ -32,7 +37,9 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         
         Spacer(modifier = Modifier.height(24.dp))
 
+        // --- GENERAL SUMMARY CARDS ---
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Lifetime Clicks Card
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
@@ -43,6 +50,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 }
             }
 
+            // Money Statistics Card (Current vs Lifetime)
             Card(
                 modifier = Modifier.weight(1f),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
@@ -57,18 +65,26 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text(stringResource(Res.string.stats_fruits_harvested), style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.Start))
+        // --- CROP BREAKDOWN ---
+        Text(
+            text = stringResource(Res.string.stats_fruits_harvested), 
+            style = MaterialTheme.typography.titleLarge, 
+            modifier = Modifier.align(Alignment.Start)
+        )
         
         Spacer(modifier = Modifier.height(8.dp))
 
+        // LazyColumn is used here because the list of vegetables could grow long.
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             items(viewModel.itemsList) { item ->
+                // Fetch current and total counts from the ViewModel maps
                 val current = viewModel.fruitCounts[item.id] ?: 0
                 val total = viewModel.totalFruitHarvested[item.id] ?: 0
                 
+                // ListItem is a Material 3 component perfect for simple rows
                 ListItem(
                     headlineContent = { Text(stringResource(item.nameRes)) },
                     supportingContent = { 
@@ -78,6 +94,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         }
                     },
                     trailingContent = { 
+                        // Visual emoji indicator
                         Text(item.particleEmoji, fontSize = 32.sp)
                     }
                 )
