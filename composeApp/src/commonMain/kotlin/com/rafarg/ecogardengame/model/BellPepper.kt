@@ -27,10 +27,15 @@ import kotlin.math.*
 import kotlin.random.Random
 
 /**
- * Bell Pepper vegetable implementation.
- * Mechanics: Moves in bursts. It remains stationary for a period, then dashes in a random
- * direction with a speed curve, and stops again.
- * Modifier "Turbo Harvest" makes the cycles faster and increases rewards.
+ * --- GAMEPLAY MECHANIC: BURST MOTION ---
+ * The Bell Pepper moves in "bursts". It remains stationary for a short period,
+ * then suddenly dashes in a random direction before stopping again.
+ * This tests the player's reaction time and "sniping" skills.
+ *
+ * --- OOP PRINCIPLES ---
+ * - INHERITANCE: Inherits core vegetable properties from 'BaseVegetable'.
+ * - ENCAPSULATION: The logic for calculating random directions and phase 
+ *   durations is kept private within the UI loop.
  */
 class BellPepper : BaseVegetable() {
     override val id: String = "bell_pepper"
@@ -57,6 +62,10 @@ class BellPepper : BaseVegetable() {
         )
     )
 
+    /**
+     * The Bell Pepper's UI implementation.
+     * Manages a state machine for movement phases (Stationary vs Moving).
+     */
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -69,11 +78,13 @@ class BellPepper : BaseVegetable() {
         val scale = remember { Animatable(1f) }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
 
-        // State for movement bursts
+        // --- MOTION STATE ---
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
         var dirX by remember { mutableStateOf(0f) }
         var dirY by remember { mutableStateOf(0f) }
+        
+        // Machine state: true = dashing, false = resting.
         var isMoving by remember { mutableStateOf(false) }
         var phaseStartTime by remember { mutableStateOf(0L) }
         var parentWidth by remember { mutableStateOf(0f) }
@@ -84,15 +95,19 @@ class BellPepper : BaseVegetable() {
         val itemSize = 120.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
         
-        // Define burst durations
+        // --- PHASE DURATIONS ---
+        // Modifiers change the base rhythm of the logic.
         val stationaryDuration = if (isTurbo) 500L else 1000L
         val movingDuration = if (isTurbo) 1000L else 2000L
         val maxBaseSpeed = 100f
 
-        // Movement logic loop
+        /**
+         * --- MOTION LOGIC LOOP (Coroutines) ---
+         * Handles the switching between "Stationary" and "Moving" states.
+         */
         LaunchedEffect(parentWidth, parentHeight, isTurbo) {
             if (parentWidth > 0 && parentHeight > 0) {
-                // Initial direction
+                // Initialize a random starting direction using trigonometry.
                 val angle = Random.nextFloat() * 2 * PI.toFloat()
                 dirX = cos(angle)
                 dirY = sin(angle)
@@ -103,22 +118,23 @@ class BellPepper : BaseVegetable() {
                         val elapsed = frameTime - phaseStartTime
 
                         if (!isMoving) {
-                            // Wait stationary
+                            // Phase: STATIONARY
                             if (elapsed >= stationaryDuration) {
                                 isMoving = true
                                 phaseStartTime = frameTime
+                                // Pick a new random direction for the next dash.
                                 val newAngle = Random.nextFloat() * 2 * PI.toFloat()
                                 dirX = cos(newAngle)
                                 dirY = sin(newAngle)
                             }
                         } else {
-                            // Move in a burst
+                            // Phase: MOVING (Dashing)
                             if (elapsed >= movingDuration) {
                                 isMoving = false
                                 phaseStartTime = frameTime
                             } else {
+                                // Calculate speed using a sine curve for a smooth dash effect.
                                 val progress = elapsed.toFloat() / movingDuration
-                                // Use sine for a smooth speed up and speed down during the dash
                                 val speedFactor = sin(progress * PI.toFloat()) 
                                 val speed = speedFactor * maxBaseSpeed
                                 posX += dirX * speed
@@ -127,21 +143,13 @@ class BellPepper : BaseVegetable() {
                                 val limitX = (parentWidth - itemSizePx) / 2
                                 val limitY = (parentHeight - itemSizePx) / 2
 
-                                // Bounce logic with slight direction randomness on impact
+                                // Collision & Bounce Logic
                                 if (abs(posX) >= limitX) {
-                                    dirX = -dirX
-                                    dirY += (Random.nextFloat() - 0.5f) * 0.2f
-                                    val norm = sqrt(dirX*dirX + dirY*dirY)
-                                    dirX /= norm
-                                    dirY /= norm
+                                    dirX = -dirX // Flip horizontal direction
                                     posX = posX.coerceIn(-limitX, limitX)
                                 }
                                 if (abs(posY) >= limitY) {
-                                    dirY = -dirY
-                                    dirX += (Random.nextFloat() - 0.5f) * 0.2f
-                                    val norm = sqrt(dirX*dirX + dirY*dirY)
-                                    dirX /= norm
-                                    dirY /= norm
+                                    dirY = -dirY // Flip vertical direction
                                     posY = posY.coerceIn(-limitY, limitY)
                                 }
                             }
@@ -182,7 +190,7 @@ class BellPepper : BaseVegetable() {
                             val currentX = posX
                             val currentY = posY
                             
-                            // Apply turbo multiplier if active
+                            // Apply turbo multiplier if the modifier is active.
                             val rewards = if (isTurbo) {
                                 baseRewards.map { it.copy(
                                     moneyValue = it.moneyValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO, 
@@ -192,20 +200,23 @@ class BellPepper : BaseVegetable() {
                                 baseRewards
                             }
 
+                            // Trigger global logic in ViewModel.
                             val finalRewards = onVegetableClick(rewards)
                             
+                            // Visual feedback animation.
                             scope.launch {
                                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                             }
                             
+                            // Create reward particles at the current position.
                             val newOnes = createRewardParticles(
                                 rewards = finalRewards,
                                 offsetX = currentX,
                                 offsetY = currentY
                             )
 
-                            // Manage particle lifecycle
+                            // Particle lifecycle management.
                             val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                             val overflow = (activeCount + newOnes.size) - 20
                             if (overflow > 0) {
@@ -218,6 +229,7 @@ class BellPepper : BaseVegetable() {
                 )
             }
 
+            // Layer for flying reward particles.
             ParticleEffect(flyingParticles)
         }
     }

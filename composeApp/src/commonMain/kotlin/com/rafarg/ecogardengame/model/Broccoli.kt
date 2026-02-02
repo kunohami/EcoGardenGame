@@ -29,10 +29,14 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
 /**
- * Broccoli vegetable implementation.
- * Mechanics: Moves around the screen bouncing off the edges.
- * Modifiers include: Giant size (more clicks needed), Speed/Overclocked (faster and more rewards), 
- * and Air Harvest (using proximity sensor).
+ * --- GAMEPLAY MECHANIC: MOTION & PROXIMITY ---
+ * The Broccoli is a moving target. It bounces around the screen, requiring the player
+ * to track it visually. It also introduces the "Proximity Sensor" mechanic.
+ *
+ * --- OOP PRINCIPLES ---
+ * - INHERITANCE: Inherits from 'BaseVegetable' to leverage common reward/particle logic.
+ * - POLYMORPHISM: Implements the 'Content' composable with specialized motion logic.
+ * - ENCAPSULATION: Hides the complexity of physics (velocity, bouncing) within the class.
  */
 class Broccoli : BaseVegetable() {
     override val id: String = "broccoli"
@@ -73,6 +77,10 @@ class Broccoli : BaseVegetable() {
         )
     )
 
+    /**
+     * The Broccoli's UI implementation.
+     * Manages a 2D physics simulation for movement and sensor interaction.
+     */
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -85,16 +93,19 @@ class Broccoli : BaseVegetable() {
         val scale = remember { Animatable(1f) }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
         
-        // Motion state
+        // --- MOTION STATE ---
+        // We use Float values for precise sub-pixel movement.
         var posX by remember { mutableStateOf(0f) }
         var posY by remember { mutableStateOf(0f) }
+        // Velocity: pixels moved per frame.
         var baseVelX by remember { mutableStateOf(4f) }
         var baseVelY by remember { mutableStateOf(4f) }
 
+        // Screen dimensions tracked via 'onGloballyPositioned'.
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
         
-        // Active modifier checks
+        // Check active modifiers to adjust gameplay parameters.
         val isGiant = activeModifiers.any { it.id == "broccoli_giant" && it.isEnabled }
         val isFast = activeModifiers.any { it.id == "broccoli_speed" && it.isEnabled }
         val isAirHarvest = activeModifiers.any { it.id == "broccoli_proximity" && it.isEnabled }
@@ -102,13 +113,16 @@ class Broccoli : BaseVegetable() {
         val itemSize = if (isGiant) 200.dp else 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
+        // Modifiers directly affect the physics and reward math.
         val speedMultiplier = if (isFast) GamePrices.MULTIPLIER_BROCCOLI_FAST.toFloat() else 1f
         val rewardMultiplier = if (isFast) GamePrices.MULTIPLIER_BROCCOLI_FAST else 1
 
         var clickCounter by remember { mutableStateOf(0) }
 
         /**
-         * Shared interaction logic for both manual clicks and proximity sensor triggers.
+         * INTERACTION HANDLER
+         * Shared logic for both manual clicks and proximity triggers.
+         * This avoids code duplication (DRY Principle).
          */
         val handleInteraction = {
             val currentX = posX
@@ -117,8 +131,9 @@ class Broccoli : BaseVegetable() {
             val rewardsToGive = mutableListOf<Reward>()
             
             if (isGiant) {
+                // Giant Broccoli mechanic: requires 2 "hits" to generate a reward.
                 clickCounter++
-                if (clickCounter >= 2) { // Giant Broccoli requires 2 hits
+                if (clickCounter >= 2) {
                     clickCounter = 0
                     rewardsToGive.addAll(baseRewards)
                 }
@@ -127,6 +142,7 @@ class Broccoli : BaseVegetable() {
             }
 
             if (rewardsToGive.isNotEmpty()) {
+                // Apply modifiers to the reward values before sending to ViewModel.
                 val basePlusMultipliers = if (rewardMultiplier > 1) {
                     rewardsToGive.map { it.copy(
                         moneyValue = it.moneyValue * rewardMultiplier,
@@ -136,31 +152,37 @@ class Broccoli : BaseVegetable() {
                     rewardsToGive
                 }
 
+                // Execute the global economy logic in the ViewModel.
                 val finalRewards = onVegetableClick(basePlusMultipliers)
                 
+                // Visual feedback: Create particles at the Broccoli's CURRENT moving position.
                 val newOnes = createRewardParticles(
                     rewards = finalRewards,
                     offsetX = currentX,
                     offsetY = currentY
                 )
                 
+                // Particle pool management.
                 val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                 val overflow = (activeCount + newOnes.size) - 20
                 if (overflow > 0) {
-                    flyingParticles.filter { !it.isManuallyRemoved }
-                        .take(overflow)
-                        .forEach { it.isManuallyRemoved = true }
+                    flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
                 }
                 flyingParticles.addAll(newOnes)
             }
             
+            // Squash and stretch animation effect.
             scope.launch {
                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                 scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
             }
         }
 
-        // Animation loop for movement and bouncing
+        /**
+         * --- PHYSICS LOOP (Coroutines) ---
+         * Continuously updates the Broccoli's position based on velocity.
+         * Detects collisions with the screen edges and flips the velocity vector (Bouncing).
+         */
         LaunchedEffect(parentWidth, parentHeight, speedMultiplier) {
             if (parentWidth > 0 && parentHeight > 0) {
                 while (true) {
@@ -171,10 +193,12 @@ class Broccoli : BaseVegetable() {
                         val limitX = (parentWidth - itemSizePx) / 2
                         val limitY = (parentHeight - itemSizePx) / 2
 
+                        // Collision detection: Left/Right walls
                         if (posX <= -limitX || posX >= limitX) {
                             baseVelX *= -1
                             posX = posX.coerceIn(-limitX, limitX)
                         }
+                        // Collision detection: Top/Bottom walls
                         if (posY <= -limitY || posY >= limitY) {
                             baseVelY *= -1
                             posY = posY.coerceIn(-limitY, limitY)
@@ -184,14 +208,20 @@ class Broccoli : BaseVegetable() {
             }
         }
 
-        // Setup proximity sensor for "Air Harvest"
+        /**
+         * --- SENSOR MANAGEMENT (DisposableEffect) ---
+         * Manages the lifecycle of the proximity sensor for "Air Harvest".
+         * Sensors must be properly shut down to prevent battery drain.
+         */
         DisposableEffect(isAirHarvest) {
             if (isAirHarvest) {
                 startListeningForProximity {
+                    // Sensor triggered! We call the same interaction handler as a click.
                     handleInteraction()
                 }
             }
             onDispose {
+                // Critical: Stop hardware listener when the component is removed from the screen.
                 stopListeningForProximity()
             }
         }
@@ -200,12 +230,13 @@ class Broccoli : BaseVegetable() {
             modifier = Modifier
                 .fillMaxSize()
                 .onGloballyPositioned {
+                    // Update parent dimensions when the layout is drawn.
                     parentWidth = it.size.width.toFloat()
                     parentHeight = it.size.height.toFloat()
                 },
             contentAlignment = Alignment.Center
         ) {
-            // Render the moving Broccoli
+            // Render the Broccoli at its calculated animated position.
             Box(
                 modifier = Modifier
                     .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
@@ -230,7 +261,7 @@ class Broccoli : BaseVegetable() {
                 )
             }
 
-            // Particle effect layer
+            // Layer for flying reward particles.
             ParticleEffect(flyingParticles)
         }
     }

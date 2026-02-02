@@ -40,8 +40,18 @@ data class PublicProfile(
 )
 
 /**
- * The main ViewModel for the game, orchestrating state between various managers 
- * (Economy, Profile, Weather) and handling data persistence.
+ * --- MVVM ARCHITECTURE (The ViewModel) ---
+ * The ViewModel is the "Brain" of the application. It orchestrates state between
+ * various managers (Economy, Profile, Weather) and handles data persistence.
+ *
+ * KEY RESPONSIBILITIES:
+ * 1. State Holder: Maintains variables that the UI observes.
+ * 2. Logic Coordinator: Calls specialized managers to process game rules.
+ * 3. Persistence: Interfaces with the Repository to save/load progress.
+ *
+ * --- OOP PRINCIPLE: ABSTRACTION & COMPOSITION ---
+ * Instead of having one massive class, GameViewModel is composed of specialized managers.
+ * This makes the code easier to maintain and test (Separation of Concerns).
  */
 @OptIn(ExperimentalTime::class)
 class GameViewModel(
@@ -49,8 +59,12 @@ class GameViewModel(
     private val authRepository: AuthRepository? = null
 ) : ViewModel(), GameItemProvider {
 
-    // --- MANAGERS ---
+    // --- COMPOSITION (OOP Principle) ---
+    // Specialized logic is delegated to these manager classes.
+    
     private val weatherManager = WeatherManager(viewModelScope) {
+        // Callback: when the weather manager triggers an auto-click (e.g., during rain),
+        // we execute the standard vegetable click logic.
         onVegetableClick(currentItem.baseRewards)
     }
     
@@ -58,21 +72,32 @@ class GameViewModel(
     
     private val economyManager = EconomyManager()
 
-    // --- LOADING STATE ---
-    /** Indicates if the initial game data has been loaded from the repository. */
+    // --- STATE OBSERVABLES (Compose State) ---
+    /** 
+     * Indicates if the initial game data has been loaded from storage.
+     * The UI (App.kt) observes this to show a loading spinner or the game content.
+     */
     var isDataLoaded by mutableStateOf(false)
         private set
 
-    // --- AUTH & PROFILE DELEGATION ---
+    // --- DELEGATION (OOP Pattern) ---
+    // The following properties and functions are "forwarded" to managers.
+    // This allows the ViewModel to remain the single point of contact for the UI.
+
     val currentUser: UserProfile? get() = profileManager.currentUser
     val username: String get() = profileManager.username
     val profileImageId: String get() = profileManager.profileImageId
     val searchResults get() = profileManager.searchResults
     val isSearching: Boolean get() = profileManager.isSearching
     
+    /** Updates username locally and triggers a save operation. */
     fun updateUsername(newName: String) { profileManager.updateUsername(newName); saveData() }
+    
+    /** Updates profile image locally and triggers a save operation. */
     fun updateProfileImage(id: String) { profileManager.updateProfileImage(id); saveData() }
+    
     fun searchPlayers(query: String) = profileManager.searchPlayers(query)
+    
     fun updatePublicProfile(onSuccess: () -> Unit, onError: (String) -> Unit) = 
         profileManager.updatePublicProfile(unlockedAchievements.toList(), onSuccess, onError)
 
@@ -86,18 +111,22 @@ class GameViewModel(
     val totalMoneyEarned: Int get() = economyManager.totalMoneyEarned
     val totalFruitHarvested: Map<String, Int> get() = economyManager.totalFruitHarvested
     
+    /** Checks if the player has enough resources to purchase an item. */
     fun canAfford(cost: ItemCost) = economyManager.canAfford(cost)
 
     // --- CPS (Clicks Per Second) LOGIC ---
     private val clickTimestamps = mutableStateListOf<Long>()
-    /** Current clicks per second, updated in real-time. */
+    /** 
+     * Current clicks per second. Updated every 100ms by a background coroutine. 
+     * Used for visual feedback and certain secret mechanics.
+     */
     var currentCps by mutableStateOf(0.0f)
         private set
 
-    // --- SETTINGS ---
-    var vibrationEnabled by mutableStateOf(false)
+    // --- SETTINGS (Reactive States) ---
+    var vibrationEnabled by mutableStateOf(true)
         private set
-    var vibrationIntensity by mutableStateOf(10f)
+    var vibrationIntensity by mutableStateOf(15f)
     var isDarkTheme by mutableStateOf(false)
         private set
     var isAutumnTheme by mutableStateOf(false)
@@ -112,6 +141,7 @@ class GameViewModel(
         private set
 
     // --- GLOBAL UPGRADES ---
+    // These upgrades affect all vegetables simultaneously.
     override var globalUpgrades = listOf(
         GlobalUpgrade("double_click_10", Res.string.upg_precise_harvest_name, Res.string.upg_precise_harvest_desc, GamePrices.UPGRADE_PRECISE_HARVEST, 5),
         GlobalUpgrade("lucky_harvest", Res.string.upg_lucky_harvest_name, Res.string.upg_lucky_harvest_desc, GamePrices.UPGRADE_LUCKY_HARVEST, 5),
@@ -131,10 +161,15 @@ class GameViewModel(
     // --- LIBRARY & ART ---
     override val libraryCategories = LibraryRepository.categories
     private var unlockedArtIds = mutableStateListOf<String>()
+    
+    /** Checks if a piece of gallery art is already owned. */
     override fun isArtUnlocked(artId: String): Boolean = unlockedArtIds.contains(artId)
     override fun getArtCount(): Int = ArtRepository.artEntries.size
     
-    /** Unlocks a piece of art from the gallery if the user can afford it. */
+    /** 
+     * Unlocks art from the gallery. 
+     * Uses calculateDiscountedPrice to check for active weather bonuses. 
+     */
     fun unlockArt(artId: String, cost: Int) {
         val finalCost = calculateDiscountedPrice(cost)
         if (money >= finalCost && !isArtUnlocked(artId)) {
@@ -151,13 +186,13 @@ class GameViewModel(
     var achievementToast by mutableStateOf<Achievement?>(null)
         private set
 
-    // --- CLOUD SYNC ---
+    // --- CLOUD SYNC STATE ---
     var lastCloudSyncTime by mutableStateOf(0L)
         private set
     var isCloudLoading by mutableStateOf(false)
         private set
 
-    // --- TUTORIAL ---
+    // --- TUTORIAL STATE ---
     var tutorialSeen by mutableStateOf(false)
         private set
     var showTutorial by mutableStateOf(false)
@@ -170,39 +205,50 @@ class GameViewModel(
         private set
     val itemsList: List<GameItem> get() = items
 
+    /**
+     * Initialization block. 
+     * Runs automatically when the ViewModel is created.
+     */
     init {
         loadData()
         startCpsTracker()
     }
 
     /**
-     * Coroutine that updates the currentCps value by tracking click timestamps over a 1-second window.
+     * --- ASYNCHRONOUS PROGRAMMING (Coroutines) ---
+     * Starts a background process that monitors click frequency.
+     * Using 'viewModelScope' ensures the process stops if the app is closed.
      */
     private fun startCpsTracker() {
         viewModelScope.launch {
             while (isActive) {
                 val now = currentTimeMillis()
                 val oneSecondAgo = now - 1000
+                // Cleanup old clicks from the window
                 while (clickTimestamps.isNotEmpty() && clickTimestamps.first() < oneSecondAgo) clickTimestamps.removeAt(0)
                 currentCps = clickTimestamps.size.toFloat()
-                delay(100)
+                delay(100) // Polling interval
             }
         }
     }
 
     private fun currentTimeMillis(): Long = Clock.System.now().toEpochMilliseconds()
 
-    /** Loads game progress from local storage. */
+    /** Loads game progress from local storage via the Repository. */
     private fun loadData() {
         viewModelScope.launch {
             val saveData = gameRepository.loadGameData()
             applySaveData(saveData)
             isDataLoaded = true
+            // Show tutorial only for completely new players
             if (!tutorialSeen) showTutorial = true
         }
     }
 
-    /** Updates the ViewModel's state based on a GameSaveData object. */
+    /** 
+     * Applies loaded save data to the current session state.
+     * This method "hydrates" the UI state with values from persistent storage.
+     */
     private fun applySaveData(saveData: GameSaveData) {
         vibrationEnabled = saveData.vibrationEnabled; vibrationIntensity = saveData.vibrationIntensity
         isDarkTheme = saveData.isDarkTheme; isAutumnTheme = saveData.isAutumnTheme
@@ -233,16 +279,22 @@ class GameViewModel(
     }
 
     /**
+     * MAIN INTERACTION LOGIC
      * Handles a click on a vegetable, calculating rewards based on active upgrades and weather.
+     * 
      * @param rewards The base rewards for the clicked item.
-     * @return The final rewards granted after all modifiers are applied.
+     * @return The final rewards granted after all modifiers (luck, precision, weather) are applied.
      */
     fun onVegetableClick(rewards: List<Reward>): List<Reward> {
         economyManager.addClicks()
         globalClickCounter++
         clickTimestamps.add(currentTimeMillis())
+        
+        // Haptic Feedback call to platform-specific code via 'util'
         if (vibrationEnabled) vibrate(vibrationIntensity.toLong())
 
+        // --- PURE LOGIC DELEGATION ---
+        // RewardCalculator is an 'object' (Singleton), providing utility functions without state.
         val finalRewards = RewardCalculator.calculateRewards(
             rewards, globalUpgrades, globalClickCounter, isWeatherBonusActive,
             currentWeatherData?.current_weather?.temperature ?: 20.0,
@@ -253,13 +305,14 @@ class GameViewModel(
         saveData(); return finalRewards
     }
 
-    /** Checks if any new achievements have been earned. */
+    /** Checks if any new achievements have been earned based on current game status. */
     private fun checkAchievements(isInitialLoad: Boolean = false) {
         achievements.forEach { achievement ->
             if (!unlockedAchievements.contains(achievement.id)) {
                 val isEarned = if (achievement.id == "art_collector") {
                     ArtRepository.artEntries.isNotEmpty() && ArtRepository.artEntries.all { isArtUnlocked(it.id) }
                 } else achievement.checkEarned(this)
+                
                 if (isEarned) {
                     unlockedAchievements.add(achievement.id)
                     if (!isInitialLoad) showAchievementToast(achievement)
@@ -268,24 +321,30 @@ class GameViewModel(
         }
     }
 
-    /** Displays a temporary UI toast for a newly unlocked achievement. */
+    /** Displays a temporary UI notification for a newly unlocked achievement. */
     private fun showAchievementToast(achievement: Achievement) {
         viewModelScope.launch {
             achievementToast = achievement
-            delay(4000) 
+            delay(4000) // Toast duration
             if (achievementToast?.id == achievement.id) achievementToast = null
         }
     }
 
-    /** Applies active discounts (e.g., from weather) to a price. */
+    /** 
+     * Business Logic: Calculates discounts.
+     * Currently applies a 10% discount on art/facts if it's cloudy and the weather bonus is active. 
+     */
     fun calculateDiscountedPrice(basePrice: Int): Int = 
         if (isWeatherBonusActive && weatherManager.isCloudy()) (basePrice * 0.9).toInt() else basePrice
 
-    /** Gets the drawable resource associated with a specific avatar ID. */
+    /** 
+     * Helper to resolve IDs into UI images.
+     * Searches through both vegetable items and gallery art.
+     */
     fun getAvatarResource(id: String): DrawableResource =
         itemsList.find { it.id == id }?.resource ?: ArtRepository.artEntries.find { it.id == id }?.resource ?: Res.drawable.tomato_strip
 
-    /** Attempts to level up a global upgrade. */
+    /** Purchase logic for global upgrades (Precise Harvest, Lucky Harvest, etc.). */
     fun tryUnlockGlobalUpgrade(upgrade: GlobalUpgrade) {
         val nextCost = upgrade.getNextLevelCost()
         if (!upgrade.isMaxLevel && canAfford(nextCost)) {
@@ -295,7 +354,7 @@ class GameViewModel(
         }
     }
 
-    /** Attempts to unlock a specific entry in the library. */
+    /** Purchase logic for Knowledge Library entries. */
     fun tryUnlockLibraryEntry(entry: LibraryEntry) {
         val finalMoneyCost = calculateDiscountedPrice(entry.cost.money)
         val adjustedCost = entry.cost.copy(money = finalMoneyCost)
@@ -307,6 +366,7 @@ class GameViewModel(
     }
 
     // --- SETTINGS UPDATERS ---
+    // These functions modify state and trigger a persistent save to DataStore.
     fun setVibration(enabled: Boolean) { vibrationEnabled = enabled; saveData() }
     fun updateVibrationIntensity(intensity: Float) { vibrationIntensity = intensity; saveData() }
     fun setTheme(dark: Boolean) { isDarkTheme = dark; saveData() }
@@ -318,10 +378,14 @@ class GameViewModel(
     fun completeTutorial() { tutorialSeen = true; showTutorial = false; saveData() }
     fun replayTutorial() { showTutorial = true }
 
-    /** Uploads current progress to Firebase Firestore. */
+    /** 
+     * CLOUD BACKUP
+     * Converts current state to JSON and uploads it to Firebase Firestore. 
+     */
     fun uploadSaveToCloud(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val user = currentUser ?: return
         val now = currentTimeMillis()
+        // Anti-spam cooldown (60 seconds)
         if (now - lastCloudSyncTime < 60000L) {
             onError(((60000L - (now - lastCloudSyncTime)) / 1000).toInt().toString()); return
         }
@@ -335,7 +399,10 @@ class GameViewModel(
         }
     }
 
-    /** Downloads and applies game progress from Firebase Firestore. */
+    /** 
+     * CLOUD RESTORE
+     * Downloads JSON from Firebase and updates the entire game state. 
+     */
     fun downloadSaveFromCloud(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val user = currentUser ?: return
         isCloudLoading = true
@@ -350,7 +417,10 @@ class GameViewModel(
         }
     }
 
-    /** Creates a snapshot of the current game state for saving. */
+    /** 
+     * MEMENTO PATTERN (Simplified)
+     * Creates a snapshot of the current game state for saving. 
+     */
     private fun getSaveDataSnapshot(): GameSaveData {
         val modUnlocked = mutableMapOf<String, Boolean>()
         val modEnabled = mutableMapOf<String, Boolean>()
@@ -374,10 +444,10 @@ class GameViewModel(
         )
     }
 
-    /** Selects a new item to be displayed in the garden. */
+    /** Changes the active vegetable being interacted with. */
     fun selectItem(item: GameItem) { if (item.unlocked) currentItem = item }
 
-    /** Attempts to unlock a new vegetable for the garden. */
+    /** Purchase logic for unlocking new vegetables (Broccoli, Pepper, etc.). */
     fun tryUnlockItem(item: GameItem) {
         if (!item.unlocked && canAfford(item.unlockCost)) {
             economyManager.spend(item.unlockCost)
@@ -386,7 +456,7 @@ class GameViewModel(
         }
     }
 
-    /** Attempts to unlock a specific modifier for a vegetable. */
+    /** Purchase logic for plant-specific gameplay modifiers. */
     fun tryUnlockModifier(modifier: GameplayModifier) {
         if (!modifier.isUnlocked && canAfford(modifier.unlockCost)) {
             economyManager.spend(modifier.unlockCost)
@@ -398,7 +468,7 @@ class GameViewModel(
     /** Toggles an already unlocked modifier on or off. */
     fun toggleModifier(modifier: GameplayModifier) { if (modifier.isUnlocked) { modifier.isEnabled = !modifier.isEnabled; saveData() } }
 
-    /** Debug function to add a large amount of all resources. */
+    /** DEBUG: Adds a massive amount of resources for testing purposes. */
     fun debugAddResources() {
         economyManager.debugAddResources()
         val newCounts = fruitCounts.toMutableMap(); val newTotals = totalFruitHarvested.toMutableMap()
@@ -407,7 +477,7 @@ class GameViewModel(
         checkAchievements(); saveData()
     }
 
-    /** Resets all progress and clears local save data. */
+    /** Hard reset: Clears all progress and returns to the initial state. */
     fun resetGame() {
         economyManager.reset()
         profileManager.username = "Farmer"; profileManager.profileImageId = "tomato"
@@ -417,6 +487,6 @@ class GameViewModel(
         unlockedArtIds.clear(); tutorialSeen = false; currentItem = items.first(); saveData()
     }
 
-    /** Saves current game state to local storage. */
+    /** Private helper to trigger a background save operation. */
     private fun saveData() { viewModelScope.launch { gameRepository.saveGameData(getSaveDataSnapshot()) } }
 }

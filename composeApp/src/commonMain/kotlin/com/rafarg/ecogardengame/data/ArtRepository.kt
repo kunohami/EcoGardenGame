@@ -3,7 +3,15 @@ package com.rafarg.ecogardengame.data
 import com.rafarg.ecogardengame.model.ArtEntry
 import ecogardengame.composeapp.generated.resources.*
 
+/**
+ * Data repository containing all the collectible art pieces available in the Gallery.
+ * These pieces can be unlocked by the player using coins and then used as profile avatars.
+ */
 object ArtRepository {
+    /**
+     * Complete list of art entries.
+     * Each entry includes a unique ID, a drawable resource, a name, and a coin cost.
+     */
     val artEntries = listOf(
         ArtEntry("tomato", Res.drawable.tomato_strip, Res.string.item_tomato, 500),
         ArtEntry("broccoli", Res.drawable.broccoli_strip, Res.string.item_broccoli, 750),

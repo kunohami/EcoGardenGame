@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -30,6 +31,7 @@ import kotlin.random.Random
 
 /**
  * Data class representing a small piece of garlic that appears after an explosion.
+ * Demonstrates the use of individual Animatable properties for complex visual effects.
  */
 class GarlicPiece(
     val id: Long,
@@ -41,10 +43,15 @@ class GarlicPiece(
 }
 
 /**
- * Garlic vegetable implementation.
- * Mechanics: Requires 10 clicks to "explode" into multiple small cloves. 
- * The player must then click all cloves to receive a large bonus.
- * Modifier "Shake to Harvest" allows collecting multiple cloves by shaking the device.
+ * --- GAMEPLAY MECHANIC: MULTI-PHASE / STATE MACHINE ---
+ * The Garlic introduces a "Two-Phase" interaction. 
+ * Phase 1: Tap the main bulb 10 times to "charge" it.
+ * Phase 2: The bulb explodes into cloves. Collect all cloves to get a large reward.
+ *
+ * --- OOP PRINCIPLES ---
+ * - ENCAPSULATION: Internal state variables (clickCount, isExploded) are managed 
+ *   within the UI layer to maintain a clean interface.
+ * - COMPOSITION: Uses a list of 'GarlicPiece' objects to manage the explosion logic.
  */
 class Garlic : BaseVegetable() {
     override val id: String = "garlic"
@@ -78,6 +85,10 @@ class Garlic : BaseVegetable() {
         )
     )
 
+    /**
+     * The Garlic's UI implementation.
+     * Switches between two distinct rendering modes based on 'isExploded'.
+     */
     @Composable
     override fun Content(
         modifier: Modifier,
@@ -88,6 +99,8 @@ class Garlic : BaseVegetable() {
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
+        
+        // --- INTERNAL STATE ---
         var clickCount by remember { mutableStateOf(0) }
         var isExploded by remember { mutableStateOf(false) }
         val pieces = remember { mutableStateListOf<GarlicPiece>() }
@@ -96,7 +109,8 @@ class Garlic : BaseVegetable() {
         val isClusterActive = activeModifiers.any { it.id == "garlic_cluster" && it.isEnabled }
         val isShakeActive = activeModifiers.any { it.id == "garlic_shake" && it.isEnabled }
 
-        // Visual vibration effect that increases as clickCount approach 10
+        // --- VISUAL FEEDBACK (Vibration Animation) ---
+        // As the clickCount increases, the bulb shakes more intensely.
         val vibrationIntensityVal = (clickCount.toFloat() / 10f) * 10f
         val infiniteTransition = rememberInfiniteTransition()
         val vibX by infiniteTransition.animateFloat(
@@ -109,9 +123,8 @@ class Garlic : BaseVegetable() {
         )
 
         /**
-         * Collects garlic cloves and handles the final reward logic once all pieces are gone.
-         * @param count Number of pieces to collect (used for shake).
-         * @param pieceToCollect Specific piece if clicked manually.
+         * COLLECTION LOGIC
+         * Handles the removal of garlic cloves and triggers the final big reward.
          */
         fun collectPieces(count: Int, pieceToCollect: GarlicPiece? = null) {
             val piecesToProcess = if (pieceToCollect != null) {
@@ -129,7 +142,7 @@ class Garlic : BaseVegetable() {
             piecesToProcess.forEach { piece ->
                 piece.isVisible = false
                 
-                // When the last piece is collected, grant the big explosion reward
+                // When the final piece is collected, grant the bonus reward.
                 if (pieces.none { it.isVisible }) {
                     val multiplier = if (isClusterActive) GamePrices.MULTIPLIER_GARLIC_CLUSTER else 1.0f
                     val bonusRewards = listOf(
@@ -137,25 +150,17 @@ class Garlic : BaseVegetable() {
                         Reward(emoji = particleEmoji, countValue = (GamePrices.REWARD_GARLIC_EXPLOSION_COUNT * multiplier).toInt(), resource = resource)
                     )
                     
+                    // Call the ViewModel to process the final big reward.
                     val finalRewards = onVegetableClick(bonusRewards)
                     
+                    // Create reward particles at the last clove's position.
                     val captureX = piece.animatableX.value
                     val captureY = piece.animatableY.value
+                    val newOnes = createRewardParticles(finalRewards, captureX, captureY)
                     
-                    val newOnes = createRewardParticles(
-                        rewards = finalRewards,
-                        offsetX = captureX,
-                        offsetY = captureY
-                    )
-                    
-                    val activeCount = flyingParticles.count { !it.isManuallyRemoved }
-                    val overflow = (activeCount + newOnes.size) - 20
-                    if (overflow > 0) {
-                        flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
-                    }
                     flyingParticles.addAll(newOnes)
                     
-                    // Reset state
+                    // Reset to Phase 1.
                     isExploded = false
                     clickCount = 0
                     pieces.clear()
@@ -163,10 +168,14 @@ class Garlic : BaseVegetable() {
             }
         }
 
-        // Setup accelerometer listener for "Shake to Harvest"
+        /**
+         * --- SENSOR INTERACTION (Accelerometer) ---
+         * If "Shake to Harvest" is active, we listen for phone movement.
+         */
         DisposableEffect(isExploded, isShakeActive) {
             if (isExploded && isShakeActive) {
                 startListeningForShake {
+                    // Shake detected! Automatically collect up to 5 pieces at once.
                     collectPieces(5)
                 }
             }
@@ -177,7 +186,7 @@ class Garlic : BaseVegetable() {
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (!isExploded) {
-                // Render main Garlic bulb
+                // --- PHASE 1: THE MAIN BULB ---
                 Box(contentAlignment = Alignment.Center) {
                     SpriteAnimation(
                         painter = painterResource(resource),
@@ -186,6 +195,7 @@ class Garlic : BaseVegetable() {
                             .size(200.dp)
                             .offset { IntOffset(if (clickCount > 0) vibX.roundToInt() else 0, 0) }
                             .graphicsLayer {
+                                // The bulb grows as it gets closer to exploding.
                                 val growth = 1f + (clickCount.toFloat() / 10f) * 0.5f
                                 scaleX = scale.value * growth
                                 scaleY = scale.value * growth
@@ -196,7 +206,7 @@ class Garlic : BaseVegetable() {
                             ) {
                                 clickCount++
                                 if (clickCount >= 10) {
-                                    // Trigger explosion
+                                    // --- TRIGGER EXPLOSION ---
                                     pieces.clear()
                                     val pieceCount = if (isClusterActive) 20 else 10
                                     repeat(pieceCount) {
@@ -208,36 +218,31 @@ class Garlic : BaseVegetable() {
                                             animatableY = Animatable(0f)
                                         )
                                         pieces.add(piece)
+                                        // Animate pieces flying outward.
                                         scope.launch { piece.animatableX.animateTo(targetX, tween(600, easing = EaseOutBack)) }
                                         scope.launch { piece.animatableY.animateTo(targetY, tween(600, easing = EaseOutBack)) }
                                     }
                                     isExploded = true
                                 } else {
-                                    // Normal click reward
+                                    // Standard click reward during Phase 1.
                                     val finalRewards = onVegetableClick(baseRewards)
                                     scope.launch {
                                         scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                         scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
                                     }
-                                    
                                     val newOnes = createRewardParticles(finalRewards)
-                                    val activeCount = flyingParticles.count { !it.isManuallyRemoved }
-                                    val overflow = (activeCount + newOnes.size) - 20
-                                    if (overflow > 0) {
-                                        flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
-                                    }
                                     flyingParticles.addAll(newOnes)
                                 }
                             }
                     )
                 }
             } else {
-                // Render scattered cloves
+                // --- PHASE 2: THE CLOVES ---
+                // Iterates through the list of generated pieces and renders them.
                 pieces.forEach { piece ->
                     key(piece.id) {
                         if (piece.isVisible) {
                             val pieceScale = remember { Animatable(1f) }
-                            
                             Box(
                                 modifier = Modifier
                                     .offset { IntOffset(piece.animatableX.value.roundToInt(), piece.animatableY.value.roundToInt()) }
@@ -266,6 +271,7 @@ class Garlic : BaseVegetable() {
                 }
             }
             
+            // Render the particles layer.
             ParticleEffect(flyingParticles)
         }
     }
