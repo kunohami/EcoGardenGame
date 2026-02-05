@@ -8,22 +8,45 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
+/**
+ * --- ANDROID AUTHENTICATION REPOSITORY ---
+ * Implements Google Sign-In and Firebase Authentication for Android.
+ */
 class AndroidAuthRepository(private val activity: ComponentActivity) : AuthRepository {
 
     private val auth = Firebase.auth
+    
+    /**
+     * --- REACTIVE STATE ---
+     * Firebase's authStateChanged can sometimes be slow to emit after a credential login.
+     * We use a MutableStateFlow to manually trigger a UI update the moment login succeeds.
+     */
+    private val manualUserUpdate = MutableStateFlow<UserProfile?>(null)
 
-    override val currentUser: Flow<UserProfile?> = auth.authStateChanged.map { user ->
-        user?.let {
-            UserProfile(
-                id = it.uid,
-                name = it.displayName,
-                email = it.email,
-                photoUrl = it.photoURL
-            )
-        }
+    /**
+     * Combines the official Firebase auth stream with our manual trigger.
+     * This ensures the UI is always up-to-date.
+     */
+    override val currentUser: Flow<UserProfile?> = combine(
+        auth.authStateChanged.map { user ->
+            user?.let {
+                UserProfile(
+                    id = it.uid,
+                    name = it.displayName,
+                    email = it.email,
+                    photoUrl = it.photoURL
+                )
+            }
+        },
+        manualUserUpdate
+    ) { firebaseUser, manualUser ->
+        // Priority: if we just logged in manually, use that info until Firebase catches up.
+        manualUser ?: firebaseUser
     }
 
     private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -36,31 +59,47 @@ class AndroidAuthRepository(private val activity: ComponentActivity) : AuthRepos
     val signInIntent get() = googleSignInClient.signInIntent
 
     override suspend fun signInWithGoogle(): Result<UserProfile> {
-        // This is handled via handleSignInResult after the activity result
+        // Handled via activity result in MainActivity
         return Result.failure(Exception("Use platform intent flow"))
     }
 
+    /**
+     * Processes the result from the Google Sign-In Activity.
+     * Links the Google Account with Firebase Auth.
+     */
     suspend fun handleSignInResult(account: GoogleSignInAccount): Result<UserProfile> {
         return try {
             val idToken = account.idToken ?: throw Exception("No ID Token found")
-            // GitLive Firebase Auth GoogleAuthProvider expects (idToken, accessToken)
             val credential = GoogleAuthProvider.credential(idToken, null)
+            
+            // Perform the Firebase login
             val authResult = auth.signInWithCredential(credential)
             val user = authResult.user ?: throw Exception("Firebase user is null")
             
-            Result.success(UserProfile(
+            val profile = UserProfile(
                 id = user.uid,
                 name = user.displayName,
                 email = user.email,
                 photoUrl = user.photoURL
-            ))
+            )
+            
+
+            // Manually emit the new profile to force the UI to react instantly.
+            manualUserUpdate.value = profile
+            
+            Result.success(profile)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
+    /**
+     * Clears both Firebase and Google sessions.
+     */
     override suspend fun signOut() {
         auth.signOut()
         googleSignInClient.signOut().await()
+        // Reset manual flow
+        manualUserUpdate.value = null
     }
 }
