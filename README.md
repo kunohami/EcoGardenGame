@@ -71,7 +71,7 @@ A cross-platform idle/clicker game built with **Kotlin Multiplatform** and **Jet
 
 ## Architecture overview
 
-The project is structured in five layers following MVVM and clean architecture principles:
+The project follows **MVVM + the Repository pattern**: MVVM separates the UI (View) from business logic (ViewModel) and game/data state (Model), while the Repository pattern hides *where* that data actually lives (DataStore, Firestore) behind a plain interface, so the storage backend can change without touching the ViewModel. It is structured in five layers:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -104,33 +104,7 @@ The project is structured in five layers following MVVM and clean architecture p
 
 Platform-specific code (sensors, shaders, auth) is isolated in `androidMain`/`iosMain` behind Kotlin `expect`/`actual` declarations, keeping all business logic in shared `commonMain`.
 
-See [`docs/architecture.md`](docs/architecture.md) for a full explanation of MVVM and how each layer is implemented.
-
----
-
-## Project structure
-
-```
-EcoGardenGame/
-├── composeApp/src/
-│   ├── commonMain/kotlin/com/rafarg/ecogardengame/
-│   │   ├── auth/         # AuthRepository interface
-│   │   ├── data/         # GameRepository, DataStore impl, WeatherService, GameSaveData
-│   │   ├── model/        # GameItem, 7 vegetables, achievements, upgrades, library
-│   │   ├── ui/           # All Compose screens, theme, animations
-│   │   ├── util/         # expect declarations (sensors, vibration, location)
-│   │   └── viewmodel/    # GameViewModel + manager classes
-│   ├── androidMain/      # Android-specific implementations
-│   └── iosMain/          # iOS-specific implementations
-├── iosApp/               # Xcode entry point
-├── docs/
-│   ├── architecture.md   # MVVM explained + layer breakdown
-│   ├── ui.md             # Screens, navigation, theming, animations
-│   ├── game-mechanics.md # Vegetables, rewards, upgrades, achievements
-│   ├── persistence.md    # GameSaveData, DataStore, cloud sync
-│   └── platform.md       # KMP, sensors, auth, permissions
-└── CLAUDE.md             # AI assistant context
-```
+See [`docs/architecture.md`](docs/architecture.md) for a full explanation of MVVM + Repository pattern and how each layer is implemented, or [`docs/clean-architecture-path.md`](docs/clean-architecture-path.md) for how it compares to Clean Architecture.
 
 ---
 
@@ -176,6 +150,7 @@ The game runs fully offline without these steps — Firebase features will be di
 - [`docs/game-mechanics.md`](docs/game-mechanics.md) — vegetables, reward pipeline, upgrades, achievements, library
 - [`docs/persistence.md`](docs/persistence.md) — GameSaveData contract, DataStore, cloud sync, weather API
 - [`docs/platform.md`](docs/platform.md) — Kotlin Multiplatform, expect/actual, sensors, auth, permissions
+- [`docs/clean-architecture-path.md`](docs/clean-architecture-path.md) — MVVM + Repository pattern compared to Clean Architecture, and how it could be extended
 
 ---
 
@@ -184,5 +159,5 @@ The game runs fully offline without these steps — Firebase features will be di
 **Source code** is licensed under the [GNU General Public License v3.0](LICENSE).
 You are free to study, modify, and distribute the code, but any distributed version must also be open source under the same license.
 
-**Art assets** (sprites, illustrations, and UI graphics in `composeApp/src/commonMain/composeResources/drawable/`) are licensed under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](composeApp/src/commonMain/composeResources/drawable/LICENSE-ASSETS).
+**Art assets** (sprites, illustrations, and UI graphics in `composeApp/src/commonMain/composeResources/drawable/`) are licensed under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](composeApp/src/commonMain/composeResources/drawable/LICENSE).
 They may not be used commercially or modified without explicit permission from the author.

@@ -6,7 +6,7 @@ EcoGardenGame (internal codename: "Clicky's Garden") is a Kotlin Multiplatform i
 
 ## Architecture in one paragraph
 
-MVVM + clean architecture. The UI layer is Jetpack Compose Multiplatform (`ui/` screens). Business logic lives in `GameViewModel`, which delegates to three manager classes: `EconomyManager` (currency/inventory), `ProfileManager` (auth, Firebase profile sync), and `WeatherManager` (Open-Meteo API, auto-harvest). The data layer uses `GameRepository` (interface) backed by `DataStoreGameRepository` (Jetpack DataStore). Game entities implement the `GameItem` interface; all reward math flows through the `RewardCalculator` singleton. Firebase Firestore is used for cloud save and player-search. Platform-specific code (sensors, location, auth, shaders) lives in `androidMain`/`iosMain` behind `expect/actual` declarations.
+MVVM + Repository pattern (not full clean architecture — see `docs/architecture.md` for why). The UI layer is Jetpack Compose Multiplatform (`ui/` screens). Business logic lives in `GameViewModel`, which delegates to three manager classes: `EconomyManager` (currency/inventory), `ProfileManager` (auth, Firebase profile sync), and `WeatherManager` (Open-Meteo API, auto-harvest). The data layer uses `GameRepository` (interface) backed by `DataStoreGameRepository` (Jetpack DataStore). Game entities implement the `GameItem` interface; all reward math flows through the `RewardCalculator` singleton. Firebase Firestore is used for cloud save and player-search. Platform-specific code (sensors, location, auth, shaders) lives in `androidMain`/`iosMain` behind `expect/actual` declarations.
 
 ## Key directories
 
@@ -62,3 +62,4 @@ composeApp/src/
 | `docs/game-mechanics.md` | Vegetables, reward flow, RewardCalculator, upgrades, achievements, library |
 | `docs/persistence.md` | GameSaveData contract, DataStore, cloud sync, weather API |
 | `docs/platform.md` | Kotlin Multiplatform, expect/actual, sensors, auth, permissions |
+| `docs/clean-architecture-path.md` | MVVM + Repository pattern compared to Clean Architecture, and how it could be extended |
