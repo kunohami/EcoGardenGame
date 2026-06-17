@@ -156,8 +156,8 @@ The game runs fully offline without these steps — Firebase features will be di
 
 ## License
 
-**Source code** is licensed under the [GNU General Public License v3.0](LICENSE).
+**Source code** is licensed under the [GNU General Public License v3.0](LICENSE.txt).
 You are free to study, modify, and distribute the code, but any distributed version must also be open source under the same license.
 
-**Art assets** (sprites, illustrations, and UI graphics in `composeApp/src/commonMain/composeResources/drawable/`) are licensed under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](composeApp/src/commonMain/composeResources/drawable/LICENSE).
+**Art assets** (sprites, illustrations, and UI graphics in `composeApp/src/commonMain/composeResources/drawable/`) are licensed under [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](composeApp/src/commonMain/composeResources/drawable/LICENSE.txt).
 They may not be used commercially or modified without explicit permission from the author.
