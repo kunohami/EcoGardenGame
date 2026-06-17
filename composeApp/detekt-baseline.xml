@@ -1,0 +1,670 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ConstructorParameterNaming:WeatherService.kt$WeatherResponse$val current_weather: CurrentWeather</ID>
+    <ID>CyclomaticComplexMethod:App.kt$@OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class) @Composable @Preview fun App( prefs: DataStore&lt;Preferences&gt;? = null, authRepository: AuthRepository? = null, onGoogleSignIn: () -&gt; Unit = {}, )</ID>
+    <ID>CyclomaticComplexMethod:Apple.kt$Apple$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>CyclomaticComplexMethod:BellPepper.kt$BellPepper$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>CyclomaticComplexMethod:Broccoli.kt$Broccoli$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>CyclomaticComplexMethod:GameRepository.kt$DataStoreGameRepository$override suspend fun loadGameData(): GameSaveData</ID>
+    <ID>CyclomaticComplexMethod:GameScreen.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class) @Composable fun GameScreen( viewModel: GameViewModel, // Manages the game logic and state onNavigateToStore: () -&gt; Unit, // Callback to navigate to the shop )</ID>
+    <ID>CyclomaticComplexMethod:GameScreen.kt$@OptIn(ExperimentalTime::class) @Composable fun WeatherDialog( viewModel: GameViewModel, onDismiss: () -&gt; Unit, onNavigateToStore: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:Garlic.kt$Garlic$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>CyclomaticComplexMethod:LibraryScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun LibraryScreen(viewModel: GameViewModel)</ID>
+    <ID>CyclomaticComplexMethod:PurpleOnion.kt$PurpleOnion$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>CyclomaticComplexMethod:RewardCalculator.kt$RewardCalculator$fun calculateRewards( baseRewards: List&lt;Reward&gt;, globalUpgrades: List&lt;GlobalUpgrade&gt;, globalClickCounter: Int, isWeatherBonusActive: Boolean, temperature: Double, isSunny: Boolean, isSnowing: Boolean, currentId: String, isCloudy: Boolean, ): List&lt;Reward&gt;</ID>
+    <ID>CyclomaticComplexMethod:Squash.kt$Squash$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>EmptyFunctionBlock:App.kt$&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:ProximityDetector.android.kt$&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:RotationDetector.android.kt$&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:ShakeDetector.android.kt$&lt;no name provided&gt;${}</ID>
+    <ID>FunctionNaming:AboutScreen.kt$@Composable fun AboutScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:App.kt$@OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class) @Composable @Preview fun App( prefs: DataStore&lt;Preferences&gt;? = null, authRepository: AuthRepository? = null, onGoogleSignIn: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:BackHandler.android.kt$@Composable actual fun BackHandler( enabled: Boolean, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:BackHandler.kt$@Composable expect fun BackHandler( enabled: Boolean = true, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:GalleryScreen.kt$@Composable fun ArtThumbnail( art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Color, onClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:GalleryScreen.kt$@Composable fun ArtViewerDialog( artList: List&lt;ArtEntry&gt;, initialIndex: Int, onDismiss: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:GalleryScreen.kt$@Composable fun GalleryScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:GameItem.kt$GameItem$@Composable fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>FunctionNaming:GameItem.kt$GameItem$@Composable fun ParticleEffect(particles: SnapshotStateList&lt;FlyingParticle&gt;)</ID>
+    <ID>FunctionNaming:GameScreen.kt$@Composable fun WeatherBonusItem( title: String, desc: String, isActive: Boolean, )</ID>
+    <ID>FunctionNaming:GameScreen.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class) @Composable fun GameScreen( viewModel: GameViewModel, // Manages the game logic and state onNavigateToStore: () -&gt; Unit, // Callback to navigate to the shop )</ID>
+    <ID>FunctionNaming:GameScreen.kt$@OptIn(ExperimentalTime::class) @Composable fun WeatherDialog( viewModel: GameViewModel, onDismiss: () -&gt; Unit, onNavigateToStore: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable fun CategoryCard( category: LibraryCategory, labelColor: Color, wavy: Boolean, onClick: (LibraryCategory) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable fun EntryListItem( entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, onShowContent: (LibraryEntry) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun LibraryScreen(viewModel: GameViewModel)</ID>
+    <ID>FunctionNaming:LoginScreen.kt$@Composable fun LoginScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, onGoogleSignIn: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MiscScreen.kt$@Composable fun MiscScreen( viewModel: GameViewModel, onNavigateToSettings: () -&gt; Unit, onNavigateToThemes: () -&gt; Unit, onNavigateToStats: () -&gt; Unit, onNavigateToAbout: () -&gt; Unit, onNavigateToLogin: () -&gt; Unit, onNavigateToGallery: () -&gt; Unit, onNavigateToTutorial: () -&gt; Unit, onNavigateToWeather: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MiscScreen.kt$@Composable fun MiscSquareButton( text: String, onClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@Composable fun AchievementBadge( achievement: Achievement, isUnlocked: Boolean, )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@Composable fun MyProfileTab( viewModel: GameViewModel, textColor: Color, )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@Composable fun ProfileView( username: String, profileImageId: String, unlockedAchievementIds: List&lt;String&gt;, allAchievements: List&lt;Achievement&gt;, viewModel: GameViewModel, textColor: Color, isEditable: Boolean = false, // True for user's own profile onEditUsername: () -&gt; Unit = {}, onEditAvatar: () -&gt; Unit = {}, headerContent: @Composable () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@Composable fun PublicProfileCard( profile: PublicProfile, viewModel: GameViewModel, onClick: (PublicProfile) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@Composable fun SearchPlayersTab( viewModel: GameViewModel, textColor: Color, )</ID>
+    <ID>FunctionNaming:ProfileScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProfileScreen(viewModel: GameViewModel)</ID>
+    <ID>FunctionNaming:PurpleOnion.kt$PurpleOnion$@Composable private fun SingleOnion( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, coinReduction: Int, spinDuration: Int, baseRewards: List&lt;Reward&gt;, parentWidth: Float, parentHeight: Float, itemSizePx: Float, onPositionChanged: (Pair&lt;Float, Float&gt;) -&gt; Unit, otherOnions: List&lt;Pair&lt;Float, Float&gt;&gt;, )</ID>
+    <ID>FunctionNaming:SettingsScreen.kt$@Composable fun SettingsScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:SpriteSheet.kt$@Composable fun SpriteAnimation( painter: Painter, frameCount: Int, modifier: Modifier = Modifier, frameDurationMillis: Long = 150, colorFilter: ColorFilter? = null, )</ID>
+    <ID>FunctionNaming:StatsScreen.kt$@Composable fun StatsScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StoreScreen.kt$@Composable fun GlobalUpgradeCard( upgrade: GlobalUpgrade, viewModel: GameViewModel, )</ID>
+    <ID>FunctionNaming:StoreScreen.kt$@Composable fun ModifierCard( gpMod: GameplayModifier, viewModel: GameViewModel, )</ID>
+    <ID>FunctionNaming:StoreScreen.kt$@Composable fun UnlockCard( item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameItem) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StoreScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun StoreScreen(viewModel: GameViewModel)</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun EcoGardenTheme( useDarkTheme: Boolean = false, useWavyTheme: Boolean = false, useAutumnTheme: Boolean = false, content: @Composable () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:ThemesScreen.kt$@Composable fun ThemeCard( name: String, colors: List&lt;Color&gt;, isSelected: Boolean, onClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:ThemesScreen.kt$@Composable fun ThemesScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:TutorialScreen.kt$@Composable fun TutorialScreen(viewModel: GameViewModel)</ID>
+    <ID>FunctionNaming:WavyBackground.kt$@Composable fun WavyBackground(enabled: Boolean)</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun WeatherScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>InvalidPackageDeclaration:Platform.android.kt$package com.rafarg.ecogardengame.util</ID>
+    <ID>LongMethod:AboutScreen.kt$@Composable fun AboutScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:App.kt$@OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class) @Composable @Preview fun App( prefs: DataStore&lt;Preferences&gt;? = null, authRepository: AuthRepository? = null, onGoogleSignIn: () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:Apple.kt$Apple$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:BellPepper.kt$BellPepper$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:Broccoli.kt$Broccoli$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:GalleryScreen.kt$@Composable fun GalleryScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:GameItem.kt$BaseVegetable$@Composable override fun ParticleEffect(particles: SnapshotStateList&lt;FlyingParticle&gt;)</ID>
+    <ID>LongMethod:GameRepository.kt$DataStoreGameRepository$override suspend fun loadGameData(): GameSaveData</ID>
+    <ID>LongMethod:GameScreen.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class) @Composable fun GameScreen( viewModel: GameViewModel, // Manages the game logic and state onNavigateToStore: () -&gt; Unit, // Callback to navigate to the shop )</ID>
+    <ID>LongMethod:GameScreen.kt$@OptIn(ExperimentalTime::class) @Composable fun WeatherDialog( viewModel: GameViewModel, onDismiss: () -&gt; Unit, onNavigateToStore: () -&gt; Unit, )</ID>
+    <ID>LongMethod:Garlic.kt$Garlic$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:LibraryScreen.kt$@Composable fun EntryListItem( entry: LibraryEntry, viewModel: GameViewModel, wavy: Boolean, onShowContent: (LibraryEntry) -&gt; Unit, )</ID>
+    <ID>LongMethod:LibraryScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun LibraryScreen(viewModel: GameViewModel)</ID>
+    <ID>LongMethod:LoginScreen.kt$@Composable fun LoginScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, onGoogleSignIn: () -&gt; Unit, )</ID>
+    <ID>LongMethod:ProfileScreen.kt$@Composable fun MyProfileTab( viewModel: GameViewModel, textColor: Color, )</ID>
+    <ID>LongMethod:ProfileScreen.kt$@Composable fun ProfileView( username: String, profileImageId: String, unlockedAchievementIds: List&lt;String&gt;, allAchievements: List&lt;Achievement&gt;, viewModel: GameViewModel, textColor: Color, isEditable: Boolean = false, // True for user's own profile onEditUsername: () -&gt; Unit = {}, onEditAvatar: () -&gt; Unit = {}, headerContent: @Composable () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:ProfileScreen.kt$@Composable fun SearchPlayersTab( viewModel: GameViewModel, textColor: Color, )</ID>
+    <ID>LongMethod:PurpleOnion.kt$PurpleOnion$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:PurpleOnion.kt$PurpleOnion$@Composable private fun SingleOnion( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, coinReduction: Int, spinDuration: Int, baseRewards: List&lt;Reward&gt;, parentWidth: Float, parentHeight: Float, itemSizePx: Float, onPositionChanged: (Pair&lt;Float, Float&gt;) -&gt; Unit, otherOnions: List&lt;Pair&lt;Float, Float&gt;&gt;, )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@Composable fun SettingsScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:Squash.kt$Squash$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:StatsScreen.kt$@Composable fun StatsScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:StoreScreen.kt$@Composable fun GlobalUpgradeCard( upgrade: GlobalUpgrade, viewModel: GameViewModel, )</ID>
+    <ID>LongMethod:StoreScreen.kt$@Composable fun UnlockCard( item: GameItem, viewModel: GameViewModel, onShowUpgrades: (GameItem) -&gt; Unit, )</ID>
+    <ID>LongMethod:StoreScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun StoreScreen(viewModel: GameViewModel)</ID>
+    <ID>LongMethod:ThemesScreen.kt$@Composable fun ThemesScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:Tomato.kt$Tomato$@Composable override fun Content( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, activeModifiers: List&lt;GameplayModifier&gt;, vibrationEnabled: Boolean, vibrationIntensity: Float, )</ID>
+    <ID>LongMethod:TutorialScreen.kt$@Composable fun TutorialScreen(viewModel: GameViewModel)</ID>
+    <ID>LongMethod:WeatherScreen.kt$@Composable fun WeatherScreen( viewModel: GameViewModel, onBack: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:GameItem.kt$FlyingParticle$( val id: Long, val emoji: String, val resource: DrawableResource? = null, val text: String = "", val animatableX: Animatable&lt;Float, *&gt; = Animatable(0f), val animatableY: Animatable&lt;Float, *&gt; = Animatable(0f), val animatableAlpha: Animatable&lt;Float, *&gt; = Animatable(0f), val isLucky: Boolean = false, )</ID>
+    <ID>LongParameterList:GameItem.kt$GameplayModifier$( val id: String, val nameRes: StringResource, val descriptionRes: StringResource, val unlockCost: ItemCost, val targetItemId: String, isUnlockedInitial: Boolean = false, isEnabledInitial: Boolean = false, )</ID>
+    <ID>LongParameterList:MiscScreen.kt$( viewModel: GameViewModel, onNavigateToSettings: () -&gt; Unit, onNavigateToThemes: () -&gt; Unit, onNavigateToStats: () -&gt; Unit, onNavigateToAbout: () -&gt; Unit, onNavigateToLogin: () -&gt; Unit, onNavigateToGallery: () -&gt; Unit, onNavigateToTutorial: () -&gt; Unit, onNavigateToWeather: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:ProfileScreen.kt$( username: String, profileImageId: String, unlockedAchievementIds: List&lt;String&gt;, allAchievements: List&lt;Achievement&gt;, viewModel: GameViewModel, textColor: Color, isEditable: Boolean = false, // True for user's own profile onEditUsername: () -&gt; Unit = {}, onEditAvatar: () -&gt; Unit = {}, headerContent: @Composable () -&gt; Unit = {}, )</ID>
+    <ID>LongParameterList:PurpleOnion.kt$PurpleOnion$( modifier: Modifier, onVegetableClick: (List&lt;Reward&gt;) -&gt; List&lt;Reward&gt;, coinReduction: Int, spinDuration: Int, baseRewards: List&lt;Reward&gt;, parentWidth: Float, parentHeight: Float, itemSizePx: Float, onPositionChanged: (Pair&lt;Float, Float&gt;) -&gt; Unit, otherOnions: List&lt;Pair&lt;Float, Float&gt;&gt;, )</ID>
+    <ID>LongParameterList:RewardCalculator.kt$RewardCalculator$( baseRewards: List&lt;Reward&gt;, globalUpgrades: List&lt;GlobalUpgrade&gt;, globalClickCounter: Int, isWeatherBonusActive: Boolean, temperature: Double, isSunny: Boolean, isSnowing: Boolean, currentId: String, isCloudy: Boolean, )</ID>
+    <ID>MagicNumber:AboutScreen.kt$0.9f</ID>
+    <ID>MagicNumber:Achievement.kt$AchievementRepository$10</ID>
+    <ID>MagicNumber:Achievement.kt$AchievementRepository$50</ID>
+    <ID>MagicNumber:App.kt$0.3f</ID>
+    <ID>MagicNumber:App.kt$0.5f</ID>
+    <ID>MagicNumber:App.kt$0xFF3E442B</ID>
+    <ID>MagicNumber:App.kt$0xFFCCD5AE</ID>
+    <ID>MagicNumber:App.kt$10f</ID>
+    <ID>MagicNumber:App.kt$12f</ID>
+    <ID>MagicNumber:App.kt$90f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$0.6f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$1000f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$15f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$180</ID>
+    <ID>MagicNumber:Apple.kt$Apple$180.0</ID>
+    <ID>MagicNumber:Apple.kt$Apple$20</ID>
+    <ID>MagicNumber:Apple.kt$Apple$2000</ID>
+    <ID>MagicNumber:Apple.kt$Apple$20f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$333</ID>
+    <ID>MagicNumber:Apple.kt$Apple$360</ID>
+    <ID>MagicNumber:Apple.kt$Apple$360f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$40f</ID>
+    <ID>MagicNumber:Apple.kt$Apple$500</ID>
+    <ID>MagicNumber:Apple.kt$Apple$5000</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$1000</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$1250</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$1500</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$2000</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$2500</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$3000</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$3500</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$4000</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$500</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$5000</ID>
+    <ID>MagicNumber:ArtRepository.kt$ArtRepository$750</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$0.8f</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$100</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$1000L</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$100f</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$20</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$2000L</ID>
+    <ID>MagicNumber:BellPepper.kt$BellPepper$500L</ID>
+    <ID>MagicNumber:Broccoli.kt$Broccoli$0.8f</ID>
+    <ID>MagicNumber:Broccoli.kt$Broccoli$20</ID>
+    <ID>MagicNumber:Broccoli.kt$Broccoli$4f</ID>
+    <ID>MagicNumber:Broccoli.kt$Broccoli$50</ID>
+    <ID>MagicNumber:EconomyManager.kt$EconomyManager$100000</ID>
+    <ID>MagicNumber:GalleryScreen.kt$0.8f</ID>
+    <ID>MagicNumber:GalleryScreen.kt$4</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$0.8f</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$100f</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$1200</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$180.0</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$20</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$250</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$300</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$360.0</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$400</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$40f</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$500</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$70f</ID>
+    <ID>MagicNumber:GameItem.kt$BaseVegetable$80f</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$10</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$100</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$15</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$150</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$2.5f</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$20</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$200</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$25</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$250</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$3</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$30</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$300</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$40</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$400</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$5</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$50</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$69</ID>
+    <ID>MagicNumber:GamePrices.kt$GamePrices$75</ID>
+    <ID>MagicNumber:GameScreen.kt$0.4f</ID>
+    <ID>MagicNumber:GameScreen.kt$1000</ID>
+    <ID>MagicNumber:GameScreen.kt$10f</ID>
+    <ID>MagicNumber:GameScreen.kt$15f</ID>
+    <ID>MagicNumber:GameScreen.kt$20f</ID>
+    <ID>MagicNumber:GameScreen.kt$24</ID>
+    <ID>MagicNumber:GameScreen.kt$3</ID>
+    <ID>MagicNumber:GameScreen.kt$51</ID>
+    <ID>MagicNumber:GameScreen.kt$53</ID>
+    <ID>MagicNumber:GameScreen.kt$55</ID>
+    <ID>MagicNumber:GameScreen.kt$5f</ID>
+    <ID>MagicNumber:GameScreen.kt$60</ID>
+    <ID>MagicNumber:GameScreen.kt$61</ID>
+    <ID>MagicNumber:GameScreen.kt$63</ID>
+    <ID>MagicNumber:GameScreen.kt$65</ID>
+    <ID>MagicNumber:GameScreen.kt$71</ID>
+    <ID>MagicNumber:GameScreen.kt$73</ID>
+    <ID>MagicNumber:GameScreen.kt$75</ID>
+    <ID>MagicNumber:GameScreen.kt$77</ID>
+    <ID>MagicNumber:GameScreen.kt$80</ID>
+    <ID>MagicNumber:GameScreen.kt$81</ID>
+    <ID>MagicNumber:GameScreen.kt$82</ID>
+    <ID>MagicNumber:GameScreen.kt$85</ID>
+    <ID>MagicNumber:GameScreen.kt$86</ID>
+    <ID>MagicNumber:GameScreen.kt$95</ID>
+    <ID>MagicNumber:GameScreen.kt$96</ID>
+    <ID>MagicNumber:GameScreen.kt$99</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$0.9</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$100</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$1000</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$100000</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$15f</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$20.0</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$4000</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$5</ID>
+    <ID>MagicNumber:GameViewModel.kt$GameViewModel$60000L</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$0.5f</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$0.8f</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$10</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$10f</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$150</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$20</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$5</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$50</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$600</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$600f</ID>
+    <ID>MagicNumber:Garlic.kt$Garlic$800f</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$10</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$100</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$10000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1050</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1200</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1250</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1350</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1400</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$150</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1500</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1600</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1750</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$1800</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$200</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2100</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2250</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2400</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2450</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$250</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2500</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2700</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$2800</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$3</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$300</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$3000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$3150</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$3200</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$350</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$3500</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$3600</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$4</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$400</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$4000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$4050</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$4200</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$450</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$4500</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$4800</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$5</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$500</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$5000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$5400</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$6</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$600</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$6000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$7</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$700</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$7000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$750</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$8</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$800</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$8000</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$9</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$900</ID>
+    <ID>MagicNumber:LibraryData.kt$LibraryRepository$9000</ID>
+    <ID>MagicNumber:LibraryScreen.kt$0.5f</ID>
+    <ID>MagicNumber:LibraryScreen.kt$1.02f</ID>
+    <ID>MagicNumber:LibraryScreen.kt$4</ID>
+    <ID>MagicNumber:LoginScreen.kt$0.5f</ID>
+    <ID>MagicNumber:LoginScreen.kt$0.8f</ID>
+    <ID>MagicNumber:LoginScreen.kt$0xFF4285F4</ID>
+    <ID>MagicNumber:LoginScreen.kt$0xFF757575</ID>
+    <ID>MagicNumber:LoginScreen.kt$0xFFD1D1D1</ID>
+    <ID>MagicNumber:MiscScreen.kt$0.7f</ID>
+    <ID>MagicNumber:ProfileManager.kt$ProfileManager$1000</ID>
+    <ID>MagicNumber:ProfileManager.kt$ProfileManager$60000L</ID>
+    <ID>MagicNumber:ProfileScreen.kt$0.3f</ID>
+    <ID>MagicNumber:ProfileScreen.kt$0xFF4CAF50</ID>
+    <ID>MagicNumber:ProfileScreen.kt$3</ID>
+    <ID>MagicNumber:ProximityDetector.android.kt$&lt;no name provided&gt;$300</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$0.8f</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$1.2f</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$100</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$15</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$20</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$200</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$3</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$350</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$360</ID>
+    <ID>MagicNumber:PurpleOnion.kt$PurpleOnion$700</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$100f</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$11</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$12</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$12.0</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$22</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$22.0</ID>
+    <ID>MagicNumber:RewardCalculator.kt$RewardCalculator$5</ID>
+    <ID>MagicNumber:RotationDetector.android.kt$3</ID>
+    <ID>MagicNumber:RotationDetector.android.kt$9</ID>
+    <ID>MagicNumber:RotationDetector.android.kt$&lt;no name provided&gt;$360f</ID>
+    <ID>MagicNumber:SettingsScreen.kt$2000</ID>
+    <ID>MagicNumber:ShakeDetector.android.kt$12.0f</ID>
+    <ID>MagicNumber:ShakeDetector.android.kt$500L</ID>
+    <ID>MagicNumber:Squash.kt$Squash$0.7f</ID>
+    <ID>MagicNumber:Squash.kt$Squash$0.8f</ID>
+    <ID>MagicNumber:Squash.kt$Squash$0.9f</ID>
+    <ID>MagicNumber:Squash.kt$Squash$1000f</ID>
+    <ID>MagicNumber:Squash.kt$Squash$20</ID>
+    <ID>MagicNumber:Squash.kt$Squash$200</ID>
+    <ID>MagicNumber:Squash.kt$Squash$250</ID>
+    <ID>MagicNumber:Squash.kt$Squash$30f</ID>
+    <ID>MagicNumber:Squash.kt$Squash$50</ID>
+    <ID>MagicNumber:Squash.kt$Squash$90f</ID>
+    <ID>MagicNumber:StoreScreen.kt$0.5f</ID>
+    <ID>MagicNumber:StoreScreen.kt$1.02f</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0D0221</ID>
+    <ID>MagicNumber:Theme.kt$0xFF0D0E14</ID>
+    <ID>MagicNumber:Theme.kt$0xFF193D31</ID>
+    <ID>MagicNumber:Theme.kt$0xFF1B065E</ID>
+    <ID>MagicNumber:Theme.kt$0xFF1C1C1C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF20504E</ID>
+    <ID>MagicNumber:Theme.kt$0xFF21005D</ID>
+    <ID>MagicNumber:Theme.kt$0xFF252933</ID>
+    <ID>MagicNumber:Theme.kt$0xFF333D29</ID>
+    <ID>MagicNumber:Theme.kt$0xFF381E72</ID>
+    <ID>MagicNumber:Theme.kt$0xFF3E442B</ID>
+    <ID>MagicNumber:Theme.kt$0xFF404556</ID>
+    <ID>MagicNumber:Theme.kt$0xFF414833</ID>
+    <ID>MagicNumber:Theme.kt$0xFF4A00E0</ID>
+    <ID>MagicNumber:Theme.kt$0xFF582F0E</ID>
+    <ID>MagicNumber:Theme.kt$0xFF597D7C</ID>
+    <ID>MagicNumber:Theme.kt$0xFF5D4037</ID>
+    <ID>MagicNumber:Theme.kt$0xFF656D4A</ID>
+    <ID>MagicNumber:Theme.kt$0xFF7F4F24</ID>
+    <ID>MagicNumber:Theme.kt$0xFF936639</ID>
+    <ID>MagicNumber:Theme.kt$0xFFA4AC86</ID>
+    <ID>MagicNumber:Theme.kt$0xFFA68A64</ID>
+    <ID>MagicNumber:Theme.kt$0xFFB6AD90</ID>
+    <ID>MagicNumber:Theme.kt$0xFFB7B7A4</ID>
+    <ID>MagicNumber:Theme.kt$0xFFC2C5AA</ID>
+    <ID>MagicNumber:Theme.kt$0xFFCCD5AE</ID>
+    <ID>MagicNumber:Theme.kt$0xFFD0BCFF</ID>
+    <ID>MagicNumber:Theme.kt$0xFFD4A373</ID>
+    <ID>MagicNumber:Theme.kt$0xFFE9EDC9</ID>
+    <ID>MagicNumber:Theme.kt$0xFFEADDFF</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFAEDCD</ID>
+    <ID>MagicNumber:Theme.kt$0xFFFEFAE0</ID>
+    <ID>MagicNumber:ThemesScreen.kt$0.6f</ID>
+    <ID>MagicNumber:ThemesScreen.kt$0xFF0D0221</ID>
+    <ID>MagicNumber:ThemesScreen.kt$0xFF1B065E</ID>
+    <ID>MagicNumber:ThemesScreen.kt$0xFF4A00E0</ID>
+    <ID>MagicNumber:ThemesScreen.kt$0xFF8E2DE2</ID>
+    <ID>MagicNumber:ThemesScreen.kt$6</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$0.1f</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$0.4f</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$0.8f</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$0.90f</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$1500</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$15f</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$20</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$30</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$30.0</ID>
+    <ID>MagicNumber:Tomato.kt$Tomato$5000f</ID>
+    <ID>MagicNumber:TutorialScreen.kt$0.4f</ID>
+    <ID>MagicNumber:TutorialScreen.kt$0.6f</ID>
+    <ID>MagicNumber:TutorialScreen.kt$3</ID>
+    <ID>MagicNumber:TutorialScreen.kt$4</ID>
+    <ID>MagicNumber:TutorialScreen.kt$5</ID>
+    <ID>MagicNumber:TutorialScreen.kt$6</ID>
+    <ID>MagicNumber:TutorialScreen.kt$7</ID>
+    <ID>MagicNumber:WavyBackground.android.kt$0xFF0D0221</ID>
+    <ID>MagicNumber:WavyBackground.android.kt$0xFF1B065E</ID>
+    <ID>MagicNumber:WavyBackground.kt$30000</ID>
+    <ID>MagicNumber:WeatherManager.kt$3</ID>
+    <ID>MagicNumber:WeatherManager.kt$45</ID>
+    <ID>MagicNumber:WeatherManager.kt$48</ID>
+    <ID>MagicNumber:WeatherManager.kt$51</ID>
+    <ID>MagicNumber:WeatherManager.kt$53</ID>
+    <ID>MagicNumber:WeatherManager.kt$55</ID>
+    <ID>MagicNumber:WeatherManager.kt$61</ID>
+    <ID>MagicNumber:WeatherManager.kt$63</ID>
+    <ID>MagicNumber:WeatherManager.kt$65</ID>
+    <ID>MagicNumber:WeatherManager.kt$71</ID>
+    <ID>MagicNumber:WeatherManager.kt$73</ID>
+    <ID>MagicNumber:WeatherManager.kt$75</ID>
+    <ID>MagicNumber:WeatherManager.kt$77</ID>
+    <ID>MagicNumber:WeatherManager.kt$80</ID>
+    <ID>MagicNumber:WeatherManager.kt$81</ID>
+    <ID>MagicNumber:WeatherManager.kt$82</ID>
+    <ID>MagicNumber:WeatherManager.kt$85</ID>
+    <ID>MagicNumber:WeatherManager.kt$86</ID>
+    <ID>MagicNumber:WeatherManager.kt$95</ID>
+    <ID>MagicNumber:WeatherManager.kt$96</ID>
+    <ID>MagicNumber:WeatherManager.kt$99</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$10000</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$1000L</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$3</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$5</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$51</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$53</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$55</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$60</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$61</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$63</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$65</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$71</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$73</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$75</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$77</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$80</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$81</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$82</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$85</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$86</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$95</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$96</ID>
+    <ID>MagicNumber:WeatherManager.kt$WeatherManager$99</ID>
+    <ID>MagicNumber:WeatherScreen.kt$0.8f</ID>
+    <ID>MagicNumber:WeatherScreen.kt$3</ID>
+    <ID>MagicNumber:WeatherScreen.kt$45</ID>
+    <ID>MagicNumber:WeatherScreen.kt$48</ID>
+    <ID>MagicNumber:WeatherScreen.kt$51</ID>
+    <ID>MagicNumber:WeatherScreen.kt$53</ID>
+    <ID>MagicNumber:WeatherScreen.kt$55</ID>
+    <ID>MagicNumber:WeatherScreen.kt$61</ID>
+    <ID>MagicNumber:WeatherScreen.kt$63</ID>
+    <ID>MagicNumber:WeatherScreen.kt$65</ID>
+    <ID>MagicNumber:WeatherScreen.kt$71</ID>
+    <ID>MagicNumber:WeatherScreen.kt$73</ID>
+    <ID>MagicNumber:WeatherScreen.kt$75</ID>
+    <ID>MagicNumber:WeatherScreen.kt$77</ID>
+    <ID>MagicNumber:WeatherScreen.kt$80</ID>
+    <ID>MagicNumber:WeatherScreen.kt$81</ID>
+    <ID>MagicNumber:WeatherScreen.kt$82</ID>
+    <ID>MagicNumber:WeatherScreen.kt$85</ID>
+    <ID>MagicNumber:WeatherScreen.kt$86</ID>
+    <ID>MagicNumber:WeatherScreen.kt$95</ID>
+    <ID>MagicNumber:WeatherScreen.kt$96</ID>
+    <ID>MagicNumber:WeatherScreen.kt$99</ID>
+    <ID>MatchingDeclarationName:Platform.android.kt$AndroidPlatform : Platform</ID>
+    <ID>MaxLineLength:AboutScreen.kt$val surfaceColor = if (wavy) Color.Black.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f)</ID>
+    <ID>MaxLineLength:Achievement.kt$AchievementRepository$checkEarned = { provider -&gt; provider.libraryCategories.find { it.id == "apple" }?.entries?.all { it.isUnlocked } ?: false }</ID>
+    <ID>MaxLineLength:App.kt$Screen.ABOUT -&gt; AboutScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })</ID>
+    <ID>MaxLineLength:App.kt$Screen.GALLERY -&gt; GalleryScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })</ID>
+    <ID>MaxLineLength:App.kt$Screen.SETTINGS -&gt; SettingsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })</ID>
+    <ID>MaxLineLength:App.kt$Screen.STATS -&gt; StatsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })</ID>
+    <ID>MaxLineLength:App.kt$Screen.THEMES -&gt; ThemesScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })</ID>
+    <ID>MaxLineLength:App.kt$Screen.WEATHER -&gt; WeatherScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })</ID>
+    <ID>MaxLineLength:App.kt$color = if (isLight) Color.White else MaterialTheme.colorScheme.onPrimaryContainer</ID>
+    <ID>MaxLineLength:App.kt$containerColor = if (viewModel.shaderBackgroundEnabled) Color.Transparent else MaterialTheme.colorScheme.background</ID>
+    <ID>MaxLineLength:App.kt$indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)</ID>
+    <ID>MaxLineLength:App.kt$transformOrigin = if (pageOffset &gt; 0f) TransformOrigin(0f, 0.5f) else TransformOrigin(1f, 0.5f)</ID>
+    <ID>MaxLineLength:App.kt$val isLight = !viewModel.isDarkTheme &amp;&amp; !viewModel.shaderBackgroundEnabled &amp;&amp; !viewModel.isAutumnTheme</ID>
+    <ID>MaxLineLength:App.kt$val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)</ID>
+    <ID>MaxLineLength:App.kt$val surfaceColor = if (isLight) Color(0xFF3E442B) else MaterialTheme.colorScheme.primaryContainer</ID>
+    <ID>MaxLineLength:App.kt$val unlockedText = stringResource(Res.string.unlocked_label, stringResource(achievement.nameRes))</ID>
+    <ID>MaxLineLength:Apple.kt$Apple$flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }</ID>
+    <ID>MaxLineLength:ArtRepository.kt$ArtRepository$ArtEntry("clicky_garden_nologo", Res.drawable.clickysgardennologo, Res.string.app_name, 5000, frameCount = 1)</ID>
+    <ID>MaxLineLength:Broccoli.kt$Broccoli$flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }</ID>
+    <ID>MaxLineLength:GalleryScreen.kt$Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back_label), tint = primaryText)</ID>
+    <ID>MaxLineLength:GamePrices.kt$GamePrices$ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 200, "broccoli" to 75, "bell_pepper" to 30, "purple_onion" to 15))</ID>
+    <ID>MaxLineLength:GamePrices.kt$GamePrices$ItemCost(money = 1500, vegetableCosts = mapOf("tomato" to 400, "squash" to 75, "bell_pepper" to 30, "purple_onion" to 15))</ID>
+    <ID>MaxLineLength:GamePrices.kt$GamePrices$ItemCost(money = 750, vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15))</ID>
+    <ID>MaxLineLength:GamePrices.kt$GamePrices$val MOD_BROCCOLI_OVERCLOCKED = ItemCost(money = 1500, vegetableCosts = mapOf("broccoli" to 250, "bell_pepper" to 50))</ID>
+    <ID>MaxLineLength:GamePrices.kt$GamePrices$val UNLOCK_PURPLE_ONION = ItemCost(money = 500, vegetableCosts = mapOf("tomato" to 100, "broccoli" to 25, "bell_pepper" to 10))</ID>
+    <ID>MaxLineLength:GameRepository.kt$DataStoreGameRepository$data.globalUpgradeLevels.forEach { (id, level) -&gt; prefs[intPreferencesKey("global_upgrade_level_$id")] = level }</ID>
+    <ID>MaxLineLength:GameRepository.kt$DataStoreGameRepository$data.libraryUnlockedEntries.forEach { (id, unlocked) -&gt; prefs[booleanPreferencesKey("library_unlocked_$id")] = unlocked }</ID>
+    <ID>MaxLineLength:GameRepository.kt$DataStoreGameRepository$data.modifierUnlocked.forEach { (id, unlocked) -&gt; prefs[booleanPreferencesKey("mod_unlocked_$id")] = unlocked }</ID>
+    <ID>MaxLineLength:GameRepository.kt$DataStoreGameRepository$name.startsWith("fruit_count_") -&gt; (value as? Int)?.let { fruitCounts[name.removePrefix("fruit_count_")] = it }</ID>
+    <ID>MaxLineLength:GameRepository.kt$DataStoreGameRepository$name.startsWith("mod_enabled_") -&gt; (value as? Boolean)?.let { modifierEnabled[name.removePrefix("mod_enabled_")] = it }</ID>
+    <ID>MaxLineLength:GameRepository.kt$DataStoreGameRepository$name.startsWith("mod_unlocked_") -&gt; (value as? Boolean)?.let { modifierUnlocked[name.removePrefix("mod_unlocked_")] = it }</ID>
+    <ID>MaxLineLength:GameScreen.kt$Text(stringResource(Res.string.bunny_guide_title, stringResource(viewModel.currentItem.nameRes)))</ID>
+    <ID>MaxLineLength:GameScreen.kt$Text(stringResource(mod.descriptionRes), style = MaterialTheme.typography.labelSmall)</ID>
+    <ID>MaxLineLength:GameScreen.kt$WeatherDialog(viewModel = viewModel, onDismiss = { showWeatherDialog = false }, onNavigateToStore = onNavigateToStore)</ID>
+    <ID>MaxLineLength:GameScreen.kt$color = if (hasMoney) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error</ID>
+    <ID>MaxLineLength:GameScreen.kt$color = if (hasVeg) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error</ID>
+    <ID>MaxLineLength:GameScreen.kt$modifier = Modifier.size(36.dp).graphicsLayer { alpha = if (isUnlocked) 1f else 0.4f }</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$Firebase.firestore.collection("users").document(user.id).set(mapOf("save_json" to jsonString), merge = true)</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$itemsList.find { it.id == id }?.resource ?: ArtRepository.artEntries.find { it.id == id }?.resource ?: Res.drawable.tomato_strip</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$libraryCategories.forEach { cat -&gt; cat.entries.forEach { it.isUnlocked = saveData.libraryUnlockedEntries[it.id] ?: false } }</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$unlockedItems = unlockedItemsMap</ID>
+    <ID>MaxLineLength:GameViewModel.kt$GameViewModel$while (clickTimestamps.isNotEmpty() &amp;&amp; clickTimestamps.first() &lt; oneSecondAgo) clickTimestamps.removeAt(0)</ID>
+    <ID>MaxLineLength:Garlic.kt$Garlic$.</ID>
+    <ID>MaxLineLength:Garlic.kt$Garlic$scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))</ID>
+    <ID>MaxLineLength:Garlic.kt$Garlic$scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))</ID>
+    <ID>MaxLineLength:Garlic.kt$Garlic$scope.launch { piece.animatableX.animateTo(targetX, tween(600, easing = EaseOutBack)) }</ID>
+    <ID>MaxLineLength:Garlic.kt$Garlic$scope.launch { piece.animatableY.animateTo(targetY, tween(600, easing = EaseOutBack)) }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$Text(stringResource(currentCategory.nameRes), style = MaterialTheme.typography.titleLarge, color = primaryText)</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$if (isSpanish) "Arte ${ArtRepository.artEntries.indexOf(art) + 1}" else "Art ${ArtRepository.artEntries.indexOf(art) + 1}"</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$val knowledgeRes = if (isSpanish) Res.drawable.knowledgespanish_strip else Res.drawable.knowledgeenglish_strip</ID>
+    <ID>MaxLineLength:LoginScreen.kt$colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.8f))</ID>
+    <ID>MaxLineLength:LoginScreen.kt$colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White, contentColor = Color(0xFF757575))</ID>
+    <ID>MaxLineLength:ProfileScreen.kt$ArtRepository.artEntries.filter { viewModel.isArtUnlocked(it.id) }.map { Triple(it.id, it.resource, it.frameCount) }</ID>
+    <ID>MaxLineLength:ProfileScreen.kt$Text(stringResource(Res.string.status_unlocked), color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:PurpleOnion.kt$PurpleOnion$flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }</ID>
+    <ID>MaxLineLength:PurpleOnion.kt$PurpleOnion$moneyValue = (GamePrices.REWARD_ONION_SPIN_MONEY_BASE - coinReduction).coerceAtLeast(1)</ID>
+    <ID>MaxLineLength:RewardCalculator.kt$RewardCalculator$finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 2, countValue = it.countValue * 2) }</ID>
+    <ID>MaxLineLength:RewardCalculator.kt$RewardCalculator$moneyValue = if (it.moneyValue &gt; 0 || it.countValue == 0) it.moneyValue + 1 else it.moneyValue</ID>
+    <ID>MaxLineLength:RewardCalculator.kt$RewardCalculator$val isFastRipening = temperature &gt; 22 &amp;&amp; (currentId == "tomato" || currentId == "bell_pepper" || currentId == "squash")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(stringResource(Res.string.debug_options), style = MaterialTheme.typography.titleMedium, color = Color.Gray)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(stringResource(Res.string.general_section), style = MaterialTheme.typography.titleMedium, color = Color.Gray)</ID>
+    <ID>MaxLineLength:Squash.kt$Squash$flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }</ID>
+    <ID>MaxLineLength:Squash.kt$Squash$reward.emoji == "🪙" -&gt; reward.copy(moneyValue = reward.moneyValue + consecutiveHits)</ID>
+    <ID>MaxLineLength:Squash.kt$Squash$reward.emoji == particleEmoji -&gt; reward.copy(countValue = reward.countValue + consecutiveHits)</ID>
+    <ID>MaxLineLength:StatsScreen.kt$Text("${stringResource(Res.string.stats_now)}: ${viewModel.money}", style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:StoreScreen.kt$Row</ID>
+    <ID>MaxLineLength:StoreScreen.kt$Text(if (upgrade.unlockedLevel == 0) stringResource(Res.string.buy) else stringResource(Res.string.upgrade))</ID>
+    <ID>MaxLineLength:StoreScreen.kt$val upgradesRes = if (isSpanish) Res.drawable.upgradesspanish_strip else Res.drawable.upgradesenglish_strip</ID>
+    <ID>MaxLineLength:ThemesScreen.kt$border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null</ID>
+    <ID>MaxLineLength:ThemesScreen.kt$containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface</ID>
+    <ID>MaxLineLength:Tomato.kt$Tomato$Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_TOMATO_CRIT_MONEY, countValue = 0)</ID>
+    <ID>MaxLineLength:Tomato.kt$Tomato$flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }</ID>
+    <ID>MaxLineLength:WeatherManager.kt$WeatherManager$fun isRaining(): Boolean</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// --- BASE CLICK REWARDS (Money) --- val REWARD_MONEY_TOMATO = 1</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// --- SPECIAL REWARDS --- // Tomato Precision (Critical Hits) val REWARD_TOMATO_CRIT_MONEY = 30</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// Apple High Frequency Bonus val REWARD_APPLE_HIGH_FREQ_MONEY = 5</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// Bell Pepper Turbo Multiplier val MULTIPLIER_BELL_PEPPER_TURBO = 2</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// Broccoli Overclocked Multiplier val MULTIPLIER_BROCCOLI_FAST = 2</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// Garlic Explosion Bonuses val REWARD_GARLIC_EXPLOSION_MONEY = 20</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$// Purple Onion Spinning Bonus val REWARD_ONION_SPIN_MONEY_BASE = 5</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val MULTIPLIER_GARLIC_CLUSTER = 2.5f</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_GARLIC_EXPLOSION_COUNT = 10</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_MONEY_APPLE = 1</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_MONEY_BELL_PEPPER = 3</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_MONEY_BROCCOLI = 2</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_MONEY_GARLIC = 1</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_MONEY_PURPLE_ONION = 1</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_MONEY_SQUASH = 1</ID>
+    <ID>MayBeConst:GamePrices.kt$GamePrices$val REWARD_TOMATO_CRIT_COUNT = 20</ID>
+    <ID>NestedBlockDepth:GameViewModel.kt$GameViewModel$private fun checkAchievements(isInitialLoad: Boolean = false)</ID>
+    <ID>PrintStackTrace:WeatherService.kt$WeatherService$e</ID>
+    <ID>ReturnCount:EconomyManager.kt$EconomyManager$fun canAfford(cost: ItemCost): Boolean</ID>
+    <ID>SwallowedException:GameViewModel.kt$GameViewModel$e: Exception</ID>
+    <ID>SwallowedException:ProfileManager.kt$ProfileManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AndroidAuthRepository.kt$AndroidAuthRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:GameViewModel.kt$GameViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:MainActivity.kt$MainActivity$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ProfileManager.kt$ProfileManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WeatherManager.kt$WeatherManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WeatherService.kt$WeatherService$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:AndroidAuthRepository.kt$AndroidAuthRepository$throw Exception("Firebase user is null")</ID>
+    <ID>TooGenericExceptionThrown:AndroidAuthRepository.kt$AndroidAuthRepository$throw Exception("No ID Token found")</ID>
+    <ID>TooManyFunctions:GameViewModel.kt$GameViewModel : ViewModelGameItemProvider</ID>
+    <ID>UnusedParameter:LibraryScreen.kt$wavy: Boolean</ID>
+    <ID>UnusedParameter:RewardCalculator.kt$RewardCalculator$isCloudy: Boolean</ID>
+    <ID>UnusedPrivateProperty:App.kt$val scope = rememberCoroutineScope()</ID>
+    <ID>UnusedPrivateProperty:MiscScreen.kt$val primaryText = if (wavy) Color.White else Color.Unspecified</ID>
+    <ID>UnusedPrivateProperty:SpeechBubbleShape.kt$SpeechBubbleShape$private val tipAtTop: Boolean = true</ID>
+    <ID>UnusedPrivateProperty:SpeechBubbleShape.kt$SpeechBubbleShape$private val tipPaddingEnd: Dp = 30.dp</ID>
+    <ID>UnusedPrivateProperty:SpeechBubbleShape.kt$SpeechBubbleShape$private val tipSize: Dp = 14.dp</ID>
+    <ID>WildcardImport:AboutScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:AboutScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:AboutScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:Achievement.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:App.kt$import androidx.compose.animation.*</ID>
+    <ID>WildcardImport:App.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:App.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:App.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:App.kt$import com.rafarg.ecogardengame.model.*</ID>
+    <ID>WildcardImport:App.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:App.kt$import org.jetbrains.compose.resources.*</ID>
+    <ID>WildcardImport:Apple.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:Apple.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:Apple.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:Apple.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:Apple.kt$import kotlin.math.*</ID>
+    <ID>WildcardImport:ArtRepository.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:BellPepper.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:BellPepper.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:BellPepper.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:BellPepper.kt$import kotlin.math.*</ID>
+    <ID>WildcardImport:Broccoli.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:Broccoli.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:Broccoli.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:GalleryScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:GalleryScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:GalleryScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:GalleryScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:GameItem.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:GameItem.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:GameItem.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:GameItem.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:GameRepository.kt$import androidx.datastore.preferences.core.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import androidx.compose.animation.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import androidx.compose.foundation.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:GameScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:GameViewModel.kt$import com.rafarg.ecogardengame.model.*</ID>
+    <ID>WildcardImport:GameViewModel.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:Garlic.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:Garlic.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:Garlic.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:LibraryData.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:LibraryScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:LibraryScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:LibraryScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:LibraryScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:LoginScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:LoginScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:LoginScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:LoginScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:MiscScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:MiscScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:MiscScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:ProfileScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:ProfileScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:ProfileScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:ProfileScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:PurpleOnion.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:PurpleOnion.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:PurpleOnion.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:SettingsScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:SettingsScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:SettingsScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:SettingsScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:SpriteSheet.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:Squash.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:Squash.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:Squash.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:StatsScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:StatsScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:StatsScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:StoreScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:StoreScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:StoreScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:StoreScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:Theme.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:ThemesScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:ThemesScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:ThemesScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:Tomato.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:Tomato.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:Tomato.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:Tomato.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:TutorialScreen.kt$import androidx.compose.animation.*</ID>
+    <ID>WildcardImport:TutorialScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:TutorialScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:TutorialScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:TutorialScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:WavyBackground.kt$import androidx.compose.animation.core.*</ID>
+    <ID>WildcardImport:WavyBackground.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:WeatherManager.kt$import kotlinx.coroutines.*</ID>
+    <ID>WildcardImport:WeatherScreen.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:WeatherScreen.kt$import androidx.compose.material3.*</ID>
+    <ID>WildcardImport:WeatherScreen.kt$import androidx.compose.runtime.*</ID>
+    <ID>WildcardImport:WeatherScreen.kt$import ecogardengame.composeapp.generated.resources.*</ID>
+    <ID>WildcardImport:WeatherService.kt$import io.ktor.client.*</ID>
+    <ID>WildcardImport:WeatherService.kt$import io.ktor.client.call.*</ID>
+    <ID>WildcardImport:WeatherService.kt$import io.ktor.client.plugins.contentnegotiation.*</ID>
+    <ID>WildcardImport:WeatherService.kt$import io.ktor.client.request.*</ID>
+    <ID>WildcardImport:WeatherService.kt$import io.ktor.serialization.kotlinx.json.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -20,6 +20,8 @@ firebase-gitlive = "2.1.0"
 google-services = "4.4.2"
 ktor = "2.3.12"
 play-services-location = "21.3.0"
+ktlint-gradle = "12.1.2"
+detekt = "1.23.7"
 
 [libraries]
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
@@ -53,3 +55,5 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

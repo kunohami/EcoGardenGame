@@ -1,0 +1,12 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# This codebase favors inline trailing comments next to call arguments and
+# wildcard imports for sibling types (e.g. model classes); both are existing
+# conventions rather than mistakes, so the rules are off instead of papering
+# over hundreds of pre-existing lines.
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_discouraged-comment-location = disabled
+# Depends on discouraged-comment-location being loaded; ktlint errors out otherwise.
+ktlint_standard_if-else-wrapping = disabled

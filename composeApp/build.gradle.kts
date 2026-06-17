@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -7,10 +6,11 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
     kotlin("native.cocoapods")
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
-
 
 kotlin {
     androidTarget {
@@ -35,7 +35,7 @@ kotlin {
 
     listOf(
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     )
 
     sourceSets {
@@ -51,7 +51,6 @@ kotlin {
 
             implementation(libs.androidx.appcompat)
             implementation("androidx.core:core-splashscreen:1.0.1")
-
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -86,7 +85,6 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
     }
-
 }
 
 android {
@@ -118,4 +116,28 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+// The Compose resource generator adds generated accessor/collector code directly into
+// each target's Kotlin source set, which makes ktlint's KMP source-set discovery pick
+// it up too. Pin every per-source-set task to its real `src/<name>/kotlin` directory
+// instead of whatever Compose appended to the source set at configuration time.
+val ktlintSourceSetTaskName = Regex("""run(?:KtlintFormat|KtlintCheck)Over(.+)SourceSet""")
+tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().configureEach {
+    ktlintSourceSetTaskName.find(name)?.let { match ->
+        val sourceSetName = match.groupValues[1].replaceFirstChar { it.lowercase() }
+        setSource(project.fileTree("src/$sourceSetName/kotlin") { include("**/*.kt") })
+    }
+}
+
+detekt {
+    source.setFrom(
+        files(
+            "src/commonMain/kotlin",
+            "src/androidMain/kotlin",
+            "src/commonTest/kotlin",
+        ),
+    )
+    buildUponDefaultConfig = true
+    baseline = file("detekt-baseline.xml")
 }
