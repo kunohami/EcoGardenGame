@@ -1,6 +1,5 @@
 package com.rafarg.ecogardengame.model
 
-import ecogardengame.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
@@ -19,5 +18,5 @@ data class ArtEntry(
     val nameRes: StringResource,
     val cost: Int = 1000,
     var isUnlocked: Boolean = false,
-    val frameCount: Int = 3
+    val frameCount: Int = 3,
 )

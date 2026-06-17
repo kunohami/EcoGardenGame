@@ -12,5 +12,5 @@ enum class Screen(val title: String, val showInBottomBar: Boolean = true) {
     PROFILE("Profile"),
     MISC("Misc"),
     SETTINGS("Settings", showInBottomBar = false),
-    ABOUT("About", showInBottomBar = false)
+    ABOUT("About", showInBottomBar = false),
 }

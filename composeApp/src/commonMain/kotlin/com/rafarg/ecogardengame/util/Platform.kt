@@ -3,7 +3,7 @@ package com.rafarg.ecogardengame.util
 /**
  * Interface representing the current operating platform (Android, iOS, etc.).
  *
- * This is used to provide platform-specific information, such as the OS version, 
+ * This is used to provide platform-specific information, such as the OS version,
  * to the common code. It follows the Kotlin Multiplatform expect/actual pattern.
  */
 interface Platform {

@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
@@ -26,7 +25,10 @@ import org.jetbrains.compose.resources.stringResource
  * It uses a speech bubble style to maintain the game's visual theme.
  */
 @Composable
-fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+fun AboutScreen(
+    viewModel: GameViewModel,
+    onBack: () -> Unit,
+) {
     // Check if background shaders are enabled to adjust UI colors
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
@@ -42,7 +44,7 @@ fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         // A simple text button with an icon to navigate back.
         TextButton(
             onClick = onBack,
-            modifier = Modifier.align(Alignment.TopStart)
+            modifier = Modifier.align(Alignment.TopStart),
         ) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = backText, tint = primaryText)
             Spacer(modifier = Modifier.width(8.dp))
@@ -52,48 +54,49 @@ fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Bottom,
         ) {
             // --- SPEECH BUBBLE CONTENT ---
             // This Surface uses the custom SpeechBubbleShape to look like a comic dialogue box.
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .clip(SpeechBubbleShape()) // Custom shape that adds a "tail" to the bubble
-                    .background(surfaceColor)
-                    .padding(24.dp),
-                color = Color.Transparent
+                modifier =
+                    Modifier
+                        .fillMaxWidth(0.9f)
+                        .clip(SpeechBubbleShape()) // Custom shape that adds a "tail" to the bubble
+                        .background(surfaceColor)
+                        .padding(24.dp),
+                color = Color.Transparent,
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 ) {
                     Text(
                         text = stringResource(Res.string.about_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = primaryText,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = stringResource(Res.string.app_version),
                         style = MaterialTheme.typography.bodyLarge,
                         color = primaryText,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = stringResource(Res.string.developed_with),
                         style = MaterialTheme.typography.bodyMedium,
                         color = primaryText,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                     Text(
                         text = stringResource(Res.string.human_made_art),
                         style = MaterialTheme.typography.bodyMedium,
                         color = primaryText,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
@@ -105,9 +108,9 @@ fun AboutScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             SpriteAnimation(
                 painter = painterResource(Res.drawable.clickyexplain_strip),
                 frameCount = 3,
-                modifier = Modifier.size(180.dp)
+                modifier = Modifier.size(180.dp),
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
         }
     }

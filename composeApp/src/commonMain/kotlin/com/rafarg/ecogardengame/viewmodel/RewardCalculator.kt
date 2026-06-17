@@ -5,14 +5,13 @@ import com.rafarg.ecogardengame.model.Reward
 import kotlin.random.Random
 
 /**
- * Utility object responsible for calculating final rewards based on base values, 
+ * Utility object responsible for calculating final rewards based on base values,
  * global upgrades, and active weather conditions.
  */
 object RewardCalculator {
-
     /**
      * Calculates the final rewards for a harvest event.
-     * 
+     *
      * @param baseRewards The initial reward values for the item.
      * @param globalUpgrades List of all global upgrades to check for active levels.
      * @param globalClickCounter Total clicks in the session, used for interval-based bonuses.
@@ -33,18 +32,21 @@ object RewardCalculator {
         isSunny: Boolean,
         isSnowing: Boolean,
         currentId: String,
-        isCloudy: Boolean
+        isCloudy: Boolean,
     ): List<Reward> {
         var finalRewards = baseRewards.map { it.copy() }
 
         // --- GLOBAL UPGRADES ---
-        
+
         // Lucky Harvest: Small chance to get 10x rewards.
         val luckyLevel = globalUpgrades.find { it.id == "lucky_harvest" }?.unlockedLevel ?: 0
         if (luckyLevel > 0) {
             val chance = luckyLevel / 100f
             if (Random.nextFloat() < chance) {
-                finalRewards = finalRewards.map { it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10, isLucky = true) }
+                finalRewards =
+                    finalRewards.map {
+                        it.copy(moneyValue = it.moneyValue * 10, countValue = it.countValue * 10, isLucky = true)
+                    }
             }
         }
 
@@ -65,23 +67,27 @@ object RewardCalculator {
             val isFastRipening = temperature > 22 && (currentId == "tomato" || currentId == "bell_pepper" || currentId == "squash")
 
             if (isResistant || isBalanced || isFastRipening) {
-                finalRewards = finalRewards.map {
-                    it.copy(
-                        moneyValue = if (it.moneyValue > 0 || it.countValue == 0) it.moneyValue + 1 else it.moneyValue,
-                        countValue = if (it.countValue > 0) it.countValue + 1 else it.countValue
-                    )
-                }
+                finalRewards =
+                    finalRewards.map {
+                        it.copy(
+                            moneyValue = if (it.moneyValue > 0 || it.countValue == 0) it.moneyValue + 1 else it.moneyValue,
+                            countValue = if (it.countValue > 0) it.countValue + 1 else it.countValue,
+                        )
+                    }
             }
 
             // Sunny Bonus (Photosynthesis): Every 5 clicks, grants a flat +2 money bonus.
             if (isSunny && globalClickCounter % 5 == 0) {
                 var applied = false
-                finalRewards = finalRewards.map {
-                    if (!applied && (it.moneyValue > 0 || it.countValue == 0)) {
-                        applied = true
-                        it.copy(moneyValue = it.moneyValue + 2)
-                    } else it
-                }
+                finalRewards =
+                    finalRewards.map {
+                        if (!applied && (it.moneyValue > 0 || it.countValue == 0)) {
+                            applied = true
+                            it.copy(moneyValue = it.moneyValue + 2)
+                        } else {
+                            it
+                        }
+                    }
             }
 
             // Snow Bonus (Hibernation): Doubles rewards for Garlic specifically.

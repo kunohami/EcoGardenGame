@@ -27,22 +27,24 @@ private const val AGSL_SHADER = """
     }
 """
 
-actual fun Modifier.wavyShader(time: Float): Modifier = this.drawBehind {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val shader = RuntimeShader(AGSL_SHADER)
-        shader.setFloatUniform("time", time)
-        shader.setFloatUniform("resolution", size.width, size.height)
-        drawRect(ShaderBrush(shader))
-    } else {
-        // Fallback for older Android versions
-        val color1 = Color(0xFF0D0221)
-        val color2 = Color(0xFF1B065E)
-        drawRect(
-            brush = Brush.verticalGradient(
-                colors = listOf(color1, color2),
-                startY = 0f,
-                endY = size.height
+actual fun Modifier.wavyShader(time: Float): Modifier =
+    this.drawBehind {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val shader = RuntimeShader(AGSL_SHADER)
+            shader.setFloatUniform("time", time)
+            shader.setFloatUniform("resolution", size.width, size.height)
+            drawRect(ShaderBrush(shader))
+        } else {
+            // Fallback for older Android versions
+            val color1 = Color(0xFF0D0221)
+            val color2 = Color(0xFF1B065E)
+            drawRect(
+                brush =
+                    Brush.verticalGradient(
+                        colors = listOf(color1, color2),
+                        startY = 0f,
+                        endY = size.height,
+                    ),
             )
-        )
+        }
     }
-}

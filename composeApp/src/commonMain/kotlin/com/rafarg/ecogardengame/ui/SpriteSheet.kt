@@ -3,7 +3,6 @@ package com.rafarg.ecogardengame.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -15,7 +14,7 @@ import kotlinx.coroutines.delay
  * --- CUSTOM UI COMPONENT: SPRITE ANIMATION ---
  * This composable handles the rendering of animated "Sprite Sheets" (long images containing
  * multiple frames side by side). This is a core technique in 2D game development.
- * 
+ *
  * @param painter The image resource (strip) to be animated.
  * @param frameCount Total number of frames in the strip.
  * @param frameDurationMillis How long each frame stays on screen.
@@ -26,7 +25,7 @@ fun SpriteAnimation(
     frameCount: Int,
     modifier: Modifier = Modifier,
     frameDurationMillis: Long = 150,
-    colorFilter: ColorFilter? = null
+    colorFilter: ColorFilter? = null,
 ) {
     /**
      * --- REACTIVE STATE ---
@@ -68,14 +67,15 @@ fun SpriteAnimation(
 
         // Fit the frame into the Canvas while maintaining its aspect ratio.
         val canvasAspectRatio = size.width / size.height
-        val (drawFrameWidth, drawFrameHeight) = if (canvasAspectRatio > frameAspectRatio) {
-            size.height * frameAspectRatio to size.height
-        } else {
-            size.width to size.width / frameAspectRatio
-        }
+        val (drawFrameWidth, drawFrameHeight) =
+            if (canvasAspectRatio > frameAspectRatio) {
+                size.height * frameAspectRatio to size.height
+            } else {
+                size.width to size.width / frameAspectRatio
+            }
 
         val totalStripWidth = drawFrameWidth * frameCount
-        
+
         // Center the frame inside the available canvas space.
         val offsetX = (size.width - drawFrameWidth) / 2
         val offsetY = (size.height - drawFrameHeight) / 2
@@ -87,17 +87,17 @@ fun SpriteAnimation(
          * By shifting it based on the 'frame' index, a different slice appears in the window.
          */
         clipRect(
-            left = offsetX, 
-            top = offsetY, 
-            right = offsetX + drawFrameWidth, 
-            bottom = offsetY + drawFrameHeight
+            left = offsetX,
+            top = offsetY,
+            right = offsetX + drawFrameWidth,
+            bottom = offsetY + drawFrameHeight,
         ) {
             // Sliding logic: shift left by (frame index * width of one frame).
             translate(left = offsetX - (frame * drawFrameWidth), top = offsetY) {
                 with(painter) {
                     draw(
                         size = Size(totalStripWidth, drawFrameHeight),
-                        colorFilter = colorFilter
+                        colorFilter = colorFilter,
                     )
                 }
             }

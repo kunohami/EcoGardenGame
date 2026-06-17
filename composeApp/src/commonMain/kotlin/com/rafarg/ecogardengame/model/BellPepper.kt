@@ -34,7 +34,7 @@ import kotlin.random.Random
  *
  * --- OOP PRINCIPLES ---
  * - INHERITANCE: Inherits core vegetable properties from 'BaseVegetable'.
- * - ENCAPSULATION: The logic for calculating random directions and phase 
+ * - ENCAPSULATION: The logic for calculating random directions and phase
  *   durations is kept private within the UI loop.
  */
 class BellPepper : BaseVegetable() {
@@ -47,20 +47,22 @@ class BellPepper : BaseVegetable() {
     override val particleEmoji: String = "🫑"
     override val tutorialRes = Res.string.tutorial_bell_pepper
 
-    override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_BELL_PEPPER, countValue = 0)
-    )
-
-    override val modifiers: List<GameplayModifier> = listOf(
-        GameplayModifier(
-            id = "bell_pepper_turbo",
-            nameRes = Res.string.mod_bell_pepper_turbo_name,
-            descriptionRes = Res.string.mod_bell_pepper_turbo_desc,
-            unlockCost = GamePrices.MOD_BELL_PEPPER_TURBO,
-            targetItemId = "bell_pepper"
+    override val baseRewards: List<Reward> get() =
+        listOf(
+            Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+            Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_BELL_PEPPER, countValue = 0),
         )
-    )
+
+    override val modifiers: List<GameplayModifier> =
+        listOf(
+            GameplayModifier(
+                id = "bell_pepper_turbo",
+                nameRes = Res.string.mod_bell_pepper_turbo_name,
+                descriptionRes = Res.string.mod_bell_pepper_turbo_desc,
+                unlockCost = GamePrices.MOD_BELL_PEPPER_TURBO,
+                targetItemId = "bell_pepper",
+            ),
+        )
 
     /**
      * The Bell Pepper's UI implementation.
@@ -72,7 +74,7 @@ class BellPepper : BaseVegetable() {
         onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
-        vibrationIntensity: Float
+        vibrationIntensity: Float,
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
@@ -83,7 +85,7 @@ class BellPepper : BaseVegetable() {
         var posY by remember { mutableStateOf(0f) }
         var dirX by remember { mutableStateOf(0f) }
         var dirY by remember { mutableStateOf(0f) }
-        
+
         // Machine state: true = dashing, false = resting.
         var isMoving by remember { mutableStateOf(false) }
         var phaseStartTime by remember { mutableStateOf(0L) }
@@ -91,10 +93,10 @@ class BellPepper : BaseVegetable() {
         var parentHeight by remember { mutableStateOf(0f) }
 
         val isTurbo = activeModifiers.any { it.id == "bell_pepper_turbo" && it.isEnabled }
-        
+
         val itemSize = 120.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
-        
+
         // --- PHASE DURATIONS ---
         // Modifiers change the base rhythm of the logic.
         val stationaryDuration = if (isTurbo) 500L else 1000L
@@ -111,7 +113,7 @@ class BellPepper : BaseVegetable() {
                 val angle = Random.nextFloat() * 2 * PI.toFloat()
                 dirX = cos(angle)
                 dirY = sin(angle)
-                
+
                 while (true) {
                     withFrameMillis { frameTime ->
                         if (phaseStartTime == 0L) phaseStartTime = frameTime
@@ -135,7 +137,7 @@ class BellPepper : BaseVegetable() {
                             } else {
                                 // Calculate speed using a sine curve for a smooth dash effect.
                                 val progress = elapsed.toFloat() / movingDuration
-                                val speedFactor = sin(progress * PI.toFloat()) 
+                                val speedFactor = sin(progress * PI.toFloat())
                                 val speed = speedFactor * maxBaseSpeed
                                 posX += dirX * speed
                                 posY += dirY * speed
@@ -160,72 +162,79 @@ class BellPepper : BaseVegetable() {
         }
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .onGloballyPositioned {
-                    parentWidth = it.size.width.toFloat()
-                    parentHeight = it.size.height.toFloat()
-                },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .onGloballyPositioned {
+                        parentWidth = it.size.width.toFloat()
+                        parentHeight = it.size.height.toFloat()
+                    },
+            contentAlignment = Alignment.Center,
         ) {
             Box(
-                modifier = Modifier
-                    .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
-                    .size(itemSize),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
+                        .size(itemSize),
+                contentAlignment = Alignment.Center,
             ) {
                 SpriteAnimation(
                     painter = painterResource(resource),
                     frameCount = 3,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            scaleX = scale.value
-                            scaleY = scale.value
-                        }
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            val currentX = posX
-                            val currentY = posY
-                            
-                            // Apply turbo multiplier if the modifier is active.
-                            val rewards = if (isTurbo) {
-                                baseRewards.map { it.copy(
-                                    moneyValue = it.moneyValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO, 
-                                    countValue = it.countValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO
-                                ) }
-                            } else {
-                                baseRewards
+                    modifier =
+                        modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                scaleX = scale.value
+                                scaleY = scale.value
                             }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                            ) {
+                                val currentX = posX
+                                val currentY = posY
 
-                            // Trigger global logic in ViewModel.
-                            val finalRewards = onVegetableClick(rewards)
-                            
-                            // Visual feedback animation.
-                            scope.launch {
-                                scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                                scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
-                            }
-                            
-                            // Create reward particles at the current position.
-                            val newOnes = createRewardParticles(
-                                rewards = finalRewards,
-                                offsetX = currentX,
-                                offsetY = currentY
-                            )
+                                // Apply turbo multiplier if the modifier is active.
+                                val rewards =
+                                    if (isTurbo) {
+                                        baseRewards.map {
+                                            it.copy(
+                                                moneyValue = it.moneyValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO,
+                                                countValue = it.countValue * GamePrices.MULTIPLIER_BELL_PEPPER_TURBO,
+                                            )
+                                        }
+                                    } else {
+                                        baseRewards
+                                    }
 
-                            // Particle lifecycle management.
-                            val activeCount = flyingParticles.count { !it.isManuallyRemoved }
-                            val overflow = (activeCount + newOnes.size) - 20
-                            if (overflow > 0) {
-                                flyingParticles.filter { !it.isManuallyRemoved }
-                                    .take(overflow)
-                                    .forEach { it.isManuallyRemoved = true }
-                            }
-                            flyingParticles.addAll(newOnes)
-                        }
+                                // Trigger global logic in ViewModel.
+                                val finalRewards = onVegetableClick(rewards)
+
+                                // Visual feedback animation.
+                                scope.launch {
+                                    scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
+                                    scale.animateTo(1f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
+                                }
+
+                                // Create reward particles at the current position.
+                                val newOnes =
+                                    createRewardParticles(
+                                        rewards = finalRewards,
+                                        offsetX = currentX,
+                                        offsetY = currentY,
+                                    )
+
+                                // Particle lifecycle management.
+                                val activeCount = flyingParticles.count { !it.isManuallyRemoved }
+                                val overflow = (activeCount + newOnes.size) - 20
+                                if (overflow > 0) {
+                                    flyingParticles.filter { !it.isManuallyRemoved }
+                                        .take(overflow)
+                                        .forEach { it.isManuallyRemoved = true }
+                                }
+                                flyingParticles.addAll(newOnes)
+                            },
                 )
             }
 

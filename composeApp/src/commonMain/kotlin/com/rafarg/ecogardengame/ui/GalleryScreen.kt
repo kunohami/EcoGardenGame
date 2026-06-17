@@ -1,6 +1,5 @@
 package com.rafarg.ecogardengame.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -34,10 +33,13 @@ import org.jetbrains.compose.resources.stringResource
  * Locked items appear as silhouettes, and unlocked items can be viewed in a fullscreen slider.
  */
 @Composable
-fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+fun GalleryScreen(
+    viewModel: GameViewModel,
+    onBack: () -> Unit,
+) {
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
-    
+
     // State to track which art is being viewed in fullscreen
     var selectedArtIndex by remember { mutableStateOf<Int?>(null) }
     // State to track which art is currently being prompted for purchase
@@ -48,12 +50,12 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // --- HEADER ---
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.back_label), tint = primaryText)
@@ -62,7 +64,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 text = stringResource(Res.string.achievements_title), // Title label
                 style = MaterialTheme.typography.headlineMedium,
                 color = primaryText,
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
             )
         }
 
@@ -74,13 +76,13 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Iterate over all available art entries in the repository
             items(ArtRepository.artEntries.indices.toList()) { index ->
                 val art = ArtRepository.artEntries[index]
                 val isUnlocked = viewModel.isArtUnlocked(art.id)
-                
+
                 ArtThumbnail(
                     art = art,
                     isUnlocked = isUnlocked,
@@ -94,7 +96,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                             // Show purchase dialog
                             artToBuy = art
                         }
-                    }
+                    },
                 )
             }
         }
@@ -117,7 +119,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                             artToBuy = null
                         }
                     },
-                    enabled = viewModel.money >= viewModel.calculateDiscountedPrice(art.cost)
+                    enabled = viewModel.money >= viewModel.calculateDiscountedPrice(art.cost),
                 ) {
                     Text(stringResource(Res.string.unlock_label))
                 }
@@ -126,7 +128,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 TextButton(onClick = { artToBuy = null }) {
                     Text(stringResource(Res.string.cancel_label))
                 }
-            }
+            },
         )
     }
 
@@ -136,7 +138,7 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         ArtViewerDialog(
             artList = unlockedArt,
             initialIndex = startIndex,
-            onDismiss = { selectedArtIndex = null }
+            onDismiss = { selectedArtIndex = null },
         )
     }
 }
@@ -145,7 +147,10 @@ fun GalleryScreen(viewModel: GameViewModel, onBack: () -> Unit) {
  * Helper function to get the localized name of an art piece.
  */
 @Composable
-fun getArtDisplayName(art: ArtEntry, index: Int): String {
+fun getArtDisplayName(
+    art: ArtEntry,
+    index: Int,
+): String {
     return if (art.id in listOf("tomato", "broccoli", "bell_pepper", "garlic", "onion", "squash", "apple")) {
         stringResource(art.nameRes)
     } else {
@@ -157,31 +162,41 @@ fun getArtDisplayName(art: ArtEntry, index: Int): String {
  * A thumbnail component that shows either the art or a silhouette if locked.
  */
 @Composable
-fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Color, onClick: () -> Unit) {
+fun ArtThumbnail(
+    art: ArtEntry,
+    isUnlocked: Boolean,
+    index: Int,
+    textColor: Color,
+    onClick: () -> Unit,
+) {
     // Silhouette matrix: turns all pixels to black while keeping transparency
-    val silhouetteMatrix = remember {
-        ColorMatrix(floatArrayOf(
-            0f, 0f, 0f, 0f, 0f,
-            0f, 0f, 0f, 0f, 0f,
-            0f, 0f, 0f, 0f, 0f,
-            0f, 0f, 0f, 1f, 0f
-        ))
-    }
+    val silhouetteMatrix =
+        remember {
+            ColorMatrix(
+                floatArrayOf(
+                    0f, 0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 1f, 0f,
+                ),
+            )
+        }
 
     val artName = getArtDisplayName(art, index)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .clickable { onClick() },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .aspectRatio(1f)
+                    .clickable { onClick() },
+            contentAlignment = Alignment.Center,
         ) {
             SpriteAnimation(
                 painter = painterResource(art.resource),
                 frameCount = art.frameCount,
                 modifier = Modifier.fillMaxSize(0.8f),
-                colorFilter = if (isUnlocked) null else ColorFilter.colorMatrix(silhouetteMatrix)
+                colorFilter = if (isUnlocked) null else ColorFilter.colorMatrix(silhouetteMatrix),
             )
             if (!isUnlocked) {
                 Text("🔒", modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp), fontSize = 12.sp)
@@ -195,23 +210,27 @@ fun ArtThumbnail(art: ArtEntry, isUnlocked: Boolean, index: Int, textColor: Colo
  * A full-screen dialog using HorizontalPager to swipe through unlocked art.
  */
 @Composable
-fun ArtViewerDialog(artList: List<ArtEntry>, initialIndex: Int, onDismiss: () -> Unit) {
+fun ArtViewerDialog(
+    artList: List<ArtEntry>,
+    initialIndex: Int,
+    onDismiss: () -> Unit,
+) {
     // HorizontalPager state keeps track of the current page
     val pagerState = rememberPagerState(initialPage = initialIndex, pageCount = { artList.size })
 
     Dialog(
         onDismissRequest = onDismiss,
         // usePlatformDefaultWidth = false allows the dialog to be truly full-screen
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color.Black.copy(alpha = 0.9f)
+            color = Color.Black.copy(alpha = 0.9f),
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) { page ->
                     val art = artList[page]
                     val artName = getArtDisplayName(art, ArtRepository.artEntries.indexOf(art))
@@ -219,26 +238,26 @@ fun ArtViewerDialog(artList: List<ArtEntry>, initialIndex: Int, onDismiss: () ->
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         SpriteAnimation(
                             painter = painterResource(art.resource),
                             frameCount = art.frameCount,
-                            modifier = Modifier.fillMaxWidth(0.8f).aspectRatio(1f)
+                            modifier = Modifier.fillMaxWidth(0.8f).aspectRatio(1f),
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Text(
                             artName,
                             color = Color.White,
-                            style = MaterialTheme.typography.headlineMedium
+                            style = MaterialTheme.typography.headlineMedium,
                         )
                     }
                 }
-                
+
                 // Exit button
                 TextButton(
                     onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
+                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp),
                 ) {
                     Text(stringResource(Res.string.close_label), color = Color.White)
                 }

@@ -24,15 +24,16 @@ fun initVibrator(context: Context) {
      * Android changed how the vibrator is accessed in API 31 (S).
      * We use a conditional check to support both modern and older devices.
      */
-    vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        // Modern way: Access via VibratorManager
-        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-        vibratorManager.defaultVibrator
-    } else {
-        // Legacy way: Direct access to VIBRATOR_SERVICE
-        @Suppress("DEPRECATION")
-        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    }
+    vibrator =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Modern way: Access via VibratorManager
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            // Legacy way: Direct access to VIBRATOR_SERVICE
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
 }
 
 /**
@@ -40,11 +41,11 @@ fun initVibrator(context: Context) {
  */
 actual fun vibrate(milliseconds: Long) {
     if (milliseconds <= 0) return
-    
+
     vibrator?.let {
         /**
          * --- VIBRATION EFFECTS (API 26+) ---
-         * Since Android O, simple millisecond vibration was deprecated in favor of 
+         * Since Android O, simple millisecond vibration was deprecated in favor of
          * 'VibrationEffect', which allows for more complex patterns.
          */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

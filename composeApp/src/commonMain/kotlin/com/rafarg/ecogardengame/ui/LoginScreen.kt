@@ -27,20 +27,20 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun LoginScreen(
-    viewModel: GameViewModel, 
+    viewModel: GameViewModel,
     onBack: () -> Unit,
-    onGoogleSignIn: () -> Unit
+    onGoogleSignIn: () -> Unit,
 ) {
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
     val user = viewModel.currentUser
-    
+
     // Coroutine scope for showing snackbars (toasts)
     val scope = rememberCoroutineScope()
     // Manages the display of bottom notifications
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollState = rememberScrollState()
-    
+
     // Confirmation dialog states
     var showSignOutDialog by remember { mutableStateOf(false) }
     var showUploadDialog by remember { mutableStateOf(false) }
@@ -55,23 +55,24 @@ fun LoginScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }, // Necessary to show snackbars
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(scrollState),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp)
+                    .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Top,
         ) {
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             Text(
                 text = stringResource(Res.string.login_title),
                 style = MaterialTheme.typography.displaySmall,
-                color = primaryText
+                color = primaryText,
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -83,7 +84,7 @@ fun LoginScreen(
                     text = stringResource(Res.string.login_desc),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
-                    color = primaryText
+                    color = primaryText,
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -94,7 +95,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(0.8f).height(50.dp),
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White, contentColor = Color(0xFF757575)),
-                    border = BorderStroke(1.dp, Color(0xFFD1D1D1))
+                    border = BorderStroke(1.dp, Color(0xFFD1D1D1)),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         Text(text = "G", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = Color(0xFF4285F4))
@@ -108,16 +109,16 @@ fun LoginScreen(
                     text = stringResource(Res.string.logged_in_as, user.name ?: user.email ?: "User"),
                     style = MaterialTheme.typography.titleMedium,
                     color = primaryText,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = stringResource(Res.string.cloud_sync_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = primaryText.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -129,7 +130,7 @@ fun LoginScreen(
                     // 1. UPLOAD SAVE: Sends local data to the server
                     Button(
                         onClick = { showUploadDialog = true },
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.fillMaxWidth(0.8f),
                     ) {
                         Text(stringResource(Res.string.upload_save_button))
                     }
@@ -140,13 +141,16 @@ fun LoginScreen(
                     OutlinedButton(
                         onClick = { showDownloadDialog = true },
                         modifier = Modifier.fillMaxWidth(0.8f),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     ) {
                         Text(stringResource(Res.string.download_save_button))
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-                    HorizontalDivider(modifier = Modifier.fillMaxWidth(0.5f), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                    )
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // 3. UPDATE PROFILE: Updates leaderboard info (CPS, level, etc.)
@@ -163,11 +167,11 @@ fun LoginScreen(
                                             snackbarHostState.showSnackbar("Error updating profile")
                                         }
                                     }
-                                }
+                                },
                             )
                         },
                         modifier = Modifier.fillMaxWidth(0.8f),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     ) {
                         Text(stringResource(Res.string.update_profile_button))
                     }
@@ -179,7 +183,7 @@ fun LoginScreen(
                 Button(
                     onClick = { showSignOutDialog = true },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)),
-                    modifier = Modifier.fillMaxWidth(0.5f)
+                    modifier = Modifier.fillMaxWidth(0.5f),
                 ) {
                     Text(stringResource(Res.string.sign_out))
                 }
@@ -192,7 +196,7 @@ fun LoginScreen(
             }
         }
     }
-    
+
     // --- CONFIRMATION DIALOGS ---
 
     // Upload Confirmation
@@ -214,13 +218,13 @@ fun LoginScreen(
                                     snackbarHostState.showSnackbar("Sync error")
                                 }
                             }
-                        }
+                        },
                     )
                 }) { Text(stringResource(Res.string.confirm)) }
             },
             dismissButton = {
                 TextButton(onClick = { showUploadDialog = false }) { Text(stringResource(Res.string.cancel)) }
-            }
+            },
         )
     }
 
@@ -238,13 +242,13 @@ fun LoginScreen(
                         onError = { error ->
                             val msg = if (error == "no_save") noCloudSaveMsg else "Error downloading save"
                             scope.launch { snackbarHostState.showSnackbar(msg) }
-                        }
+                        },
                     )
                 }) { Text(stringResource(Res.string.confirm)) }
             },
             dismissButton = {
                 TextButton(onClick = { showDownloadDialog = false }) { Text(stringResource(Res.string.cancel)) }
-            }
+            },
         )
     }
 
@@ -261,7 +265,7 @@ fun LoginScreen(
                         viewModel.resetGame() // Security measure: reset local state on logout
                         showSignOutDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 ) {
                     Text(stringResource(Res.string.sign_out))
                 }
@@ -270,7 +274,7 @@ fun LoginScreen(
                 TextButton(onClick = { showSignOutDialog = false }) {
                     Text(stringResource(Res.string.cancel))
                 }
-            }
+            },
         )
     }
 }

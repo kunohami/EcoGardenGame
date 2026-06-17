@@ -5,15 +5,17 @@ package com.rafarg.ecogardengame.model
  * This object serves as a single source of truth for the game's economic balance.
  */
 object GamePrices {
-    
     // --- VEGETABLE UNLOCK COSTS ---
     val UNLOCK_TOMATO = ItemCost(money = 0)
     val UNLOCK_BROCCOLI = ItemCost(money = 100, vegetableCosts = mapOf("tomato" to 20))
     val UNLOCK_BELL_PEPPER = ItemCost(money = 250, vegetableCosts = mapOf("tomato" to 50, "broccoli" to 10))
-    val UNLOCK_GARLIC = ItemCost(money = 750, vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15))
+    val UNLOCK_GARLIC =
+        ItemCost(money = 750, vegetableCosts = mapOf("tomato" to 150, "broccoli" to 50, "bell_pepper" to 20, "purple_onion" to 15))
     val UNLOCK_PURPLE_ONION = ItemCost(money = 500, vegetableCosts = mapOf("tomato" to 100, "broccoli" to 25, "bell_pepper" to 10))
-    val UNLOCK_SQUASH = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 200, "broccoli" to 75, "bell_pepper" to 30, "purple_onion" to 15))
-    val UNLOCK_APPLE = ItemCost(money = 1500, vegetableCosts = mapOf("tomato" to 400, "squash" to 75, "bell_pepper" to 30, "purple_onion" to 15))
+    val UNLOCK_SQUASH =
+        ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 200, "broccoli" to 75, "bell_pepper" to 30, "purple_onion" to 15))
+    val UNLOCK_APPLE =
+        ItemCost(money = 1500, vegetableCosts = mapOf("tomato" to 400, "squash" to 75, "bell_pepper" to 30, "purple_onion" to 15))
 
     // --- GLOBAL UPGRADES ---
     val UPGRADE_PRECISE_HARVEST = ItemCost(money = 1000, vegetableCosts = mapOf("tomato" to 100))
@@ -68,8 +70,11 @@ object GamePrices {
     /**
      * Helper function to calculate the library price based on category and fact index.
      */
-    fun libraryPrice(cat: String, index: Int): Int {
-        return when(cat) {
+    fun libraryPrice(
+        cat: String,
+        index: Int,
+    ): Int {
+        return when (cat) {
             "tomato" -> index * 100
             "broccoli" -> index * 100
             "bell_pepper" -> index * 100

@@ -19,12 +19,16 @@ import org.jetbrains.compose.resources.stringResource
  * It shows total clicks, lifetime earnings, and specific harvest counts for each crop.
  */
 @Composable
-fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+fun StatsScreen(
+    viewModel: GameViewModel,
+    onBack: () -> Unit,
+) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // --- HEADER ---
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -34,7 +38,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
             Text(stringResource(Res.string.stats_title), style = MaterialTheme.typography.displaySmall)
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
 
         // --- GENERAL SUMMARY CARDS ---
@@ -42,7 +46,7 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             // Lifetime Clicks Card
             Card(
                 modifier = Modifier.weight(1f),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text("👆 Clicks", style = MaterialTheme.typography.labelLarge)
@@ -53,12 +57,15 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             // Money Statistics Card (Current vs Lifetime)
             Card(
                 modifier = Modifier.weight(1f),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text("🪙 ${stringResource(Res.string.stats_money)}", style = MaterialTheme.typography.labelLarge)
                     Text("${stringResource(Res.string.stats_now)}: ${viewModel.money}", style = MaterialTheme.typography.bodyMedium)
-                    Text("${stringResource(Res.string.stats_total)}: ${viewModel.totalMoneyEarned}", style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "${stringResource(Res.string.stats_total)}: ${viewModel.totalMoneyEarned}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
             }
         }
@@ -67,36 +74,36 @@ fun StatsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
         // --- CROP BREAKDOWN ---
         Text(
-            text = stringResource(Res.string.stats_fruits_harvested), 
-            style = MaterialTheme.typography.titleLarge, 
-            modifier = Modifier.align(Alignment.Start)
+            text = stringResource(Res.string.stats_fruits_harvested),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.align(Alignment.Start),
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // LazyColumn is used here because the list of vegetables could grow long.
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             items(viewModel.itemsList) { item ->
                 // Fetch current and total counts from the ViewModel maps
                 val current = viewModel.fruitCounts[item.id] ?: 0
                 val total = viewModel.totalFruitHarvested[item.id] ?: 0
-                
+
                 // ListItem is a Material 3 component perfect for simple rows
                 ListItem(
                     headlineContent = { Text(stringResource(item.nameRes)) },
-                    supportingContent = { 
+                    supportingContent = {
                         Column {
                             Text("${stringResource(Res.string.stats_current)}: $current")
                             Text("${stringResource(Res.string.stats_total)}: $total")
                         }
                     },
-                    trailingContent = { 
+                    trailingContent = {
                         // Visual emoji indicator
                         Text(item.particleEmoji, fontSize = 32.sp)
-                    }
+                    },
                 )
             }
         }

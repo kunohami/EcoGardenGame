@@ -4,14 +4,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
 
 /**
  * --- DATA MODEL: GAME SNAPSHOT ---
  * This serializable class represents the entire state of the game.
  * It is used both for local storage (DataStore) and cloud storage (Firestore).
- * 
+ *
  * DESIGN PATTERN: Memento
  * This object captures the internal state of the game so it can be restored later
  * without exposing the complex logic of the Managers.
@@ -21,8 +19,8 @@ data class GameSaveData(
     val totalClicks: Int = 0,
     val money: Int = 0,
     val totalMoneyEarned: Int = 0,
-    val vibrationEnabled: Boolean = true, 
-    val vibrationIntensity: Float = 15f, 
+    val vibrationEnabled: Boolean = true,
+    val vibrationIntensity: Float = 15f,
     val isDarkTheme: Boolean = false,
     val isAutumnTheme: Boolean = false,
     val shaderBackgroundEnabled: Boolean = false,
@@ -43,7 +41,7 @@ data class GameSaveData(
     val unlockedArtIds: Set<String> = emptySet(),
     val tutorialSeen: Boolean = false,
     val lastWeatherUpdateTime: Long = 0L,
-    val weatherDataJson: String? = null
+    val weatherDataJson: String? = null,
 )
 
 /**
@@ -53,13 +51,13 @@ data class GameSaveData(
  * stored in a file, a database, or a cloud server.
  */
 interface GameRepository {
-    /** 
+    /**
      * Suspended function: runs asynchronously to prevent UI freezing.
      * Fetches the last saved state from storage.
      */
     suspend fun loadGameData(): GameSaveData
-    
-    /** 
+
+    /**
      * Suspended function: saves the current game snapshot to persistent storage.
      */
     suspend fun saveGameData(data: GameSaveData)
@@ -71,7 +69,6 @@ interface GameRepository {
  * This is more efficient and safer than the older SharedPreferences.
  */
 class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : GameRepository {
-
     // --- PREFERENCE KEYS ---
     // We define unique keys for each data field we want to persist.
     private val totalClicksKey = intPreferencesKey("total_clicks")
@@ -95,23 +92,24 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
     private val weatherDataJsonKey = stringPreferencesKey("weather_data_json")
 
     /** List of "Fixed" keys that do not belong to dynamic maps. */
-    private val fixedKeys = setOf(
-        "total_clicks", "money", "total_money_earned", "vibration_enabled",
-        "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
-        "emerald_wavy_theme", "language", "language_set", "username",
-        "profile_image_id", "unlocked_achievements", "last_profile_update", "unlocked_art",
-        "tutorial_seen", "last_weather_update_time", "weather_data_json"
-    )
+    private val fixedKeys =
+        setOf(
+            "total_clicks", "money", "total_money_earned", "vibration_enabled",
+            "vibration_intensity", "dark_theme", "autumn_theme", "shader_background_enabled",
+            "emerald_wavy_theme", "language", "language_set", "username",
+            "profile_image_id", "unlocked_achievements", "last_profile_update", "unlocked_art",
+            "tutorial_seen", "last_weather_update_time", "weather_data_json",
+        )
 
     /**
      * READ OPERATION
-     * Accesses the DataStore flow and converts the key-value pairs back into 
+     * Accesses the DataStore flow and converts the key-value pairs back into
      * a structured GameSaveData object.
      */
     override suspend fun loadGameData(): GameSaveData {
         // 'first()' collects the current snapshot of the data stream.
         val prefs = dataStore.data.first()
-        
+
         // Reconstruct dynamic maps (Inventory, Upgrades, etc.)
         val fruitCounts = mutableMapOf<String, Int>()
         val totalFruitHarvested = mutableMapOf<String, Int>()
@@ -123,7 +121,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
 
         /**
          * --- DYNAMIC KEY PARSING ---
-         * DataStore doesn't support nested maps directly. 
+         * DataStore doesn't support nested maps directly.
          * We solve this by iterating through ALL stored keys and identifying them by prefix.
          */
         prefs.asMap().forEach { (key, value) ->
@@ -132,12 +130,21 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
 
             when {
                 name.startsWith("fruit_count_") -> (value as? Int)?.let { fruitCounts[name.removePrefix("fruit_count_")] = it }
-                name.startsWith("total_harvested_") -> (value as? Int)?.let { totalFruitHarvested[name.removePrefix("total_harvested_")] = it }
-                name.startsWith("library_unlocked_") -> (value as? Boolean)?.let { libraryUnlockedEntries[name.removePrefix("library_unlocked_")] = it }
+                name.startsWith(
+                    "total_harvested_",
+                ) -> (value as? Int)?.let { totalFruitHarvested[name.removePrefix("total_harvested_")] = it }
+                name.startsWith(
+                    "library_unlocked_",
+                ) -> (value as? Boolean)?.let { libraryUnlockedEntries[name.removePrefix("library_unlocked_")] = it }
                 name.startsWith("mod_unlocked_") -> (value as? Boolean)?.let { modifierUnlocked[name.removePrefix("mod_unlocked_")] = it }
                 name.startsWith("mod_enabled_") -> (value as? Boolean)?.let { modifierEnabled[name.removePrefix("mod_enabled_")] = it }
-                name.startsWith("global_upgrade_level_") -> (value as? Int)?.let { globalUpgradeLevels[name.removePrefix("global_upgrade_level_")] = it }
-                name.startsWith("unlocked_") && name != "unlocked_achievements" -> (value as? Boolean)?.let { unlockedItems[name.removePrefix("unlocked_")] = it }
+                name.startsWith(
+                    "global_upgrade_level_",
+                ) -> (value as? Int)?.let { globalUpgradeLevels[name.removePrefix("global_upgrade_level_")] = it }
+                name.startsWith("unlocked_") && name != "unlocked_achievements" ->
+                    (value as? Boolean)?.let {
+                        unlockedItems[name.removePrefix("unlocked_")] = it
+                    }
             }
         }
 
@@ -168,7 +175,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             unlockedArtIds = prefs[unlockedArtKey] ?: emptySet(),
             tutorialSeen = prefs[tutorialSeenKey] ?: false,
             lastWeatherUpdateTime = prefs[lastWeatherUpdateTimeKey] ?: 0L,
-            weatherDataJson = prefs[weatherDataJsonKey]
+            weatherDataJson = prefs[weatherDataJsonKey],
         )
     }
 
@@ -200,7 +207,7 @@ class DataStoreGameRepository(private val dataStore: DataStore<Preferences>) : G
             prefs[lastWeatherUpdateTimeKey] = data.lastWeatherUpdateTime
             data.weatherDataJson?.let { prefs[weatherDataJsonKey] = it }
 
-            /** 
+            /**
              * --- MAP SERIALIZATION ---
              * We convert map entries into individual keys using prefixes.
              * Example: { "tomato": 50 } becomes a key named "fruit_count_tomato" with value 50.

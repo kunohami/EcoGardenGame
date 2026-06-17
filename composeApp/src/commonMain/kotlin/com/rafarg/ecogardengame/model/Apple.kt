@@ -44,20 +44,22 @@ class Apple : BaseVegetable() {
     override val particleEmoji: String = "🍎"
     override val tutorialRes = Res.string.tutorial_apple
 
-    override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_APPLE, countValue = 0)
-    )
-
-    override val modifiers: List<GameplayModifier> = listOf(
-        GameplayModifier(
-            id = "apple_overclock",
-            nameRes = Res.string.mod_apple_high_freq_name,
-            descriptionRes = Res.string.mod_apple_high_freq_desc,
-            unlockCost = GamePrices.MOD_APPLE_HIGH_FREQ,
-            targetItemId = "apple"
+    override val baseRewards: List<Reward> get() =
+        listOf(
+            Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+            Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_APPLE, countValue = 0),
         )
-    )
+
+    override val modifiers: List<GameplayModifier> =
+        listOf(
+            GameplayModifier(
+                id = "apple_overclock",
+                nameRes = Res.string.mod_apple_high_freq_name,
+                descriptionRes = Res.string.mod_apple_high_freq_desc,
+                unlockCost = GamePrices.MOD_APPLE_HIGH_FREQ,
+                targetItemId = "apple",
+            ),
+        )
 
     /**
      * The Apple's UI is a circular path with a pointer.
@@ -69,23 +71,23 @@ class Apple : BaseVegetable() {
         onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
-        vibrationIntensity: Float
+        vibrationIntensity: Float,
     ) {
         // List of particles currently flying on screen. Backed by Compose state.
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
-        
+
         // --- LOGIC STATES ---
         // 'targetAngle' is where the apple is currently "hiding" in the 360-degree circle.
         var targetAngle by remember { mutableStateOf(0f) }
         // 'deviceRotation' is the real-world azimuth fetched from the phone's compass.
         var deviceRotation by remember { mutableStateOf(0f) }
-        
+
         val density = LocalDensity.current
         val circleRadius = 120.dp
         val circleRadiusPx = with(density) { circleRadius.toPx() }
 
         val isOverclocked = activeModifiers.any { it.id == "apple_overclock" && it.isEnabled }
-        
+
         /**
          * --- HARDWARE INTERACTION (KMP Pattern) ---
          * 'DisposableEffect' manages the lifecycle of the rotation sensor.
@@ -111,11 +113,11 @@ class Apple : BaseVegetable() {
             var currentDirection = 1f
             var lastChangeTime = 0L
             val speedMultiplier = if (isOverclocked) 2f else 1f
-            
+
             while (isActive) {
                 withFrameMillis { time ->
                     val delta = (time - lastTime) / 1000f
-                    
+
                     // Periodically change speed and direction randomly to make it a game.
                     if (lastChangeTime == 0L || time - lastChangeTime > (Random.nextLong(2000, 5000))) {
                         currentSpeed = (Random.nextFloat() * 40f + 15f) * speedMultiplier
@@ -137,11 +139,12 @@ class Apple : BaseVegetable() {
          * We calculate the shortest distance between the apple's angle and the device angle.
          * If they are within 15 degrees, the user is "pointing" at the apple.
          */
-        val isAligned = remember(targetAngle, deviceRotation) {
-            val diff = abs(targetAngle - deviceRotation)
-            val shortestDiff = if (diff > 180) 360 - diff else diff
-            shortestDiff < 15f
-        }
+        val isAligned =
+            remember(targetAngle, deviceRotation) {
+                val diff = abs(targetAngle - deviceRotation)
+                val shortestDiff = if (diff > 180) 360 - diff else diff
+                shortestDiff < 15f
+            }
 
         /**
          * --- AUTO-HARVEST LOOP ---
@@ -150,19 +153,20 @@ class Apple : BaseVegetable() {
          */
         LaunchedEffect(isAligned, isOverclocked) {
             if (isAligned) {
-                val currentRewards = if (isOverclocked) {
-                    listOf(
-                        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-                        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_APPLE_HIGH_FREQ_MONEY, countValue = 0)
-                    )
-                } else {
-                    baseRewards
-                }
+                val currentRewards =
+                    if (isOverclocked) {
+                        listOf(
+                            Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+                            Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_APPLE_HIGH_FREQ_MONEY, countValue = 0),
+                        )
+                    } else {
+                        baseRewards
+                    }
 
                 while (isActive) {
                     // Trigger the reward logic in the ViewModel
                     val finalRewards = onVegetableClick(currentRewards)
-                    
+
                     // Visual feedback: Create flying reward particles
                     val newOnes = createRewardParticles(finalRewards)
                     val activeCount = flyingParticles.count { !it.isManuallyRemoved }
@@ -171,7 +175,7 @@ class Apple : BaseVegetable() {
                         flyingParticles.filter { !it.isManuallyRemoved }.take(overflow).forEach { it.isManuallyRemoved = true }
                     }
                     flyingParticles.addAll(newOnes)
-                    
+
                     delay(333) // Harvest interval
                 }
             }
@@ -185,16 +189,17 @@ class Apple : BaseVegetable() {
                 drawCircle(
                     color = onBackgroundColor.copy(alpha = 0.2f),
                     radius = size.minDimension / 2,
-                    style = Stroke(width = 2.dp.toPx())
+                    style = Stroke(width = 2.dp.toPx()),
                 )
             }
-            
+
             // Fixed pointer at the top edge of the circle (representing the front of the phone)
             Box(
-                modifier = Modifier
-                    .size(4.dp, 40.dp)
-                    .offset(y = (-circleRadius)) 
-                    .background(if (isAligned) Color.Green else onBackgroundColor.copy(alpha = 0.5f))
+                modifier =
+                    Modifier
+                        .size(4.dp, 40.dp)
+                        .offset(y = (-circleRadius))
+                        .background(if (isAligned) Color.Green else onBackgroundColor.copy(alpha = 0.5f)),
             )
 
             /**
@@ -208,24 +213,25 @@ class Apple : BaseVegetable() {
             val appleY = (-circleRadiusPx * cos(radians)).toFloat()
 
             Box(
-                modifier = Modifier
-                    .offset { IntOffset(appleX.roundToInt(), appleY.roundToInt()) }
-                    .size(80.dp),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .offset { IntOffset(appleX.roundToInt(), appleY.roundToInt()) }
+                        .size(80.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 SpriteAnimation(
                     painter = painterResource(resource),
                     frameCount = 3,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
-            
+
             if (isAligned) {
                 Text(
-                    "COLLECTING!", 
-                    color = Color.Green, 
+                    "COLLECTING!",
+                    color = Color.Green,
                     style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.offset(y = circleRadius + 40.dp)
+                    modifier = Modifier.offset(y = circleRadius + 40.dp),
                 )
             }
 

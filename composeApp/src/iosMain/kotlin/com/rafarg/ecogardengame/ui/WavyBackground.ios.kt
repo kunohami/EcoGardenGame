@@ -2,11 +2,9 @@ package com.rafarg.ecogardengame.ui
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.asComposeRenderEffect
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.ShaderBrush
 import org.jetbrains.skia.RuntimeEffect
 import org.jetbrains.skia.RuntimeShaderBuilder
-import androidx.compose.ui.graphics.ShaderBrush
 
 private const val SKSL_SHADER = """
     uniform float time;
@@ -29,11 +27,12 @@ private const val SKSL_SHADER = """
 
 private val runtimeEffect = RuntimeEffect.makeForShader(SKSL_SHADER)
 
-actual fun Modifier.wavyShader(time: Float): Modifier = this.drawBehind {
-    val shaderBuilder = RuntimeShaderBuilder(runtimeEffect)
-    shaderBuilder.uniform("time", time)
-    shaderBuilder.uniform("resolution", size.width, size.height)
+actual fun Modifier.wavyShader(time: Float): Modifier =
+    this.drawBehind {
+        val shaderBuilder = RuntimeShaderBuilder(runtimeEffect)
+        shaderBuilder.uniform("time", time)
+        shaderBuilder.uniform("resolution", size.width, size.height)
 
-    val skiaShader = shaderBuilder.makeShader()
-    drawRect(ShaderBrush(skiaShader))
-}
+        val skiaShader = shaderBuilder.makeShader()
+        drawRect(ShaderBrush(skiaShader))
+    }

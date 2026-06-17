@@ -1,6 +1,5 @@
 package com.rafarg.ecogardengame.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
@@ -40,7 +38,10 @@ import org.jetbrains.compose.resources.stringResource
  * SettingsScreen allows players to customize their experience and manage their game data.
  */
 @Composable
-fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+fun SettingsScreen(
+    viewModel: GameViewModel,
+    onBack: () -> Unit,
+) {
     // Visibility states for confirmation dialogs
     var showResetDialog by remember { mutableStateOf(false) }
     var showDebugDialog by remember { mutableStateOf(false) }
@@ -48,7 +49,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
     var passwordInput by remember { mutableStateOf("") }
     // Controls the visibility and content of the custom toast message
     var toastMessage by remember { mutableStateOf<String?>(null) }
-    
+
     // Coroutine scope is needed to run background tasks like the toast timer
     val scope = rememberCoroutineScope()
     // rememberScrollState allows the Column to be scrollable if content overflows
@@ -69,42 +70,46 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
         ) {
             Text(stringResource(Res.string.settings_title), style = MaterialTheme.typography.displayMedium)
-            
+
             Spacer(modifier = Modifier.height(8.dp))
 
             // --- GENERAL SECTION ---
             Text(stringResource(Res.string.general_section), style = MaterialTheme.typography.titleMedium, color = Color.Gray)
-            
+
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     // Vibration Toggle: Communicates directly with the ViewModel
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(stringResource(Res.string.vibration_label))
                         Switch(
                             checked = viewModel.vibrationEnabled,
-                            onCheckedChange = { viewModel.setVibration(it) }
+                            onCheckedChange = { viewModel.setVibration(it) },
                         )
                     }
-                    
+
                     // Only show the Intensity slider if vibration is ON
                     if (viewModel.vibrationEnabled) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(stringResource(Res.string.intensity_label, viewModel.vibrationIntensity.toInt()), style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            stringResource(Res.string.intensity_label, viewModel.vibrationIntensity.toInt()),
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                         Slider(
                             value = viewModel.vibrationIntensity,
                             onValueChange = { viewModel.updateVibrationIntensity(it) },
                             valueRange = 5f..100f,
-                            steps = 19 // Results in 20 distinct points on the slider
+                            steps = 19, // Results in 20 distinct points on the slider
                         )
                     }
                 }
@@ -115,12 +120,12 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             // --- DEBUG / TESTING SECTION ---
             // Hidden behind a simple password for developer/tester use.
             Text(stringResource(Res.string.debug_options), style = MaterialTheme.typography.titleMedium, color = Color.Gray)
-            
+
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Row(
                     modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OutlinedTextField(
                         value = passwordInput,
@@ -128,9 +133,9 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(), // Masks text with dots
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
-                    
+
                     Button(
                         onClick = {
                             if (passwordInput == "vip3aa") {
@@ -141,7 +146,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                         },
                         enabled = passwordInput.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(top = 8.dp),
                     ) {
                         Text("OK")
                     }
@@ -151,13 +156,13 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             // Danger Zone: Resetting progress
             Button(
                 onClick = { showResetDialog = true },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             ) {
                 Text(stringResource(Res.string.reset_progress))
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             Button(onClick = onBack) {
                 Text(stringResource(Res.string.back_to_misc))
             }
@@ -182,7 +187,7 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 },
                 dismissButton = {
                     TextButton(onClick = { showDebugDialog = false }) { Text(stringResource(Res.string.cancel)) }
-                }
+                },
             )
         }
 
@@ -200,12 +205,12 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                             showResetDialog = false
                             showToast(resetProgressToast)
                         },
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
                     ) { Text(stringResource(Res.string.reset_progress)) }
                 },
                 dismissButton = {
                     TextButton(onClick = { showResetDialog = false }) { Text(stringResource(Res.string.cancel)) }
-                }
+                },
             )
         }
 
@@ -213,17 +218,18 @@ fun SettingsScreen(viewModel: GameViewModel, onBack: () -> Unit) {
         // A simple overlay that appears at the bottom center.
         toastMessage?.let { message ->
             Surface(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 64.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 64.dp),
                 color = Color.Black.copy(alpha = 0.7f),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(24.dp),
             ) {
                 Text(
                     text = message,
                     color = Color.White,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }

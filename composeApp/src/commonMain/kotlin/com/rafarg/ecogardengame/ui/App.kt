@@ -28,7 +28,6 @@ import com.rafarg.ecogardengame.model.*
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
 import ecogardengame.composeapp.generated.resources.Res
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
@@ -40,15 +39,16 @@ import kotlin.math.abs
  * the rest of the app can treat them as a generic 'GameItem'.
  * This makes the code scalable: adding a new vegetable only requires adding it to this list.
  */
-val items: List<GameItem> = listOf(
-    Tomato(),
-    Broccoli(),
-    BellPepper(),
-    Garlic(),
-    PurpleOnion(),
-    Squash(),
-    Apple()
-)
+val items: List<GameItem> =
+    listOf(
+        Tomato(),
+        Broccoli(),
+        BellPepper(),
+        Garlic(),
+        PurpleOnion(),
+        Squash(),
+        Apple(),
+    )
 
 /**
  * --- ENCAPSULATION (OOP Principle) ---
@@ -69,7 +69,7 @@ enum class Screen(val showInBottomBar: Boolean = true) {
     LOGIN(false),
     GALLERY(false),
     TUTORIAL(false),
-    WEATHER(false)
+    WEATHER(false),
 }
 
 /**
@@ -79,26 +79,28 @@ enum class Screen(val showInBottomBar: Boolean = true) {
  */
 @Composable
 fun Screen.getTitle(): String {
-    return stringResource(when(this) {
-        Screen.GAME -> Res.string.nav_garden
-        Screen.STORE -> Res.string.nav_shop
-        Screen.LIBRARY -> Res.string.nav_library
-        Screen.PROFILE -> Res.string.nav_profile
-        Screen.MISC -> Res.string.nav_misc
-        Screen.STATS -> Res.string.stats_title
-        Screen.SETTINGS -> Res.string.settings_title
-        Screen.THEMES -> Res.string.themes_title
-        Screen.ABOUT -> Res.string.about_title
-        Screen.LOGIN -> Res.string.login_title
-        Screen.GALLERY -> Res.string.achievements_title
-        Screen.TUTORIAL -> Res.string.tutorial_title
-        Screen.WEATHER -> Res.string.app_name 
-    })
+    return stringResource(
+        when (this) {
+            Screen.GAME -> Res.string.nav_garden
+            Screen.STORE -> Res.string.nav_shop
+            Screen.LIBRARY -> Res.string.nav_library
+            Screen.PROFILE -> Res.string.nav_profile
+            Screen.MISC -> Res.string.nav_misc
+            Screen.STATS -> Res.string.stats_title
+            Screen.SETTINGS -> Res.string.settings_title
+            Screen.THEMES -> Res.string.themes_title
+            Screen.ABOUT -> Res.string.about_title
+            Screen.LOGIN -> Res.string.login_title
+            Screen.GALLERY -> Res.string.achievements_title
+            Screen.TUTORIAL -> Res.string.tutorial_title
+            Screen.WEATHER -> Res.string.app_name
+        },
+    )
 }
 
 /**
  * The main entry point of the application UI.
- * 
+ *
  * @param prefs DataStore for persistence (passed from platform-specific code).
  * @param authRepository Handles Google Auth (Dependency Injection principle).
  * @param onGoogleSignIn Callback to trigger the native login flow.
@@ -109,31 +111,34 @@ fun Screen.getTitle(): String {
 fun App(
     prefs: DataStore<Preferences>? = null,
     authRepository: AuthRepository? = null,
-    onGoogleSignIn: () -> Unit = {}
+    onGoogleSignIn: () -> Unit = {},
 ) {
     /**
      * --- STATE MANAGEMENT & MVVM ---
      * We initialize the ViewModel using a factory.
      * The ViewModel acts as the "Source of Truth" for all game data.
      */
-    val viewModel: GameViewModel = viewModel { 
-        val repository = if (prefs != null) {
-            DataStoreGameRepository(prefs) 
-        } else {
-            // Mock repository for Previews/Tests
-            object : com.rafarg.ecogardengame.data.GameRepository {
-                override suspend fun loadGameData() = com.rafarg.ecogardengame.data.GameSaveData()
-                override suspend fun saveGameData(data: com.rafarg.ecogardengame.data.GameSaveData) {}
-            }
+    val viewModel: GameViewModel =
+        viewModel {
+            val repository =
+                if (prefs != null) {
+                    DataStoreGameRepository(prefs)
+                } else {
+                    // Mock repository for Previews/Tests
+                    object : com.rafarg.ecogardengame.data.GameRepository {
+                        override suspend fun loadGameData() = com.rafarg.ecogardengame.data.GameSaveData()
+
+                        override suspend fun saveGameData(data: com.rafarg.ecogardengame.data.GameSaveData) {}
+                    }
+                }
+            GameViewModel(repository, authRepository)
         }
-        GameViewModel(repository, authRepository) 
-    }
-    
+
     val scope = rememberCoroutineScope()
-    
+
     // Local state for navigation
     var currentScreen by remember { mutableStateOf(Screen.GAME) }
-    
+
     // Pager state for the 3D Cube transition
     val mainScreens = remember { Screen.entries.filter { it.showInBottomBar } }
     val pagerState = rememberPagerState(pageCount = { mainScreens.size })
@@ -149,7 +154,7 @@ fun App(
             pagerState.animateScrollToPage(index)
         }
     }
-    
+
     /**
      * --- COMPOSITION & THEMING ---
      * We wrap the entire UI in our custom Theme.
@@ -158,7 +163,7 @@ fun App(
     EcoGardenTheme(
         useDarkTheme = viewModel.isDarkTheme,
         useWavyTheme = viewModel.shaderBackgroundEnabled,
-        useAutumnTheme = viewModel.isAutumnTheme
+        useAutumnTheme = viewModel.isAutumnTheme,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (!viewModel.isDataLoaded) {
@@ -180,27 +185,28 @@ fun App(
                         NavigationBar(
                             modifier = Modifier.height(120.dp),
                             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                            tonalElevation = 8.dp
+                            tonalElevation = 8.dp,
                         ) {
                             mainScreens.forEach { screen ->
                                 NavigationBarItem(
                                     selected = currentScreen == screen,
                                     onClick = { currentScreen = screen },
                                     icon = {
-                                        val iconRes = when(screen) {
-                                            Screen.GAME -> Res.drawable.gardenmainmenu_strip
-                                            Screen.STORE -> Res.drawable.shopmainmenu_strip
-                                            Screen.LIBRARY -> Res.drawable.librarymainmenu_strip
-                                            Screen.PROFILE -> Res.drawable.profilemainmenu_strip
-                                            Screen.MISC -> Res.drawable.miscmainmenu_strip
-                                            else -> null
-                                        }
+                                        val iconRes =
+                                            when (screen) {
+                                                Screen.GAME -> Res.drawable.gardenmainmenu_strip
+                                                Screen.STORE -> Res.drawable.shopmainmenu_strip
+                                                Screen.LIBRARY -> Res.drawable.librarymainmenu_strip
+                                                Screen.PROFILE -> Res.drawable.profilemainmenu_strip
+                                                Screen.MISC -> Res.drawable.miscmainmenu_strip
+                                                else -> null
+                                            }
                                         if (iconRes != null) {
                                             // Animate icons in the bottom bar
                                             SpriteAnimation(
                                                 painter = painterResource(iconRes),
                                                 frameCount = 3,
-                                                modifier = Modifier.size(56.dp)
+                                                modifier = Modifier.size(56.dp),
                                             )
                                         } else {
                                             Text(text = "❓", fontSize = 24.sp)
@@ -208,18 +214,20 @@ fun App(
                                     },
                                     label = null,
                                     alwaysShowLabel = false,
-                                    colors = NavigationBarItemDefaults.colors(
-                                        indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                                    )
+                                    colors =
+                                        NavigationBarItemDefaults.colors(
+                                            indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                        ),
                                 )
                             }
                         }
-                    }
+                    },
                 ) { innerPadding ->
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
                     ) {
                         /**
                          * --- NAVIGATION LOGIC ---
@@ -230,10 +238,10 @@ fun App(
                             HorizontalPager(
                                 state = pagerState,
                                 modifier = Modifier.fillMaxSize(),
-                                userScrollEnabled = false // Manual scrolling is disabled to prioritize clicking
+                                userScrollEnabled = false, // Manual scrolling is disabled to prioritize clicking
                             ) { page ->
                                 val screen = mainScreens[page]
-                                
+
                                 /**
                                  * --- 3D CUBE EFFECT (Graphics Math) ---
                                  * We manipulate the 'graphicsLayer' based on the scroll progress.
@@ -245,32 +253,34 @@ fun App(
                                     Modifier
                                         .fillMaxSize()
                                         .graphicsLayer {
-                                            val pageOffset = ( (pagerState.currentPage - page ) + pagerState.currentPageOffsetFraction )
+                                            val pageOffset = ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction)
                                             rotationY = pageOffset * 90f
                                             transformOrigin = if (pageOffset > 0f) TransformOrigin(0f, 0.5f) else TransformOrigin(1f, 0.5f)
                                             cameraDistance = 12f * density
                                             alpha = 1f - abs(pageOffset).coerceIn(0f, 1f) * 0.3f
-                                        }
+                                        },
                                 ) {
                                     when (screen) {
-                                        Screen.GAME -> GameScreen(
-                                            viewModel = viewModel,
-                                            onNavigateToStore = { currentScreen = Screen.STORE }
-                                        )
+                                        Screen.GAME ->
+                                            GameScreen(
+                                                viewModel = viewModel,
+                                                onNavigateToStore = { currentScreen = Screen.STORE },
+                                            )
                                         Screen.STORE -> StoreScreen(viewModel)
                                         Screen.LIBRARY -> LibraryScreen(viewModel)
                                         Screen.PROFILE -> ProfileScreen(viewModel)
-                                        Screen.MISC -> MiscScreen(
-                                            viewModel = viewModel,
-                                            onNavigateToSettings = { currentScreen = Screen.SETTINGS },
-                                            onNavigateToThemes = { currentScreen = Screen.THEMES },
-                                            onNavigateToStats = { currentScreen = Screen.STATS },
-                                            onNavigateToAbout = { currentScreen = Screen.ABOUT },
-                                            onNavigateToLogin = { currentScreen = Screen.LOGIN },
-                                            onNavigateToGallery = { currentScreen = Screen.GALLERY },
-                                            onNavigateToTutorial = { viewModel.replayTutorial() },
-                                            onNavigateToWeather = { currentScreen = Screen.WEATHER }
-                                        )
+                                        Screen.MISC ->
+                                            MiscScreen(
+                                                viewModel = viewModel,
+                                                onNavigateToSettings = { currentScreen = Screen.SETTINGS },
+                                                onNavigateToThemes = { currentScreen = Screen.THEMES },
+                                                onNavigateToStats = { currentScreen = Screen.STATS },
+                                                onNavigateToAbout = { currentScreen = Screen.ABOUT },
+                                                onNavigateToLogin = { currentScreen = Screen.LOGIN },
+                                                onNavigateToGallery = { currentScreen = Screen.GALLERY },
+                                                onNavigateToTutorial = { viewModel.replayTutorial() },
+                                                onNavigateToWeather = { currentScreen = Screen.WEATHER },
+                                            )
                                         else -> Unit
                                     }
                                 }
@@ -282,7 +292,12 @@ fun App(
                                 Screen.SETTINGS -> SettingsScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.THEMES -> ThemesScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.ABOUT -> AboutScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
-                                Screen.LOGIN -> LoginScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC }, onGoogleSignIn = onGoogleSignIn)
+                                Screen.LOGIN ->
+                                    LoginScreen(
+                                        viewModel = viewModel,
+                                        onBack = { currentScreen = Screen.MISC },
+                                        onGoogleSignIn = onGoogleSignIn,
+                                    )
                                 Screen.GALLERY -> GalleryScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 Screen.WEATHER -> WeatherScreen(viewModel = viewModel, onBack = { currentScreen = Screen.MISC })
                                 else -> Unit
@@ -305,25 +320,27 @@ fun App(
                     visible = viewModel.achievementToast != null,
                     enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
                     exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 100.dp)
-                        .zIndex(10f)
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 100.dp)
+                            .zIndex(10f),
                 ) {
                     viewModel.achievementToast?.let { achievement ->
                         val isLight = !viewModel.isDarkTheme && !viewModel.shaderBackgroundEnabled && !viewModel.isAutumnTheme
                         val surfaceColor = if (isLight) Color(0xFF3E442B) else MaterialTheme.colorScheme.primaryContainer
                         Surface(
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .clip(RoundedCornerShape(24.dp)),
+                            modifier =
+                                Modifier
+                                    .padding(horizontal = 32.dp)
+                                    .clip(RoundedCornerShape(24.dp)),
                             color = surfaceColor,
                             tonalElevation = 8.dp,
-                            shadowElevation = 8.dp
+                            shadowElevation = 8.dp,
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(achievement.emoji, fontSize = 28.sp)
                                 Spacer(modifier = Modifier.width(12.dp))
@@ -331,15 +348,15 @@ fun App(
                                 val unlockedText = stringResource(Res.string.unlocked_label, stringResource(achievement.nameRes))
                                 Column {
                                     Text(
-                                        congrats, 
-                                        style = MaterialTheme.typography.labelSmall, 
-                                        color = if (isLight) Color(0xFFCCD5AE) else MaterialTheme.colorScheme.primary
+                                        congrats,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = if (isLight) Color(0xFFCCD5AE) else MaterialTheme.colorScheme.primary,
                                     )
                                     Text(
-                                        unlockedText, 
-                                        style = MaterialTheme.typography.bodyMedium, 
+                                        unlockedText,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isLight) Color.White else MaterialTheme.colorScheme.onPrimaryContainer
+                                        color = if (isLight) Color.White else MaterialTheme.colorScheme.onPrimaryContainer,
                                     )
                                 }
                             }

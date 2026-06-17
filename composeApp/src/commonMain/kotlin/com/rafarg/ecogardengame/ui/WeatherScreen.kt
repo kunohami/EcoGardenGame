@@ -16,23 +16,24 @@ import com.rafarg.ecogardengame.data.WeatherService
 import com.rafarg.ecogardengame.util.rememberLocationProvider
 import com.rafarg.ecogardengame.viewmodel.GameViewModel
 import ecogardengame.composeapp.generated.resources.*
-import ecogardengame.composeapp.generated.resources.Res
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
 
 /**
  * WeatherScreen allows the player to fetch and view real-time weather data.
  * This data is used by the ViewModel to apply productivity bonuses based on actual local conditions.
  */
 @Composable
-fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
+fun WeatherScreen(
+    viewModel: GameViewModel,
+    onBack: () -> Unit,
+) {
     // Utility to get the device's GPS coordinates
     val locationProvider = rememberLocationProvider()
     // Service that connects to the weather API
     val weatherService = remember { WeatherService() }
     // Coroutine scope needed for asynchronous network calls
     val scope = rememberCoroutineScope()
-    
+
     // UI states to handle the asynchronous flow
     var weatherData by remember { mutableStateOf<WeatherResponse?>(null) }
     var isLoading by remember { mutableStateOf(false) }
@@ -43,12 +44,12 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // --- HEADER ---
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = primaryText)
@@ -56,7 +57,7 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
             Text(
                 text = "Garden Weather",
                 style = MaterialTheme.typography.headlineMedium,
-                color = primaryText
+                color = primaryText,
             )
         }
 
@@ -71,13 +72,13 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                 Text(
                     text = "${data.current_weather.temperature}°C",
                     fontSize = 64.sp,
-                    color = primaryText
+                    color = primaryText,
                 )
                 // Human-readable description based on the WMO code
                 Text(
                     text = getWeatherDescription(data.current_weather.weathercode),
                     style = MaterialTheme.typography.titleLarge,
-                    color = primaryText
+                    color = primaryText,
                 )
             }
 
@@ -119,11 +120,11 @@ fun WeatherScreen(viewModel: GameViewModel, onBack: () -> Unit) {
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier.fillMaxWidth(0.8f),
         ) {
             Text("Update Weather")
         }
-        
+
         Spacer(modifier = Modifier.height(32.dp))
     }
 }

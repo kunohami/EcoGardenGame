@@ -30,26 +30,28 @@ fun MiscScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToGallery: () -> Unit,
     onNavigateToTutorial: () -> Unit,
-    onNavigateToWeather: () -> Unit
+    onNavigateToWeather: () -> Unit,
 ) {
     // Check if background shaders are active to adjust text color for readability
     val wavy = viewModel.shaderBackgroundEnabled
     val primaryText = if (wavy) Color.White else Color.Unspecified
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // --- HEADER STRIP ---
         // A visual title for the "Extras" or "Misc" section using a sprite animation.
         SpriteAnimation(
             painter = painterResource(Res.drawable.miscmainmenu_strip),
             frameCount = 3,
-            modifier = Modifier
-                .height(90.dp) 
-                .fillMaxWidth(0.7f)
+            modifier =
+                Modifier
+                    .height(90.dp)
+                    .fillMaxWidth(0.7f),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -60,16 +62,16 @@ fun MiscScreen(
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val rowModifier = Modifier.weight(1f).fillMaxWidth()
-            
+
             // Row 1: Settings and Themes
             Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MiscSquareButton(stringResource(Res.string.settings_title), onNavigateToSettings, Modifier.weight(1f))
                 MiscSquareButton(stringResource(Res.string.themes_title), onNavigateToThemes, Modifier.weight(1f))
             }
-            
+
             // Row 2: Stats and Gallery
             Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 MiscSquareButton(stringResource(Res.string.stats_title), onNavigateToStats, Modifier.weight(1f))
@@ -88,7 +90,7 @@ fun MiscScreen(
                 MiscSquareButton(stringResource(Res.string.about_title), onNavigateToAbout, Modifier.weight(1f))
             }
         }
-        
+
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
@@ -100,23 +102,25 @@ fun MiscScreen(
 fun MiscSquareButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxHeight()
-            // aspectRatio(1f) tries to keep the button perfectly square
-            .aspectRatio(1f, matchHeightConstraintsFirst = true),
+        modifier =
+            modifier
+                .fillMaxHeight()
+                // aspectRatio(1f) tries to keep the button perfectly square
+                .aspectRatio(1f, matchHeightConstraintsFirst = true),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(4.dp),
         // Shadows are removed here to match the flat 2D game aesthetic
-        elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 0.dp,
-            hoveredElevation = 0.dp,
-            focusedElevation = 0.dp
-        )
+        elevation =
+            ButtonDefaults.buttonElevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp,
+                hoveredElevation = 0.dp,
+                focusedElevation = 0.dp,
+            ),
     ) {
         Text(
             text = text,
@@ -124,7 +128,7 @@ fun MiscSquareButton(
             style = MaterialTheme.typography.titleMedium,
             fontSize = 15.sp,
             lineHeight = 18.sp,
-            softWrap = true // Allows text to wrap into multiple lines if too long
+            softWrap = true, // Allows text to wrap into multiple lines if too long
         )
     }
 }

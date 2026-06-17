@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -48,34 +47,36 @@ class Broccoli : BaseVegetable() {
     override val particleEmoji: String = "🥦"
     override val tutorialRes = Res.string.tutorial_broccoli
 
-    override val baseRewards: List<Reward> get() = listOf(
-        Reward(emoji = particleEmoji, countValue = 1, resource = resource),
-        Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_BROCCOLI, countValue = 0)
-    )
-
-    override val modifiers: List<GameplayModifier> = listOf(
-        GameplayModifier(
-            id = "broccoli_giant",
-            nameRes = Res.string.mod_broccoli_giant_name,
-            descriptionRes = Res.string.mod_broccoli_giant_desc,
-            unlockCost = GamePrices.MOD_BROCCOLI_GIANT,
-            targetItemId = "broccoli"
-        ),
-        GameplayModifier(
-            id = "broccoli_speed",
-            nameRes = Res.string.mod_broccoli_overclocked_name,
-            descriptionRes = Res.string.mod_broccoli_overclocked_desc,
-            unlockCost = GamePrices.MOD_BROCCOLI_OVERCLOCKED,
-            targetItemId = "broccoli"
-        ),
-        GameplayModifier(
-            id = "broccoli_proximity",
-            nameRes = Res.string.mod_broccoli_air_name,
-            descriptionRes = Res.string.mod_broccoli_air_desc,
-            unlockCost = GamePrices.MOD_BROCCOLI_AIR,
-            targetItemId = "broccoli"
+    override val baseRewards: List<Reward> get() =
+        listOf(
+            Reward(emoji = particleEmoji, countValue = 1, resource = resource),
+            Reward(emoji = "🪙", moneyValue = GamePrices.REWARD_MONEY_BROCCOLI, countValue = 0),
         )
-    )
+
+    override val modifiers: List<GameplayModifier> =
+        listOf(
+            GameplayModifier(
+                id = "broccoli_giant",
+                nameRes = Res.string.mod_broccoli_giant_name,
+                descriptionRes = Res.string.mod_broccoli_giant_desc,
+                unlockCost = GamePrices.MOD_BROCCOLI_GIANT,
+                targetItemId = "broccoli",
+            ),
+            GameplayModifier(
+                id = "broccoli_speed",
+                nameRes = Res.string.mod_broccoli_overclocked_name,
+                descriptionRes = Res.string.mod_broccoli_overclocked_desc,
+                unlockCost = GamePrices.MOD_BROCCOLI_OVERCLOCKED,
+                targetItemId = "broccoli",
+            ),
+            GameplayModifier(
+                id = "broccoli_proximity",
+                nameRes = Res.string.mod_broccoli_air_name,
+                descriptionRes = Res.string.mod_broccoli_air_desc,
+                unlockCost = GamePrices.MOD_BROCCOLI_AIR,
+                targetItemId = "broccoli",
+            ),
+        )
 
     /**
      * The Broccoli's UI implementation.
@@ -87,12 +88,12 @@ class Broccoli : BaseVegetable() {
         onVegetableClick: (List<Reward>) -> List<Reward>,
         activeModifiers: List<GameplayModifier>,
         vibrationEnabled: Boolean,
-        vibrationIntensity: Float
+        vibrationIntensity: Float,
     ) {
         val scope = rememberCoroutineScope()
         val scale = remember { Animatable(1f) }
         val flyingParticles = remember { mutableStateListOf<FlyingParticle>() }
-        
+
         // --- MOTION STATE ---
         // We use Float values for precise sub-pixel movement.
         var posX by remember { mutableStateOf(0f) }
@@ -104,12 +105,12 @@ class Broccoli : BaseVegetable() {
         // Screen dimensions tracked via 'onGloballyPositioned'.
         var parentWidth by remember { mutableStateOf(0f) }
         var parentHeight by remember { mutableStateOf(0f) }
-        
+
         // Check active modifiers to adjust gameplay parameters.
         val isGiant = activeModifiers.any { it.id == "broccoli_giant" && it.isEnabled }
         val isFast = activeModifiers.any { it.id == "broccoli_speed" && it.isEnabled }
         val isAirHarvest = activeModifiers.any { it.id == "broccoli_proximity" && it.isEnabled }
-        
+
         val itemSize = if (isGiant) 200.dp else 100.dp
         val itemSizePx = with(LocalDensity.current) { itemSize.toPx() }
 
@@ -127,9 +128,9 @@ class Broccoli : BaseVegetable() {
         val handleInteraction = {
             val currentX = posX
             val currentY = posY
-            
+
             val rewardsToGive = mutableListOf<Reward>()
-            
+
             if (isGiant) {
                 // Giant Broccoli mechanic: requires 2 "hits" to generate a reward.
                 clickCounter++
@@ -143,25 +144,29 @@ class Broccoli : BaseVegetable() {
 
             if (rewardsToGive.isNotEmpty()) {
                 // Apply modifiers to the reward values before sending to ViewModel.
-                val basePlusMultipliers = if (rewardMultiplier > 1) {
-                    rewardsToGive.map { it.copy(
-                        moneyValue = it.moneyValue * rewardMultiplier,
-                        countValue = it.countValue * rewardMultiplier
-                    ) }
-                } else {
-                    rewardsToGive
-                }
+                val basePlusMultipliers =
+                    if (rewardMultiplier > 1) {
+                        rewardsToGive.map {
+                            it.copy(
+                                moneyValue = it.moneyValue * rewardMultiplier,
+                                countValue = it.countValue * rewardMultiplier,
+                            )
+                        }
+                    } else {
+                        rewardsToGive
+                    }
 
                 // Execute the global economy logic in the ViewModel.
                 val finalRewards = onVegetableClick(basePlusMultipliers)
-                
+
                 // Visual feedback: Create particles at the Broccoli's CURRENT moving position.
-                val newOnes = createRewardParticles(
-                    rewards = finalRewards,
-                    offsetX = currentX,
-                    offsetY = currentY
-                )
-                
+                val newOnes =
+                    createRewardParticles(
+                        rewards = finalRewards,
+                        offsetX = currentX,
+                        offsetY = currentY,
+                    )
+
                 // Particle pool management.
                 val activeCount = flyingParticles.count { !it.isManuallyRemoved }
                 val overflow = (activeCount + newOnes.size) - 20
@@ -170,7 +175,7 @@ class Broccoli : BaseVegetable() {
                 }
                 flyingParticles.addAll(newOnes)
             }
-            
+
             // Squash and stretch animation effect.
             scope.launch {
                 scale.animateTo(0.8f, spring(Spring.DampingRatioLowBouncy, Spring.StiffnessMedium))
@@ -227,37 +232,40 @@ class Broccoli : BaseVegetable() {
         }
 
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .onGloballyPositioned {
-                    // Update parent dimensions when the layout is drawn.
-                    parentWidth = it.size.width.toFloat()
-                    parentHeight = it.size.height.toFloat()
-                },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .onGloballyPositioned {
+                        // Update parent dimensions when the layout is drawn.
+                        parentWidth = it.size.width.toFloat()
+                        parentHeight = it.size.height.toFloat()
+                    },
+            contentAlignment = Alignment.Center,
         ) {
             // Render the Broccoli at its calculated animated position.
             Box(
-                modifier = Modifier
-                    .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
-                    .size(itemSize),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .offset { IntOffset(posX.roundToInt(), posY.roundToInt()) }
+                        .size(itemSize),
+                contentAlignment = Alignment.Center,
             ) {
                 SpriteAnimation(
                     painter = painterResource(resource),
                     frameCount = 3,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            scaleX = scale.value
-                            scaleY = scale.value
-                        }
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            handleInteraction()
-                        }
+                    modifier =
+                        modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                scaleX = scale.value
+                                scaleY = scale.value
+                            }
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                            ) {
+                                handleInteraction()
+                            },
                 )
             }
 

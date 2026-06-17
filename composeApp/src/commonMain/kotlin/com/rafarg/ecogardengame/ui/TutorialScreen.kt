@@ -4,7 +4,6 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,37 +29,41 @@ fun TutorialScreen(viewModel: GameViewModel) {
     val totalSteps = 7
 
     // Logic to select the appropriate text for each step
-    val stepText = when (currentStep) {
-        1 -> stringResource(Res.string.tutorial_step1)
-        2 -> stringResource(Res.string.tutorial_step2)
-        3 -> stringResource(Res.string.tutorial_step3)
-        4 -> stringResource(Res.string.tutorial_step4)
-        5 -> stringResource(Res.string.tutorial_step5)
-        6 -> stringResource(Res.string.tutorial_step6)
-        7 -> stringResource(Res.string.tutorial_step7)
-        else -> ""
-    }
+    val stepText =
+        when (currentStep) {
+            1 -> stringResource(Res.string.tutorial_step1)
+            2 -> stringResource(Res.string.tutorial_step2)
+            3 -> stringResource(Res.string.tutorial_step3)
+            4 -> stringResource(Res.string.tutorial_step4)
+            5 -> stringResource(Res.string.tutorial_step5)
+            6 -> stringResource(Res.string.tutorial_step6)
+            7 -> stringResource(Res.string.tutorial_step7)
+            else -> ""
+        }
 
     // Changes the visual expression of Clicky based on the current step
-    val clickySprite = when (currentStep) {
-        1, 6 -> Res.drawable.clickyopenarms_strip
-        4, 7 -> Res.drawable.clickycheekykneel_strip
-        else -> Res.drawable.clickyexplain_strip
-    }
+    val clickySprite =
+        when (currentStep) {
+            1, 6 -> Res.drawable.clickyopenarms_strip
+            4, 7 -> Res.drawable.clickycheekykneel_strip
+            else -> Res.drawable.clickyexplain_strip
+        }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            // Semi-transparent black background to focus attention on the tutorial
-            .background(Color.Black.copy(alpha = 0.7f))
-            .clickable(enabled = false) { } // Intercept clicks to prevent interaction with the game behind
+        modifier =
+            Modifier
+                .fillMaxSize()
+                // Semi-transparent black background to focus attention on the tutorial
+                .background(Color.Black.copy(alpha = 0.7f))
+                .clickable(enabled = false) { }, // Intercept clicks to prevent interaction with the game behind
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             // --- MASCOT AREA ---
             Box(modifier = Modifier.weight(0.6f), contentAlignment = Alignment.BottomCenter) {
@@ -69,7 +72,7 @@ fun TutorialScreen(viewModel: GameViewModel) {
                     SpriteAnimation(
                         painter = painterResource(clickySprite),
                         frameCount = 3,
-                        modifier = Modifier.size(250.dp)
+                        modifier = Modifier.size(250.dp),
                     )
                 }
             }
@@ -78,29 +81,31 @@ fun TutorialScreen(viewModel: GameViewModel) {
 
             // --- DIALOGUE BOX ---
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(horizontal = 8.dp)
-                    .clip(SpeechBubbleShape()), // Custom shape for the dialogue bubble
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(horizontal = 8.dp)
+                        .clip(SpeechBubbleShape()),
+                // Custom shape for the dialogue bubble
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Text(
                         text = stepText,
                         style = MaterialTheme.typography.bodyLarge,
                         fontSize = 17.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
                     )
 
                     // --- NAVIGATION BUTTONS ---
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (currentStep < totalSteps) {
                             // "Skip" allows experienced players to exit the tutorial immediately
@@ -121,7 +126,7 @@ fun TutorialScreen(viewModel: GameViewModel) {
                     }
                 }
             }
-            
+
             // Spacer at the bottom to push content slightly up from the very bottom of the screen
             Spacer(modifier = Modifier.weight(0.4f))
         }

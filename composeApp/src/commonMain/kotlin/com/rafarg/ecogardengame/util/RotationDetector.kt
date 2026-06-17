@@ -5,4 +5,5 @@ package com.rafarg.ecogardengame.util
  * Usually representing the Azimuth/Yaw (compass direction).
  */
 expect fun startListeningForRotation(onRotationChanged: (Float) -> Unit)
+
 expect fun stopListeningForRotation()

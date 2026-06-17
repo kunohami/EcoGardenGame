@@ -17,7 +17,7 @@ class AndroidPlatform : Platform {
 /**
  * The actual function that instantiates the Android version of the Platform interface.
  * This is called by commonMain code through the 'expect' declaration.
- * 
+ *
  * NOTE: The package must match exactly the one in commonMain (com.rafarg.ecogardengame.util).
  */
 actual fun getPlatform(): Platform = AndroidPlatform()

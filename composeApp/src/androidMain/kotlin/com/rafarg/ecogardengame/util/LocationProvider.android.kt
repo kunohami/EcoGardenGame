@@ -24,9 +24,9 @@ actual fun rememberLocationProvider(): LocationProvider {
 
 /**
  * Implementation of the [LocationProvider] interface for the Android platform.
- * 
+ *
  * --- OOP PRINCIPLE: INTERFACE IMPLEMENTATION ---
- * This class implements the common interface defined in commonMain, 
+ * This class implements the common interface defined in commonMain,
  * allowing the UI to remain platform-agnostic.
  */
 class AndroidLocationProvider(private val context: Context) : LocationProvider {
@@ -39,7 +39,7 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
 
     /**
      * Requests the current location from the system.
-     * 
+     *
      * @param onLocationReceived Callback invoked when location data is available or fails.
      */
     @SuppressLint("MissingPermission") // Permissions are handled in the UI layer before calling this.
