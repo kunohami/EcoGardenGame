@@ -63,3 +63,4 @@ composeApp/src/
 | `docs/persistence.md` | GameSaveData contract, DataStore, cloud sync, weather API |
 | `docs/platform.md` | Kotlin Multiplatform, expect/actual, sensors, auth, permissions |
 | `docs/clean-architecture-path.md` | MVVM + Repository pattern compared to Clean Architecture, and how it could be extended |
+| `docs/ci-cd.md` | GitHub Actions CI, ktlint/detekt, pre-PR checklist, git/PR workflow, testing scope |
