@@ -1,5 +1,7 @@
 # Clicky's Garden
 
+[![Android CI](https://github.com/kunohami/EcoGardenGame/actions/workflows/android_ci.yml/badge.svg)](https://github.com/kunohami/EcoGardenGame/actions/workflows/android_ci.yml)
+
 A cross-platform idle/clicker game built with **Kotlin Multiplatform** and **Jetpack Compose Multiplatform**. Players harvest virtual vegetables to earn coins, unlock new crops, and complete achievements — each vegetable has a unique physical interaction mechanic powered by the device's sensors.
 
 > **Platform:** Android (iOS scaffolding in place)
